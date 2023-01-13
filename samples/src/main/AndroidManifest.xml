@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.HelloCharts">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.HelloCharts">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".PreviewColumnChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".PieChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".LineColumnDependencyActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".LineChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".GoodBadChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".ComboLineColumnChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".ColumnChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".BubbleChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".AboutActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".PreviewLineChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".SpeedChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+
+        <activity
+            android:name=".TempoChartActivity"
+            android:screenOrientation="fullSensor"
+            android:exported="true"/>
+    </application>
+
+</manifest>
