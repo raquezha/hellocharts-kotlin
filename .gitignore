@@ -67,14 +67,3 @@ lint/tmp/
 
 # Android Profiling
 *.hprof
-
-firebase-app-id.txt
-firebase-token.txt
-app-hungrily/keystore.properties
-
-non-prod-app-distribution-credentials.json
-prod-app-distribution-credentials.json
-/credentials.properties
-/app-hungrily/keystore.properties
-/.githooks/pre-commit
-/.githooks/pre-push

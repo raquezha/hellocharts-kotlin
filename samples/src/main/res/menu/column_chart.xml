@@ -20,7 +20,7 @@
         tools:ignore="HardcodedText" />
     <item
         android:id="@+id/action_negative_subcolumns"
-        android:title="Negative subcolumns"
+        android:title="Negative SubColumns"
         app:showAsAction="never"
         tools:ignore="HardcodedText" />
     <item

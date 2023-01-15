@@ -1,191 +1,159 @@
-package net.raquezha.lecho.samples;
+package net.raquezha.hellocharts.kotlin
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.commit
+import lecho.lib.hellocharts.gesture.ZoomType
+import lecho.lib.hellocharts.listener.ViewportChangeListener
+import lecho.lib.hellocharts.model.Axis
+import lecho.lib.hellocharts.model.Line
+import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.model.PointValue
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.util.ChartUtils
+import lecho.lib.hellocharts.util.ChartUtils.pickColor
+import net.raquezha.hellocharts.kotlin.databinding.FragmentPreviewLineChartBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import net.raquezha.lecho.hellocharts.gesture.ZoomType;
-import net.raquezha.lecho.hellocharts.listener.ViewportChangeListener;
-import net.raquezha.lecho.hellocharts.model.Axis;
-import net.raquezha.lecho.hellocharts.model.Line;
-import net.raquezha.lecho.hellocharts.model.LineChartData;
-import net.raquezha.lecho.hellocharts.model.PointValue;
-import net.raquezha.lecho.hellocharts.model.Viewport;
-import net.raquezha.lecho.hellocharts.util.ChartUtils;
-import net.raquezha.lecho.hellocharts.view.LineChartView;
-import net.raquezha.lecho.hellocharts.view.PreviewLineChartView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class PreviewLineChartActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview_line_chart);
+class PreviewLineChartActivity : HelloChartsActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_preview_line_chart)
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+            supportFragmentManager.commit {
+                add(R.id.container, PlaceholderFragment())
+            }
         }
     }
 
     /**
      * A fragment containing a line chart and preview line chart.
      */
-    public static class PlaceholderFragment extends Fragment {
+    class PlaceholderFragment : HelloChartsFragmentMenu() {
 
-        private LineChartView chart;
-        private PreviewLineChartView previewChart;
-        private LineChartData data;
+        private val binding: FragmentPreviewLineChartBinding by lazy {
+            FragmentPreviewLineChartBinding.inflate(layoutInflater)
+        }
+        private lateinit var data: LineChartData
         /**
          * Deep copy of data.
          */
-        private LineChartData previewData;
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            setHasOptionsMenu(true);
-            View rootView = inflater.inflate(R.layout.fragment_preview_line_chart, container, false);
-
-            chart = rootView.findViewById(R.id.chart);
-            previewChart = rootView.findViewById(R.id.chart_preview);
-
+        private lateinit var previewData: LineChartData
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View {
             // Generate data for previewed chart and copy of that data for preview chart.
-            generateDefaultData();
-
-            chart.setLineChartData(data);
+            generateDefaultData()
+            binding.chart.lineChartData = data
             // Disable zoom/scroll for previewed chart, visible chart ranges depends on preview chart viewport so
             // zoom/scroll is unnecessary.
-            chart.setZoomEnabled(false);
-            chart.setScrollEnabled(false);
-
-            previewChart.setLineChartData(previewData);
-            previewChart.setViewportChangeListener(new ViewportListener());
-
-            previewX(false);
-
-            return rootView;
+            binding.chart.isZoomEnabled = false
+            binding.chart.isScrollEnabled = false
+            binding.previewChart.lineChartData = previewData
+            binding.previewChart.setViewportChangeListener(ViewportListener())
+            previewX(false)
+            return binding.root
         }
 
-        // MENU
-        @Override
-        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            inflater.inflate(R.menu.preview_line_chart, menu);
-        }
+        override fun getMenu() = R.menu.preview_line_chart
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            val id = menuItem.itemId
             if (id == R.id.action_reset) {
-                generateDefaultData();
-                chart.setLineChartData(data);
-                previewChart.setLineChartData(previewData);
-                previewX(true);
-                return true;
+                generateDefaultData()
+                binding.chart.lineChartData = data
+                binding.previewChart.lineChartData = previewData
+                previewX(true)
+                return true
             }
             if (id == R.id.action_preview_both) {
-                previewXY();
-                previewChart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
-                return true;
+                previewXY()
+                binding.previewChart.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL
+                return true
             }
             if (id == R.id.action_preview_horizontal) {
-                previewX(true);
-                return true;
+                previewX(true)
+                return true
             }
             if (id == R.id.action_preview_vertical) {
-                previewY();
-                return true;
+                previewY()
+                return true
             }
             if (id == R.id.action_change_color) {
-                int color = ChartUtils.pickColor();
-                while (color == previewChart.getPreviewColor()) {
-                    color = ChartUtils.pickColor();
+                var color = pickColor()
+                while (color == binding.previewChart.previewColor) {
+                    color = pickColor()
                 }
-                previewChart.setPreviewColor(color);
-                return true;
+                binding.previewChart.previewColor = color
+                return true
             }
-            return super.onOptionsItemSelected(item);
+            return false
         }
 
-        private void generateDefaultData() {
-            int numValues = 50;
-
-            List<PointValue> values = new ArrayList<PointValue>();
-            for (int i = 0; i < numValues; ++i) {
-                values.add(new PointValue(i, (float) Math.random() * 100f));
+        private fun generateDefaultData() {
+            val numValues = 50
+            val values: MutableList<PointValue> = ArrayList()
+            for (i in 0 until numValues) {
+                values.add(PointValue(i.toFloat(), Math.random().toFloat() * 100f))
             }
-
-            Line line = new Line(values);
-            line.setColor(ChartUtils.COLOR_GREEN);
-            line.setHasPoints(false);// too many values so don't draw points.
-
-            List<Line> lines = new ArrayList<Line>();
-            lines.add(line);
-
-            data = new LineChartData(lines);
-            data.setAxisXBottom(new Axis());
-            data.setAxisYLeft(new Axis().setHasLines(true));
+            val line = Line(values)
+            line.color = ChartUtils.COLOR_GREEN
+            line.setHasPoints(false) // too many values so don't draw points.
+            val lines: MutableList<Line> = ArrayList()
+            lines.add(line)
+            data = LineChartData(lines)
+            data.axisXBottom = Axis()
+            data.axisYLeft = Axis().setHasLines(true)
 
             // prepare preview data, is better to use separate deep copy for preview chart.
             // Set color to grey to make preview area more visible.
-            previewData = new LineChartData(data);
-            previewData.getLines().get(0).setColor(ChartUtils.DEFAULT_DARKEN_COLOR);
-
+            previewData = LineChartData(data)
+            previewData.lines[0].color = ChartUtils.DEFAULT_DARKEN_COLOR
         }
 
-        private void previewY() {
-            Viewport tempViewport = new Viewport(chart.getMaximumViewport());
-            float dy = tempViewport.height() / 4;
-            tempViewport.inset(0, dy);
-            previewChart.setCurrentViewportWithAnimation(tempViewport);
-            previewChart.setZoomType(ZoomType.VERTICAL);
+        private fun previewY() {
+            val tempViewport = Viewport(binding.chart.maximumViewport)
+            val dy = tempViewport.height() / 4
+            tempViewport.inset(0f, dy)
+            binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
+            binding.previewChart.zoomType = ZoomType.VERTICAL
         }
 
-        private void previewX(boolean animate) {
-            Viewport tempViewport = new Viewport(chart.getMaximumViewport());
-            float dx = tempViewport.width() / 4;
-            tempViewport.inset(dx, 0);
+        private fun previewX(animate: Boolean) {
+            val tempViewport = Viewport(binding.chart.maximumViewport)
+            val dx = tempViewport.width() / 4
+            tempViewport.inset(dx, 0f)
             if (animate) {
-                previewChart.setCurrentViewportWithAnimation(tempViewport);
+                binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
             } else {
-                previewChart.setCurrentViewport(tempViewport);
+                binding.previewChart.currentViewport = tempViewport
             }
-            previewChart.setZoomType(ZoomType.HORIZONTAL);
+            binding.previewChart.zoomType = ZoomType.HORIZONTAL
         }
 
-        private void previewXY() {
+        private fun previewXY() {
             // Better to not modify viewport of any chart directly so create a copy.
-            Viewport tempViewport = new Viewport(chart.getMaximumViewport());
+            val tempViewport = Viewport(binding.chart.maximumViewport)
             // Make temp viewport smaller.
-            float dx = tempViewport.width() / 4;
-            float dy = tempViewport.height() / 4;
-            tempViewport.inset(dx, dy);
-            previewChart.setCurrentViewportWithAnimation(tempViewport);
+            val dx = tempViewport.width() / 4
+            val dy = tempViewport.height() / 4
+            tempViewport.inset(dx, dy)
+            binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
         }
 
         /**
-         * Viewport listener for preview chart(lower one). in {@link #onViewportChanged(Viewport)} method change
-         * viewport of upper chart.
+         * Viewport listener for preview chart(lower one).
+         * in [onViewportChanged] method change viewport of upper chart.
          */
-        private class ViewportListener implements ViewportChangeListener {
-
-            @Override
-            public void onViewportChanged(Viewport newViewport) {
+        private inner class ViewportListener : ViewportChangeListener {
+            override fun onViewportChanged(newViewport: Viewport) {
                 // don't use animation, it is unnecessary when using preview chart.
-                chart.setCurrentViewport(newViewport);
+                binding.chart.currentViewport = newViewport
             }
-
         }
-
     }
 }

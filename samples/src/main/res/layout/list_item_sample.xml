@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/chart_layout"
+        android:layout_toStartOf="@+id/chartLayout"
         android:text="TEXT1"
         android:textSize="16sp"
         tools:ignore="HardcodedText" />
@@ -22,13 +22,13 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/text1"
         android:layout_below="@+id/text1"
-        android:layout_toStartOf="@id/chart_layout"
+        android:layout_toStartOf="@id/chartLayout"
         android:text="TEXT2"
         android:textSize="12sp"
         tools:ignore="HardcodedText" />
 
     <FrameLayout
-        android:id="@id/chart_layout"
+        android:id="@id/chartLayout"
         android:layout_width="54dp"
         android:layout_height="54dp"
         android:layout_alignParentEnd="true"

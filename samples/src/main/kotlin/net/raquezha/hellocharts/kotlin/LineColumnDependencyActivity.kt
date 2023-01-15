@@ -1,194 +1,175 @@
-package net.raquezha.lecho.samples;
+package net.raquezha.hellocharts.kotlin
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import lecho.lib.hellocharts.gesture.ZoomType.HORIZONTAL
+import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener
+import lecho.lib.hellocharts.model.Axis
+import lecho.lib.hellocharts.model.AxisValue
+import lecho.lib.hellocharts.model.Column
+import lecho.lib.hellocharts.model.ColumnChartData
+import lecho.lib.hellocharts.model.Line
+import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.model.PointValue
+import lecho.lib.hellocharts.model.SubcolumnValue
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.util.ChartUtils
+import net.raquezha.hellocharts.kotlin.databinding.FragmentLineColumnDependencyBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
-import net.raquezha.lecho.hellocharts.gesture.ZoomType;
-import net.raquezha.lecho.hellocharts.listener.ColumnChartOnValueSelectListener;
-import net.raquezha.lecho.hellocharts.model.Axis;
-import net.raquezha.lecho.hellocharts.model.AxisValue;
-import net.raquezha.lecho.hellocharts.model.Column;
-import net.raquezha.lecho.hellocharts.model.ColumnChartData;
-import net.raquezha.lecho.hellocharts.model.Line;
-import net.raquezha.lecho.hellocharts.model.LineChartData;
-import net.raquezha.lecho.hellocharts.model.PointValue;
-import net.raquezha.lecho.hellocharts.model.SubcolumnValue;
-import net.raquezha.lecho.hellocharts.model.Viewport;
-import net.raquezha.lecho.hellocharts.util.ChartUtils;
-import net.raquezha.lecho.hellocharts.view.ColumnChartView;
-import net.raquezha.lecho.hellocharts.view.LineChartView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class LineColumnDependencyActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_line_column_dependency);
+class LineColumnDependencyActivity : HelloChartsActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_line_column_dependency)
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+            supportFragmentManager.commit {
+                add(R.id.container, PlaceholderFragment())
+            }
         }
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
-        public final static String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-                "Sep", "Oct", "Nov", "Dec",};
-
-        public final static String[] days = new String[]{"Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun",};
-
-        private LineChartView chartTop;
-        private ColumnChartView chartBottom;
-
-        private LineChartData lineData;
-        private ColumnChartData columnData;
-
-        public PlaceholderFragment() {
+    class PlaceholderFragment : Fragment() {
+        private lateinit var lineData: LineChartData
+        private val binding: FragmentLineColumnDependencyBinding by lazy {
+            FragmentLineColumnDependencyBinding.inflate(layoutInflater)
         }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_line_column_dependency, container, false);
-
-            // *** TOP LINE CHART ***
-            chartTop = (LineChartView) rootView.findViewById(R.id.chart_top);
-
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View {
             // Generate and set data for line chart
-            generateInitialLineData();
-
-            // *** BOTTOM COLUMN CHART ***
-
-            chartBottom = (ColumnChartView) rootView.findViewById(R.id.chart_bottom);
-
-            generateColumnData();
-
-            return rootView;
+            generateInitialLineData()
+            generateColumnData()
+            return binding.root
         }
 
-        private void generateColumnData() {
-
-            int numSubcolumns = 1;
-            int numColumns = months.length;
-
-            List<AxisValue> axisValues = new ArrayList<AxisValue>();
-            List<Column> columns = new ArrayList<Column>();
-            List<SubcolumnValue> values;
-            for (int i = 0; i < numColumns; ++i) {
-
-                values = new ArrayList<SubcolumnValue>();
-                for (int j = 0; j < numSubcolumns; ++j) {
-                    values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
+        private fun generateColumnData() {
+            val numSubColumns = 1
+            val numColumns = months.size
+            val axisValues: MutableList<AxisValue> = ArrayList()
+            val columns: MutableList<Column> = ArrayList()
+            var values: MutableList<SubcolumnValue>
+            for (i in 0 until numColumns) {
+                values = ArrayList()
+                for (j in 0 until numSubColumns) {
+                    values.add(
+                        SubcolumnValue(
+                            Math.random().toFloat() * 50f + 5,
+                            ChartUtils.pickColor()
+                        )
+                    )
                 }
-
-                axisValues.add(new AxisValue(i).setLabel(months[i]));
-
-                columns.add(new Column(values).setHasLabelsOnlyForSelected(true));
+                axisValues.add(AxisValue(i.toFloat()).setLabel(months[i]))
+                columns.add(Column(values).setHasLabelsOnlyForSelected(true))
             }
-
-            columnData = new ColumnChartData(columns);
-
-            columnData.setAxisXBottom(new Axis(axisValues).setHasLines(true));
-            columnData.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(2));
-
-            chartBottom.setColumnChartData(columnData);
+            val columnData = ColumnChartData(columns)
+            columnData.axisXBottom = Axis(axisValues).setHasLines(true)
+            columnData.axisYLeft = Axis().setHasLines(true).setMaxLabelChars(2)
+            binding.chartBottom.columnChartData = columnData
 
             // Set value touch listener that will trigger changes for chartTop.
-            chartBottom.setOnValueTouchListener(new ValueTouchListener());
+            binding.chartBottom.onValueTouchListener = ValueTouchListener()
 
             // Set selection mode to keep selected month column highlighted.
-            chartBottom.setValueSelectionEnabled(true);
-
-            chartBottom.setZoomType(ZoomType.HORIZONTAL);
-
-            // chartBottom.setOnClickListener(new View.OnClickListener() {
-            //
-            // @Override
-            // public void onClick(View v) {
-            // SelectedValue sv = chartBottom.getSelectedValue();
-            // if (!sv.isSet()) {
-            // generateInitialLineData();
-            // }
-            //
-            // }
-            // });
-
+            binding.chartBottom.isValueSelectionEnabled = true
+            binding.chartBottom.zoomType = HORIZONTAL
         }
 
         /**
-         * Generates initial data for line chart. At the begining all Y values are equals 0. That will change when user
+         * Generates initial data for line chart.
+         * At the beginning all Y values are equals 0.
+         * That will change when user
          * will select value on column chart.
          */
-        private void generateInitialLineData() {
-            int numValues = 7;
-
-            List<AxisValue> axisValues = new ArrayList<AxisValue>();
-            List<PointValue> values = new ArrayList<PointValue>();
-            for (int i = 0; i < numValues; ++i) {
-                values.add(new PointValue(i, 0));
-                axisValues.add(new AxisValue(i).setLabel(days[i]));
+        private fun generateInitialLineData() {
+            val numValues = 7
+            val axisValues: MutableList<AxisValue> = ArrayList()
+            val values: MutableList<PointValue> = ArrayList()
+            for (i in 0 until numValues) {
+                values.add(PointValue(i.toFloat(), 0f))
+                axisValues.add(AxisValue(i.toFloat()).setLabel(days[i]))
             }
-
-            Line line = new Line(values);
-            line.setColor(ChartUtils.COLOR_GREEN).setCubic(true);
-
-            List<Line> lines = new ArrayList<Line>();
-            lines.add(line);
-
-            lineData = new LineChartData(lines);
-            lineData.setAxisXBottom(new Axis(axisValues).setHasLines(true));
-            lineData.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(3));
-
-            chartTop.setLineChartData(lineData);
+            val line = Line(values)
+            line.setColor(ChartUtils.COLOR_GREEN).isCubic = true
+            val lines: MutableList<Line> = ArrayList()
+            lines.add(line)
+            lineData = LineChartData(lines)
+            lineData.axisXBottom = Axis(axisValues).setHasLines(true)
+            lineData.axisYLeft = Axis().setHasLines(true).setMaxLabelChars(3)
+            binding.chartTop.lineChartData = lineData
 
             // For build-up animation you have to disable viewport recalculation.
-            chartTop.setViewportCalculationEnabled(false);
+            binding.chartTop.isViewportCalculationEnabled = false
 
             // And set initial max viewport and current viewport- remember to set viewports after data.
-            Viewport v = new Viewport(0, 110, 6, 0);
-            chartTop.setMaximumViewport(v);
-            chartTop.setCurrentViewport(v);
-
-            chartTop.setZoomType(ZoomType.HORIZONTAL);
+            val v = Viewport(0f, 110f, 6f, 0f)
+            binding.chartTop.maximumViewport = v
+            binding.chartTop.currentViewport = v
+            binding.chartTop.zoomType = HORIZONTAL
         }
 
-        private void generateLineData(int color, float range) {
+        private fun generateLineData(color: Int, range: Float) {
             // Cancel last animation if not finished.
-            chartTop.cancelDataAnimation();
+            binding.chartTop.cancelDataAnimation()
 
             // Modify data targets
-            Line line = lineData.getLines().get(0);// For this example there is always only one line.
-            line.setColor(color);
-            for (PointValue value : line.getValues()) {
+            val line = lineData.lines[0] // For this example there is always only one line.
+            line.color = color
+            for (value in line.values) {
                 // Change target only for Y value.
-                value.setTarget(value.getX(), (float) Math.random() * range);
+                value.setTarget(value.x, Math.random().toFloat() * range)
             }
 
             // Start new data animation with 300ms duration;
-            chartTop.startDataAnimation(300);
+            binding.chartTop.startDataAnimation(300)
         }
 
-        private class ValueTouchListener implements ColumnChartOnValueSelectListener {
-
-            @Override
-            public void onValueSelected(int columnIndex, int subcolumnIndex, SubcolumnValue value) {
-                generateLineData(value.getColor(), 100);
+        private inner class ValueTouchListener : ColumnChartOnValueSelectListener {
+            override fun onValueSelected(
+                columnIndex: Int,
+                subColumnIndex: Int,
+                value: SubcolumnValue
+            ) {
+                generateLineData(value.color, 100f)
             }
 
-            @Override
-            public void onValueDeselected() {
-
-                generateLineData(ChartUtils.COLOR_GREEN, 0);
-
+            override fun onValueDeselected() {
+                generateLineData(ChartUtils.COLOR_GREEN, 0f)
             }
+        }
+
+        companion object {
+            val months = arrayOf(
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"
+            )
+            val days = arrayOf(
+                "Mon",
+                "Tue",
+                "Wen",
+                "Thu",
+                "Fri",
+                "Sat",
+                "Sun"
+            )
         }
     }
 }

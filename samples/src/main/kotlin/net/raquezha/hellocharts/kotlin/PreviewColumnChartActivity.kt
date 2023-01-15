@@ -1,195 +1,172 @@
-package net.raquezha.lecho.samples;
+package net.raquezha.hellocharts.kotlin
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.commit
+import lecho.lib.hellocharts.gesture.ZoomType
+import lecho.lib.hellocharts.listener.ViewportChangeListener
+import lecho.lib.hellocharts.model.Axis
+import lecho.lib.hellocharts.model.Column
+import lecho.lib.hellocharts.model.ColumnChartData
+import lecho.lib.hellocharts.model.SubcolumnValue
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.util.ChartUtils
+import net.raquezha.hellocharts.kotlin.databinding.FragmentPreviewColumnChartBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import net.raquezha.lecho.hellocharts.gesture.ZoomType;
-import net.raquezha.lecho.hellocharts.listener.ViewportChangeListener;
-import net.raquezha.lecho.hellocharts.model.Axis;
-import net.raquezha.lecho.hellocharts.model.Column;
-import net.raquezha.lecho.hellocharts.model.ColumnChartData;
-import net.raquezha.lecho.hellocharts.model.SubcolumnValue;
-import net.raquezha.lecho.hellocharts.model.Viewport;
-import net.raquezha.lecho.hellocharts.util.ChartUtils;
-import net.raquezha.lecho.hellocharts.view.ColumnChartView;
-import net.raquezha.lecho.hellocharts.view.PreviewColumnChartView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class PreviewColumnChartActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview_column_chart);
+class PreviewColumnChartActivity : HelloChartsActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_preview_column_chart)
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+            supportFragmentManager.commit {
+                add(R.id.container, PlaceholderFragment())
+            }
         }
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    class PlaceholderFragment : HelloChartsFragmentMenu() {
 
-        private ColumnChartView chart;
-        private PreviewColumnChartView previewChart;
-        private ColumnChartData data;
+        private val binding: FragmentPreviewColumnChartBinding by lazy {
+            FragmentPreviewColumnChartBinding.inflate(layoutInflater)
+        }
+
         /**
          * Deep copy of data.
          */
-        private ColumnChartData previewData;
+        private lateinit var data: ColumnChartData
+        private lateinit var previewData: ColumnChartData
 
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            setHasOptionsMenu(true);
-            View rootView = inflater.inflate(R.layout.fragment_preview_column_chart, container, false);
-
-            chart = (ColumnChartView) rootView.findViewById(R.id.chart);
-            previewChart = (PreviewColumnChartView) rootView.findViewById(R.id.chart_preview);
-
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View {
             // Generate data for previewed chart and copy of that data for preview chart.
-            generateDefaultData();
-
-            chart.setColumnChartData(data);
+            generateDefaultData()
+            binding.chart.columnChartData = data
             // Disable zoom/scroll for previewed chart, visible chart ranges depends on preview chart viewport so
             // zoom/scroll is unnecessary.
-            chart.setZoomEnabled(false);
-            chart.setScrollEnabled(false);
-
-            previewChart.setColumnChartData(previewData);
-            previewChart.setViewportChangeListener(new ViewportListener());
-
-            previewX(false);
-
-            return rootView;
+            binding.chart.isZoomEnabled = false
+            binding.chart.isScrollEnabled = false
+            binding.previewChart.columnChartData = previewData
+            binding.previewChart.setViewportChangeListener(ViewportListener())
+            previewX(false)
+            return binding.root
         }
 
-        // MENU
-        @Override
-        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            inflater.inflate(R.menu.preview_column_chart, menu);
-        }
+        override fun getMenu() = R.menu.preview_column_chart
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == R.id.action_reset) {
-                generateDefaultData();
-                chart.setColumnChartData(data);
-                previewChart.setColumnChartData(previewData);
-                previewX(true);
-                return true;
-            }
-            if (id == R.id.action_preview_both) {
-                previewXY();
-                previewChart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
-                return true;
-            }
-            if (id == R.id.action_preview_horizontal) {
-                previewX(true);
-                return true;
-            }
-            if (id == R.id.action_preview_vertical) {
-                previewY();
-                return true;
-            }
-            if (id == R.id.action_change_color) {
-                int color = ChartUtils.pickColor();
-                while (color == previewChart.getPreviewColor()) {
-                    color = ChartUtils.pickColor();
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            when (menuItem.itemId) {
+                R.id.action_reset -> {
+                    generateDefaultData()
+                    binding.chart.columnChartData = data
+                    binding.previewChart.columnChartData = previewData
+                    previewX(true)
+                    return true
                 }
-                previewChart.setPreviewColor(color);
-                return true;
+                R.id.action_preview_both -> {
+                    previewXY()
+                    binding.previewChart.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL
+                    return true
+                }
+                R.id.action_preview_horizontal -> {
+                    previewX(true)
+                    return true
+                }
+                R.id.action_preview_vertical -> {
+                    previewY()
+                    return true
+                }
+                R.id.action_change_color -> {
+                    var color = ChartUtils.pickColor()
+                    while (color == binding.previewChart.previewColor) {
+                        color = ChartUtils.pickColor()
+                    }
+                    binding.previewChart.previewColor = color
+                    return true
+                }
             }
-            return super.onOptionsItemSelected(item);
+            return false
         }
 
-        private void generateDefaultData() {
-            int numSubcolumns = 1;
-            int numColumns = 50;
-            List<Column> columns = new ArrayList<Column>();
-            List<SubcolumnValue> values;
-            for (int i = 0; i < numColumns; ++i) {
-
-                values = new ArrayList<SubcolumnValue>();
-                for (int j = 0; j < numSubcolumns; ++j) {
-                    values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
+        private fun generateDefaultData() {
+            val numSubColumns = 1
+            val numColumns = 50
+            val columns: MutableList<Column> = ArrayList()
+            var values: MutableList<SubcolumnValue>
+            for (i in 0 until numColumns) {
+                values = ArrayList()
+                for (j in 0 until numSubColumns) {
+                    values.add(
+                        SubcolumnValue(
+                            Math.random().toFloat() * 50f + 5,
+                            ChartUtils.pickColor()
+                        )
+                    )
                 }
-
-                columns.add(new Column(values));
+                columns.add(Column(values))
             }
-
-            data = new ColumnChartData(columns);
-            data.setAxisXBottom(new Axis());
-            data.setAxisYLeft(new Axis().setHasLines(true));
+            data = ColumnChartData(columns)
+            data.axisXBottom = Axis()
+            data.axisYLeft = Axis().setHasLines(true)
 
             // prepare preview data, is better to use separate deep copy for preview chart.
             // set color to grey to make preview area more visible.
-            previewData = new ColumnChartData(data);
-            for (Column column : previewData.getColumns()) {
-                for (SubcolumnValue value : column.getValues()) {
-                    value.setColor(ChartUtils.DEFAULT_DARKEN_COLOR);
+            previewData = ColumnChartData(data)
+            for (column in previewData.columns) {
+                for (value in column.values) {
+                    value.color = ChartUtils.DEFAULT_DARKEN_COLOR
                 }
             }
-
         }
 
-        private void previewY() {
-            Viewport tempViewport = new Viewport(chart.getMaximumViewport());
-            float dy = tempViewport.height() / 4;
-            tempViewport.inset(0, dy);
-            previewChart.setCurrentViewportWithAnimation(tempViewport);
-            previewChart.setZoomType(ZoomType.VERTICAL);
+        private fun previewY() {
+            val tempViewport = Viewport(binding.chart.maximumViewport)
+            val dy = tempViewport.height() / 4
+            tempViewport.inset(0f, dy)
+            binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
+            binding.previewChart.zoomType = ZoomType.VERTICAL
         }
 
-        private void previewX(boolean animate) {
-            Viewport tempViewport = new Viewport(chart.getMaximumViewport());
-            float dx = tempViewport.width() / 4;
-            tempViewport.inset(dx, 0);
+        private fun previewX(animate: Boolean) {
+            val tempViewport = Viewport(binding.chart.maximumViewport)
+            val dx = tempViewport.width() / 4
+            tempViewport.inset(dx, 0f)
             if (animate) {
-                previewChart.setCurrentViewportWithAnimation(tempViewport);
+                binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
             } else {
-                previewChart.setCurrentViewport(tempViewport);
+                binding.previewChart.currentViewport = tempViewport
             }
-            previewChart.setZoomType(ZoomType.HORIZONTAL);
+            binding.previewChart.zoomType = ZoomType.HORIZONTAL
         }
 
-        private void previewXY() {
+        private fun previewXY() {
             // Better to not modify viewport of any chart directly so create a copy.
-            Viewport tempViewport = new Viewport(chart.getMaximumViewport());
+            val tempViewport = Viewport(binding.chart.maximumViewport)
             // Make temp viewport smaller.
-            float dx = tempViewport.width() / 4;
-            float dy = tempViewport.height() / 4;
-            tempViewport.inset(dx, dy);
-            previewChart.setCurrentViewportWithAnimation(tempViewport);
+            val dx = tempViewport.width() / 4
+            val dy = tempViewport.height() / 4
+            tempViewport.inset(dx, dy)
+            binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
         }
 
         /**
-         * Viewport listener for preview chart(lower one). in {@link #onViewportChanged(Viewport)} method change
-         * viewport of upper chart.
+         * Viewport listener for preview chart(lower one).
+         * in [onViewportChanged] method change viewport of upper chart.
          */
-        private class ViewportListener implements ViewportChangeListener {
-
-            @Override
-            public void onViewportChanged(Viewport newViewport) {
+        private inner class ViewportListener : ViewportChangeListener {
+            override fun onViewportChanged(newViewport: Viewport) {
                 // don't use animation, it is unnecessary when using preview chart because usually viewport changes
                 // happens to often.
-                chart.setCurrentViewport(newViewport);
+                binding.chart.currentViewport = newViewport
             }
-
         }
     }
 }

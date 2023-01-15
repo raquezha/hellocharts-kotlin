@@ -1,312 +1,277 @@
-package net.raquezha.lecho.samples;
+package net.raquezha.hellocharts.kotlin
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.commit
+import lecho.lib.hellocharts.animation.ChartAnimationListener
+import lecho.lib.hellocharts.gesture.ZoomType
+import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener
+import lecho.lib.hellocharts.model.Axis
+import lecho.lib.hellocharts.model.Line
+import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.model.PointValue
+import lecho.lib.hellocharts.model.ValueShape
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.util.ChartUtils
+import lecho.lib.hellocharts.view.LineChartView
+import net.raquezha.hellocharts.kotlin.databinding.FragmentLineChartBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import net.raquezha.lecho.hellocharts.animation.ChartAnimationListener;
-import net.raquezha.lecho.hellocharts.gesture.ZoomType;
-import net.raquezha.lecho.hellocharts.listener.LineChartOnValueSelectListener;
-import net.raquezha.lecho.hellocharts.model.Axis;
-import net.raquezha.lecho.hellocharts.model.Line;
-import net.raquezha.lecho.hellocharts.model.LineChartData;
-import net.raquezha.lecho.hellocharts.model.PointValue;
-import net.raquezha.lecho.hellocharts.model.ValueShape;
-import net.raquezha.lecho.hellocharts.model.Viewport;
-import net.raquezha.lecho.hellocharts.util.ChartUtils;
-import net.raquezha.lecho.hellocharts.view.LineChartView;
-
-import java.util.ArrayList;
-import java.util.List;
-public class LineChartActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_line_chart);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+class LineChartActivity : HelloChartsActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_line_chart)
+        supportFragmentManager.commit {
+            add(R.id.container, PlaceholderFragment())
         }
     }
 
     /**
      * A fragment containing a line chart.
      */
-    public static class PlaceholderFragment extends Fragment {
+    class PlaceholderFragment : HelloChartsFragmentMenu(), MenuProvider {
+        private var data: LineChartData? = null
+        private var numberOfLines = 1
+        private val maxNumberOfLines = 4
+        private val numberOfPoints = 12
+        private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
+        private var hasAxis = true
+        private var hasAxesNames = true
+        private var hasLines = true
+        private var hasPoints = true
+        private var shape = ValueShape.CIRCLE
+        private var isFilled = false
+        private var hasLabels = false
+        private var isCubic = false
+        private var hasLabelForSelected = false
+        private var pointsHaveDifferentColor = false
+        private var hasGradientToTransparent = false
 
-        private LineChartView chart;
-        private LineChartData data;
-        private int numberOfLines = 1;
-        private final int maxNumberOfLines = 4;
-        private final int numberOfPoints = 12;
-
-        float[][] randomNumbersTab = new float[maxNumberOfLines][numberOfPoints];
-
-        private boolean hasAxes = true;
-        private boolean hasAxesNames = true;
-        private boolean hasLines = true;
-        private boolean hasPoints = true;
-        private ValueShape shape = ValueShape.CIRCLE;
-        private boolean isFilled = false;
-        private boolean hasLabels = false;
-        private boolean isCubic = false;
-        private boolean hasLabelForSelected = false;
-        private boolean pointsHaveDifferentColor;
-        private boolean hasGradientToTransparent = false;
-
-        public PlaceholderFragment() {
+        private val binding: FragmentLineChartBinding by lazy {
+            FragmentLineChartBinding.inflate(layoutInflater)
         }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            setHasOptionsMenu(true);
-            View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
-
-            chart = rootView.findViewById(R.id.chart);
-            chart.setOnValueTouchListener(new ValueTouchListener());
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View {
+            binding.chart.onValueTouchListener = ValueTouchListener()
 
             // Generate some random values.
-            generateValues();
-
-            generateData();
+            generateValues()
+            generateData()
 
             // Disable viewport recalculations, see toggleCubic() method for more info.
-            chart.setViewportCalculationEnabled(false);
-
-            resetViewport();
-
-            return rootView;
+            binding.chart.isViewportCalculationEnabled = false
+            resetViewport()
+            return binding.root
         }
 
-        // MENU
-        @Override
-        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            inflater.inflate(R.menu.line_chart, menu);
+        override fun getMenu() = R.menu.line_chart
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            when (menuItem.itemId) {
+                R.id.action_reset -> {
+                    reset()
+                    generateData()
+                    return true
+                }
+                R.id.action_add_line -> {
+                    addLineToData()
+                    return true
+                }
+                R.id.action_toggle_lines -> {
+                    toggleLines()
+                    return true
+                }
+                R.id.action_toggle_points -> {
+                    togglePoints()
+                    return true
+                }
+                R.id.action_toggle_gradient -> {
+                    toggleGradient()
+                    return true
+                }
+                R.id.action_toggle_cubic -> {
+                    toggleCubic()
+                    return true
+                }
+                R.id.action_toggle_area -> {
+                    toggleFilled()
+                    return true
+                }
+                R.id.action_point_color -> {
+                    togglePointColor()
+                    return true
+                }
+                R.id.action_shape_circles -> {
+                    setCircles()
+                    return true
+                }
+                R.id.action_shape_square -> {
+                    setSquares()
+                    return true
+                }
+                R.id.action_shape_diamond -> {
+                    setDiamonds()
+                    return true
+                }
+                R.id.action_toggle_labels -> {
+                    toggleLabels()
+                    return true
+                }
+                R.id.action_toggle_axes -> {
+                    toggleAxes()
+                    return true
+                }
+                R.id.action_toggle_axes_names -> {
+                    toggleAxesNames()
+                    return true
+                }
+                R.id.action_animate -> {
+                    prepareDataAnimation()
+                    binding.chart.startDataAnimation()
+                    return true
+                }
+                R.id.action_toggle_selection_mode -> {
+                    toggleLabelForSelected()
+                    showToast(
+                        "Selection mode set to " + binding.chart.isValueSelectionEnabled
+                            + " select any point."
+                    )
+                    return true
+                }
+                R.id.action_toggle_touch_zoom -> {
+                    binding.chart.isZoomEnabled = !binding.chart.isZoomEnabled
+                    showToast("IsZoomEnabled " + binding.chart.isZoomEnabled)
+                    return true
+                }
+                R.id.action_zoom_both -> {
+                    binding.chart.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL
+                    return true
+                }
+                R.id.action_zoom_horizontal -> {
+                    binding.chart.zoomType = ZoomType.HORIZONTAL
+                    return true
+                }
+                R.id.action_zoom_vertical -> {
+                    binding.chart.zoomType = ZoomType.VERTICAL
+                    return true
+                }
+                else -> return false
+            }
         }
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == R.id.action_reset) {
-                reset();
-                generateData();
-                return true;
-            }
-            if (id == R.id.action_add_line) {
-                addLineToData();
-                return true;
-            }
-            if (id == R.id.action_toggle_lines) {
-                toggleLines();
-                return true;
-            }
-            if (id == R.id.action_toggle_points) {
-                togglePoints();
-                return true;
-            }
-            if (id == R.id.action_toggle_gradient) {
-                toggleGradient();
-                return true;
-            }
-            if (id == R.id.action_toggle_cubic) {
-                toggleCubic();
-                return true;
-            }
-            if (id == R.id.action_toggle_area) {
-                toggleFilled();
-                return true;
-            }
-            if (id == R.id.action_point_color) {
-                togglePointColor();
-                return true;
-            }
-            if (id == R.id.action_shape_circles) {
-                setCircles();
-                return true;
-            }
-            if (id == R.id.action_shape_square) {
-                setSquares();
-                return true;
-            }
-            if (id == R.id.action_shape_diamond) {
-                setDiamonds();
-                return true;
-            }
-            if (id == R.id.action_toggle_labels) {
-                toggleLabels();
-                return true;
-            }
-            if (id == R.id.action_toggle_axes) {
-                toggleAxes();
-                return true;
-            }
-            if (id == R.id.action_toggle_axes_names) {
-                toggleAxesNames();
-                return true;
-            }
-            if (id == R.id.action_animate) {
-                prepareDataAnimation();
-                chart.startDataAnimation();
-                return true;
-            }
-            if (id == R.id.action_toggle_selection_mode) {
-                toggleLabelForSelected();
-
-                Toast.makeText(getActivity(),
-                        "Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
-                        Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            if (id == R.id.action_toggle_touch_zoom) {
-                chart.setZoomEnabled(!chart.isZoomEnabled());
-                Toast.makeText(getActivity(), "IsZoomEnabled " + chart.isZoomEnabled(), Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            if (id == R.id.action_zoom_both) {
-                chart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
-                return true;
-            }
-            if (id == R.id.action_zoom_horizontal) {
-                chart.setZoomType(ZoomType.HORIZONTAL);
-                return true;
-            }
-            if (id == R.id.action_zoom_vertical) {
-                chart.setZoomType(ZoomType.VERTICAL);
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-
-        private void generateValues() {
-            for (int i = 0; i < maxNumberOfLines; ++i) {
-                for (int j = 0; j < numberOfPoints; ++j) {
-                    randomNumbersTab[i][j] = (float) Math.random() * 100f;
+        private fun generateValues() {
+            for (i in 0 until maxNumberOfLines) {
+                for (j in 0 until numberOfPoints) {
+                    randomNumbersTab[i][j] = Math.random().toFloat() * 100f
                 }
             }
         }
 
-        private void reset() {
-            numberOfLines = 1;
-
-            hasAxes = true;
-            hasAxesNames = true;
-            hasLines = true;
-            hasPoints = true;
-            shape = ValueShape.CIRCLE;
-            isFilled = false;
-            hasLabels = false;
-            isCubic = false;
-            hasLabelForSelected = false;
-            pointsHaveDifferentColor = false;
-
-            chart.setValueSelectionEnabled(hasLabelForSelected);
-            resetViewport();
+        private fun reset() {
+            numberOfLines = 1
+            hasAxis = true
+            hasAxesNames = true
+            hasLines = true
+            hasPoints = true
+            shape = ValueShape.CIRCLE
+            isFilled = false
+            hasLabels = false
+            isCubic = false
+            hasLabelForSelected = false
+            pointsHaveDifferentColor = false
+            binding.chart.isValueSelectionEnabled = hasLabelForSelected
+            resetViewport()
         }
 
-        private void resetViewport() {
+        private fun resetViewport() {
             // Reset viewport height range to (0,100)
-            final Viewport v = new Viewport(chart.getMaximumViewport());
-            v.bottom = 0;
-            v.top = 100;
-            v.left = 0;
-            v.right = numberOfPoints - 1;
-            chart.setMaximumViewport(v);
-            chart.setCurrentViewport(v);
+            val v = Viewport(binding.chart.maximumViewport)
+            v.bottom = 0f
+            v.top = 100f
+            v.left = 0f
+            v.right = (numberOfPoints - 1).toFloat()
+            binding.chart.maximumViewport = v
+            binding.chart.currentViewport = v
         }
 
-        private void generateData() {
-
-            List<Line> lines = new ArrayList<>();
-            for (int i = 0; i < numberOfLines; ++i) {
-
-                List<PointValue> values = new ArrayList<PointValue>();
-                for (int j = 0; j < numberOfPoints; ++j) {
-                    values.add(new PointValue(j, randomNumbersTab[i][j]));
+        private fun generateData() {
+            val lines: MutableList<Line> = ArrayList()
+            for (i in 0 until numberOfLines) {
+                val values: MutableList<PointValue> = ArrayList()
+                for (j in 0 until numberOfPoints) {
+                    values.add(PointValue(j.toFloat(), randomNumbersTab[i][j]))
                 }
-
-                Line line = new Line(values);
-                line.setColor(ChartUtils.COLORS[i]);
-                line.setShape(shape);
-                line.setCubic(isCubic);
-                line.setFilled(isFilled);
-                line.setHasLabels(hasLabels);
-                line.setHasLabelsOnlyForSelected(hasLabelForSelected);
-                line.setHasLines(hasLines);
-                line.setHasPoints(hasPoints);
-                line.setHasGradientToTransparent(hasGradientToTransparent);
-                if (pointsHaveDifferentColor){
-                    line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
+                val line = Line(values)
+                line.color = ChartUtils.COLORS[i]
+                line.shape = shape
+                line.isCubic = isCubic
+                line.isFilled = isFilled
+                line.setHasLabels(hasLabels)
+                line.setHasLabelsOnlyForSelected(hasLabelForSelected)
+                line.setHasLines(hasLines)
+                line.setHasPoints(hasPoints)
+                line.setHasGradientToTransparent(hasGradientToTransparent)
+                if (pointsHaveDifferentColor) {
+                    line.pointColor = ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.size]
                 }
-                lines.add(line);
+                lines.add(line)
             }
-
-            data = new LineChartData(lines);
-
-            if (hasAxes) {
-                Axis axisX = new Axis();
-                Axis axisY = new Axis().setHasLines(true);
+            data = LineChartData(lines)
+            if (hasAxis) {
+                val axisX = Axis()
+                val axisY = Axis().setHasLines(true)
                 if (hasAxesNames) {
-                    axisX.setName("Axis X");
-                    axisY.setName("Axis Y");
+                    axisX.name = "Axis X"
+                    axisY.name = "Axis Y"
                 }
-                data.setAxisXBottom(axisX);
-                data.setAxisYLeft(axisY);
+                data!!.axisXBottom = axisX
+                data!!.axisYLeft = axisY
             } else {
-                data.setAxisXBottom(null);
-                data.setAxisYLeft(null);
+                data!!.axisXBottom = null
+                data!!.axisYLeft = null
             }
-
-            data.setBaseValue(Float.NEGATIVE_INFINITY);
-            chart.setLineChartData(data);
-
+            data!!.baseValue = Float.NEGATIVE_INFINITY
+            binding.chart.lineChartData = data
         }
 
         /**
          * Adds lines to data, after that data should be set again with
-         * {@link LineChartView#setLineChartData(LineChartData)}. Last 4th line has non-monotonically x values.
+         * [LineChartView.setLineChartData]. Last 4th line has non-monotonically x values.
          */
-        private void addLineToData() {
-            if (data.getLines().size() >= maxNumberOfLines) {
-                Toast.makeText(getActivity(), "Samples app uses max 4 lines!", Toast.LENGTH_SHORT).show();
-                return;
+        private fun addLineToData() {
+            if (data!!.lines.size >= maxNumberOfLines) {
+                showToast("Samples app uses max 4 lines!")
+                return
             } else {
-                ++numberOfLines;
+                ++numberOfLines
             }
-
-            generateData();
+            generateData()
         }
 
-        private void toggleLines() {
-            hasLines = !hasLines;
-
-            generateData();
+        private fun toggleLines() {
+            hasLines = !hasLines
+            generateData()
         }
 
-        private void togglePoints() {
-            hasPoints = !hasPoints;
-
-            generateData();
+        private fun togglePoints() {
+            hasPoints = !hasPoints
+            generateData()
         }
 
-        private void toggleGradient() {
-            hasGradientToTransparent = !hasGradientToTransparent;
-
-            generateData();
+        private fun toggleGradient() {
+            hasGradientToTransparent = !hasGradientToTransparent
+            generateData()
         }
 
-        private void toggleCubic() {
-            isCubic = !isCubic;
-
-            generateData();
-
+        private fun toggleCubic() {
+            isCubic = !isCubic
+            generateData()
             if (isCubic) {
                 // It is good idea to manually set a little higher max viewport for cubic lines because sometimes line
                 // go above or below max/min. To do that use Viewport.inest() method and pass negative value as dy
@@ -316,136 +281,115 @@ public class LineChartActivity extends AppCompatActivity {
                 // To make this works during animations you should use Chart.setViewportCalculationEnabled(false) before
                 // modifying viewport.
                 // Remember to set viewport after you call setLineChartData().
-                final Viewport v = new Viewport(chart.getMaximumViewport());
-                v.bottom = -5;
-                v.top = 105;
+                val v = Viewport(binding.chart.maximumViewport)
+                v.bottom = -5f
+                v.top = 105f
                 // You have to set max and current viewports separately.
-                chart.setMaximumViewport(v);
+                binding.chart.maximumViewport = v
                 // I changing current viewport with animation in this case.
-                chart.setCurrentViewportWithAnimation(v);
+                binding.chart.setCurrentViewportWithAnimation(v)
             } else {
                 // If not cubic restore viewport to (0,100) range.
-                final Viewport v = new Viewport(chart.getMaximumViewport());
-                v.bottom = 0;
-                v.top = 100;
+                val v = Viewport(binding.chart.maximumViewport)
+                v.bottom = 0f
+                v.top = 100f
 
                 // You have to set max and current viewports separately.
                 // In this case, if I want animation I have to set current viewport first and use animation listener.
                 // Max viewport will be set in onAnimationFinished method.
-                chart.setViewportAnimationListener(new ChartAnimationListener() {
-
-                    @Override
-                    public void onAnimationStarted() {
-                        // TODO Auto-generated method stub
-
+                binding.chart.setViewportAnimationListener(object : ChartAnimationListener {
+                    override fun onAnimationStarted() {
+                        // nothing to do here
                     }
 
-                    @Override
-                    public void onAnimationFinished() {
-                        // Set max viewpirt and remove listener.
-                        chart.setMaximumViewport(v);
-                        chart.setViewportAnimationListener(null);
-
+                    override fun onAnimationFinished() {
+                        // Set max viewport and remove listener.
+                        binding.chart.maximumViewport = v
+                        binding.chart.setViewportAnimationListener(null)
                     }
-                });
-                // Set current viewpirt with animation;
-                chart.setCurrentViewportWithAnimation(v);
+                })
+                // Set current viewport with animation;
+                binding.chart.setCurrentViewportWithAnimation(v)
             }
-
         }
 
-        private void toggleFilled() {
-            isFilled = !isFilled;
-
-            generateData();
+        private fun toggleFilled() {
+            isFilled = !isFilled
+            generateData()
         }
 
-        private void togglePointColor() {
-            pointsHaveDifferentColor = !pointsHaveDifferentColor;
-
-            generateData();
+        private fun togglePointColor() {
+            pointsHaveDifferentColor = !pointsHaveDifferentColor
+            generateData()
         }
 
-        private void setCircles() {
-            shape = ValueShape.CIRCLE;
-
-            generateData();
+        private fun setCircles() {
+            shape = ValueShape.CIRCLE
+            generateData()
         }
 
-        private void setSquares() {
-            shape = ValueShape.SQUARE;
-
-            generateData();
+        private fun setSquares() {
+            shape = ValueShape.SQUARE
+            generateData()
         }
 
-        private void setDiamonds() {
-            shape = ValueShape.DIAMOND;
-
-            generateData();
+        private fun setDiamonds() {
+            shape = ValueShape.DIAMOND
+            generateData()
         }
 
-        private void toggleLabels() {
-            hasLabels = !hasLabels;
-
+        private fun toggleLabels() {
+            hasLabels = !hasLabels
             if (hasLabels) {
-                hasLabelForSelected = false;
-                chart.setValueSelectionEnabled(hasLabelForSelected);
+                hasLabelForSelected = false
+                binding.chart.isValueSelectionEnabled = hasLabelForSelected
             }
-
-            generateData();
+            generateData()
         }
 
-        private void toggleLabelForSelected() {
-            hasLabelForSelected = !hasLabelForSelected;
-
-            chart.setValueSelectionEnabled(hasLabelForSelected);
-
+        private fun toggleLabelForSelected() {
+            hasLabelForSelected = !hasLabelForSelected
+            binding.chart.isValueSelectionEnabled = hasLabelForSelected
             if (hasLabelForSelected) {
-                hasLabels = false;
+                hasLabels = false
             }
-
-            generateData();
+            generateData()
         }
 
-        private void toggleAxes() {
-            hasAxes = !hasAxes;
-
-            generateData();
+        private fun toggleAxes() {
+            hasAxis = !hasAxis
+            generateData()
         }
 
-        private void toggleAxesNames() {
-            hasAxesNames = !hasAxesNames;
-
-            generateData();
+        private fun toggleAxesNames() {
+            hasAxesNames = !hasAxesNames
+            generateData()
         }
 
         /**
-         * To animate values you have to change targets values and then call {@link net.raquezha.lecho.hellocharts.view.Chart#startDataAnimation()}
-         * method(don't confuse with View.animate()). If you operate on data that was set before you don't have to call
-         * {@link LineChartView#setLineChartData(LineChartData)} again.
+         * To animate values you have to change targets values and then call
+         * [lecho.lib.hellocharts.view.Chart.startDataAnimation]
+         * method(don't confuse with View.animate()).
+         * If you operate on data that was set before you don't have to call
+         * [LineChartView.setLineChartData] again.
          */
-        private void prepareDataAnimation() {
-            for (Line line : data.getLines()) {
-                for (PointValue value : line.getValues()) {
+        private fun prepareDataAnimation() {
+            for (line in data!!.lines) {
+                for (value in line.values) {
                     // Here I modify target only for Y values but it is OK to modify X targets as well.
-                    value.setTarget(value.getX(), (float) Math.random() * 100);
+                    value.setTarget(value.x, Math.random().toFloat() * 100)
                 }
             }
         }
 
-        private class ValueTouchListener implements LineChartOnValueSelectListener {
-
-            @Override
-            public void onValueSelected(int lineIndex, int pointIndex, PointValue value) {
-                Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
+        private inner class ValueTouchListener : LineChartOnValueSelectListener {
+            override fun onValueSelected(lineIndex: Int, pointIndex: Int, value: PointValue) {
+                showToast("Selected: $value")
             }
 
-            @Override
-            public void onValueDeselected() {
-                // TODO Auto-generated method stub
+            override fun onValueDeselected() {
 
             }
-
         }
     }
 }

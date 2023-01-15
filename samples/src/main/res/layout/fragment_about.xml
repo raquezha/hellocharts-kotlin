@@ -20,7 +20,7 @@
             android:layout_centerHorizontal="true"
             android:layout_margin="16dp"
             android:contentDescription="@string/about_app_icon_content_description"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/hellocharts_logo" />
 
         <TextView
             android:id="@+id/app_name"
@@ -52,10 +52,18 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/author"
+            android:id="@+id/author2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/version_layout"
+            android:layout_centerHorizontal="true"
+            android:text="@string/about_author2" />
+
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/author2"
             android:layout_centerHorizontal="true"
             android:text="@string/about_author" />
 

@@ -1,65 +1,52 @@
-package net.raquezha.lecho.samples;
+package net.raquezha.hellocharts.kotlin
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import lecho.lib.hellocharts.model.Line
+import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.model.PointValue
+import lecho.lib.hellocharts.util.ChartUtils
+import net.raquezha.hellocharts.kotlin.databinding.FragmentGoodBadBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import net.raquezha.lecho.hellocharts.model.Line;
-import net.raquezha.lecho.hellocharts.model.LineChartData;
-import net.raquezha.lecho.hellocharts.model.PointValue;
-import net.raquezha.lecho.hellocharts.model.Viewport;
-import net.raquezha.lecho.hellocharts.util.ChartUtils;
-import net.raquezha.lecho.hellocharts.view.LineChartView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class GoodBadChartActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_good_bad);
+class GoodBadChartActivity : HelloChartsActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_good_bad)
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+            supportFragmentManager.commit {
+                add(R.id.container, PlaceholderFragment())
+            }
         }
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
-
-        private LineChartView chart;
-        private LineChartData data;
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_good_bad, container, false);
-
-            chart = rootView.findViewById(R.id.chart);
-
-            generateDefaultData();
-            chart.setLineChartData(data);
+    class PlaceholderFragment : Fragment() {
+        private var data: LineChartData? = null
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View {
+            val binding = FragmentGoodBadBinding.inflate(layoutInflater)
+            generateDefaultData()
+            binding.chart.lineChartData = data
 
             // Increase viewport height for better look
-            Viewport v = chart.getMaximumViewport();
-            float dy = v.height() * 0.2f;
-            v.inset(0, -dy);
-            chart.setMaximumViewport(v);
-            chart.setCurrentViewport(v);
-
-            return rootView;
+            val v = binding.chart.maximumViewport
+            val dy = v.height() * 0.2f
+            v.inset(0f, -dy)
+            binding.chart.maximumViewport = v
+            binding.chart.currentViewport = v
+            return binding.root
         }
 
-        private void generateDefaultData() {
+        private fun generateDefaultData() {
 
             // Generate data, every line has 3 points to form filled triangle. Point radius is set to 1 to be almost
             // invisible but it has to be there because without points there is not labels. Area transparency is set to
@@ -68,58 +55,52 @@ public class GoodBadChartActivity extends AppCompatActivity {
             // Important note. This example uses negative values, to properly fill area below 0 chart base value have to
             // be set to 0. That is default base value but if you want to be sure you can call data.setBaseValue(0)
             // method.
-
-            Line line;
-            List<PointValue> values;
-            List<Line> lines = new ArrayList<Line>();
+            var line: Line
+            var values: MutableList<PointValue?>
+            val lines: MutableList<Line> = ArrayList()
 
             // First good triangle
-            values = new ArrayList<PointValue>();
-            values.add(new PointValue(0, 0).setLabel(""));
-            values.add(new PointValue(1, 1).setLabel("Very Good:)"));
-            values.add(new PointValue(2, 0).setLabel(""));
-
-            line = new Line(values);
-            line.setColor(ChartUtils.COLOR_GREEN);
-            line.setAreaTransparency(255);
-            line.setFilled(true);
-            line.setPointRadius(1);
-            line.setHasLabels(true);
-            lines.add(line);
+            values = ArrayList()
+            values.add(PointValue(0f, 0f).setLabel(""))
+            values.add(PointValue(1f, 1f).setLabel("Very Good:)"))
+            values.add(PointValue(2f, 0f).setLabel(""))
+            line = Line(values)
+            line.color = ChartUtils.COLOR_GREEN
+            line.areaTransparency = 255
+            line.isFilled = true
+            line.pointRadius = 1
+            line.setHasLabels(true)
+            lines.add(line)
 
             // Second good triangle
-            values = new ArrayList<PointValue>();
-            values.add(new PointValue(3, 0).setLabel(""));
-            values.add(new PointValue(4, 0.5f).setLabel("Good Enough"));
-            values.add(new PointValue(5, 0).setLabel(""));
-
-            line = new Line(values);
-            line.setColor(ChartUtils.COLOR_GREEN);
-            line.setAreaTransparency(255);
-            line.setFilled(true);
-            line.setPointRadius(1);
-            line.setHasLabels(true);
-            lines.add(line);
+            values = ArrayList()
+            values.add(PointValue(3f, 0f).setLabel(""))
+            values.add(PointValue(4f, 0.5f).setLabel("Good Enough"))
+            values.add(PointValue(5f, 0f).setLabel(""))
+            line = Line(values)
+            line.color = ChartUtils.COLOR_GREEN
+            line.areaTransparency = 255
+            line.isFilled = true
+            line.pointRadius = 1
+            line.setHasLabels(true)
+            lines.add(line)
 
             // Bad triangle
-            values = new ArrayList<PointValue>();
-            values.add(new PointValue(1, 0).setLabel(""));
-            values.add(new PointValue(2, -1).setLabel("Very Bad"));
-            values.add(new PointValue(3, 0).setLabel(""));
-
-            line = new Line(values);
-            line.setColor(ChartUtils.COLOR_RED);
-            line.setAreaTransparency(255);
-            line.setFilled(true);
-            line.setPointRadius(1);
-            line.setHasLabels(true);
-            lines.add(line);
-
-            data = new LineChartData(lines);
+            values = ArrayList()
+            values.add(PointValue(1f, 0f).setLabel(""))
+            values.add(PointValue(2f, -1f).setLabel("Very Bad"))
+            values.add(PointValue(3f, 0f).setLabel(""))
+            line = Line(values)
+            line.color = ChartUtils.COLOR_RED
+            line.areaTransparency = 255
+            line.isFilled = true
+            line.pointRadius = 1
+            line.setHasLabels(true)
+            lines.add(line)
+            data = LineChartData(lines)
 
             // *** Important, set base value to 0 to fill negative part of chart.
             // data.setBaseValue(0);
-
         }
     }
 }

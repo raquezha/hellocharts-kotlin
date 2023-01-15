@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-    <net.raquezha.lecho.hellocharts.view.LineChartView
+    <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/chart_top"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -21,7 +21,7 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/darker_gray" />
 
-    <net.raquezha.lecho.hellocharts.view.ColumnChartView
+    <lecho.lib.hellocharts.view.ColumnChartView
         android:id="@+id/chart_bottom"
         android:layout_width="match_parent"
         android:layout_height="0dp"
