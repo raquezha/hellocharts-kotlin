@@ -4,7 +4,6 @@ package lecho.lib.hellocharts.model
 
 import lecho.lib.hellocharts.formatter.BubbleChartValueFormatter
 import lecho.lib.hellocharts.formatter.SimpleBubbleChartValueFormatter
-import java.util.Collections
 
 /**
  * Data for BubbleChart.
@@ -26,7 +25,7 @@ class BubbleChartData : AbstractChartData {
      */
     var bubbleScale = DEFAULT_BUBBLE_SCALE
 
-    var values: MutableList<BubbleValue> = Collections.emptyList()
+    var values: MutableList<BubbleValue> = arrayListOf()
 
     constructor()
     constructor(values: MutableList<BubbleValue>?) {

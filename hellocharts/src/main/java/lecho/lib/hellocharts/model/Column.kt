@@ -4,7 +4,6 @@ package lecho.lib.hellocharts.model
 
 import lecho.lib.hellocharts.formatter.ColumnChartValueFormatter
 import lecho.lib.hellocharts.formatter.SimpleColumnChartValueFormatter
-import java.util.Collections
 
 /**
  * Single column for ColumnChart. One column can be divided into multiple sub-columns(ColumnValues) especially for
@@ -19,7 +18,7 @@ class Column {
     var formatter: ColumnChartValueFormatter = SimpleColumnChartValueFormatter()
         private set
 
-    var values: MutableList<SubcolumnValue> = Collections.emptyList()
+    var values: MutableList<SubcolumnValue> = arrayListOf()
 
     constructor(values: MutableList<SubcolumnValue>?) {
         setValues(values)
