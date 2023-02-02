@@ -67,7 +67,3 @@ lint/tmp/
 
 # Android Profiling
 *.hprof
-
-firebase-app-id.txt
-firebase-token.txt
-/.gradle/
