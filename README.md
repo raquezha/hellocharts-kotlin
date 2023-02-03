@@ -44,7 +44,7 @@ Forked version of lecho's unmantained hellocharts-android libary.
 #### Android Studio/Gradle
 
  
- - JitPack.io, add `jitpack.io` repositiory and dependency to your `build.gradle`:
+ - JitPack.io, add `jitpack.io` repository and dependency to your `build.gradle`:
  
  ```groovy
     dependencyResolutionManagement {
