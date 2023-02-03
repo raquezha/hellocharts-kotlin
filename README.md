@@ -57,7 +57,7 @@ Forked version of lecho's unmantained hellocharts-android libary.
     }
 	
     dependencies {
-        implementation 'com.github.raquezha:hellocharts-kotlin:Tag'
+        implementation 'com.github.raquezha:hellocharts-kotlin:<latest tag>'
     }
  ```
  
