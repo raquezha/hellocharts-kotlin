@@ -10,35 +10,41 @@ import lecho.lib.hellocharts.formatter.SimplePieChartValueFormatter
  */
 @Suppress("unused")
 class PieChartData : AbstractChartData {
+
     var centerText1FontSize = DEFAULT_CENTER_TEXT1_SIZE_SP
-        private set
+
     var centerText2FontSize = DEFAULT_CENTER_TEXT2_SIZE_SP
-        private set
+
     var centerCircleScale = DEFAULT_CENTER_CIRCLE_SCALE
-        private set
+
     var slicesSpacing = DEFAULT_SLICE_SPACING_DP
-        private set
+
     var formatter: PieChartValueFormatter = SimplePieChartValueFormatter()
-        private set
-    private var hasLabels = false
-    private var hasLabelsOnlyForSelected = false
-    private var hasLabelsOutside = false
-    private var hasCenterCircle = false
+
+    var hasLabels = false
+
+    var hasLabelsOnlyForSelected = false
+
+    var hasLabelsOutside = false
+
+    var hasCenterCircle = false
+
     var centerCircleColor = Color.TRANSPARENT
-        private set
+
     var centerText1Color = Color.BLACK
-        private set
+
     var centerText1Typeface: Typeface? = null
-        private set
+
     var centerText1: String? = null
-        private set
+
     var centerText2Color = Color.BLACK
-        private set
+
     var centerText2Typeface: Typeface? = null
-        private set
+
     var centerText2: String? = null
-        private set
-    private var values: MutableList<SliceValue> = ArrayList()
+
+    @JvmField
+    var values: MutableList<SliceValue> = ArrayList()
 
     constructor() {
         setAxisXBottom(null)

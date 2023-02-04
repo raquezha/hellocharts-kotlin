@@ -140,7 +140,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
     private void calculateMaxViewportForSubcolumns(ColumnChartData data) {
         for (Column column : data.getColumns()) {
-            for (SubcolumnValue columnValue : column.getValues()) {
+            for (SubcolumnValue columnValue : column.values) {
                 if (columnValue.getValue() >= baseValue && columnValue.getValue() > tempMaximumViewport.top) {
                     tempMaximumViewport.top = columnValue.getValue();
                 }
@@ -155,7 +155,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         for (Column column : data.getColumns()) {
             float sumPositive = baseValue;
             float sumNegative = baseValue;
-            for (SubcolumnValue columnValue : column.getValues()) {
+            for (SubcolumnValue columnValue : column.values) {
                 if (columnValue.getValue() >= baseValue) {
                     sumPositive += columnValue.getValue();
                 } else {
@@ -205,8 +205,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
     private void processColumnForSubcolumns(Canvas canvas, Column column, float columnWidth, int columnIndex, int mode, boolean isRoundedCorners) {
         // For n subColumns there will be n-1 spacing and there will be one
         // subColumn for every columnValue
-        float subcolumnWidth = (columnWidth - (subcolumnSpacing * (column.getValues().size() - 1)))
-                / column.getValues().size();
+        float subcolumnWidth = (columnWidth - (subcolumnSpacing * (column.values.size() - 1)))
+                / column.values.size();
         if (subcolumnWidth < 1) {
             subcolumnWidth = 1;
         }
@@ -218,7 +218,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         // rawValueX is horizontal center of that column
         float subcolumnRawX = rawX - halfColumnWidth;
         int valueIndex = 0;
-        for (SubcolumnValue columnValue : column.getValues()) {
+        for (SubcolumnValue columnValue : column.values) {
             columnPaint.setColor(columnValue.getColor());
             if (subcolumnRawX > rawX + halfColumnWidth) {
                 break;
@@ -277,14 +277,20 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private void processColumnForStacked(Canvas canvas, Column column, float columnWidth, int columnIndex, int mode, boolean isRoundedCorners) {
+    private void processColumnForStacked(
+            Canvas canvas,
+            Column column,
+            float columnWidth,
+            int columnIndex,
+            int mode,
+            boolean isRoundedCorners) {
         final float rawX = computator.computeRawX(columnIndex);
         final float halfColumnWidth = columnWidth / 2;
         float mostPositiveValue = baseValue;
         float mostNegativeValue = baseValue;
         float subcolumnBaseValue;
         int valueIndex = 0;
-        for (SubcolumnValue columnValue : column.getValues()) {
+        for (SubcolumnValue columnValue : column.values) {
             columnPaint.setColor(columnValue.getColor());
             if (columnValue.getValue() >= baseValue) {
                 // Using values instead of raw pixels make code easier to
@@ -329,8 +335,13 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private void highlightSubcolumn(Canvas canvas, Column column, SubcolumnValue columnValue, int valueIndex,
-                                    boolean isStacked, boolean isRoundedCorners) {
+    private void highlightSubcolumn(
+            Canvas canvas,
+            Column column,
+            SubcolumnValue columnValue,
+            int valueIndex,
+            boolean isStacked,
+            boolean isRoundedCorners) {
         if (selectedValue.getSecondIndex() == valueIndex) {
             columnPaint.setColor(columnValue.getDarkenColor());
             if(isRoundedCorners) {

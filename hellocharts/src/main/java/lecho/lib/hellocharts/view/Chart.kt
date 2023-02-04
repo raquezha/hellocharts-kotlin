@@ -36,9 +36,9 @@ interface Chart {
 
     fun setAxesRenderer(axesRenderer: AxesRenderer?)
 
-    fun setChartComputator(chartComputator: ChartComputator?)
+    fun setChartComputator(chartComputator: ChartComputator)
 
-    fun getChartComputator(): ChartComputator?
+    fun getChartComputator(): ChartComputator
 
     fun getTouchHandler(): ChartTouchHandler?
 

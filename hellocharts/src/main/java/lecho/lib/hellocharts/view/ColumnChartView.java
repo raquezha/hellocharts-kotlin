@@ -71,7 +71,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
         SelectedValue selectedValue = chartRenderer.getSelectedValue();
 
         if (selectedValue.isSet()) {
-            SubcolumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
+            SubcolumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).values
                     .get(selectedValue.getSecondIndex());
             onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
         } else {

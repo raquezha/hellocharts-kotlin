@@ -243,10 +243,7 @@ class MainActivity : HelloChartsActivity() {
                 holder.chartLayout.visibility = View.GONE
             }
 
-            if (null != chart) {
-                // Disable touch handling for chart on the ListView.
-                chart.isInteractive = false
-            }
+            chart?.setInteractive(false)
 
             holder.text1.text = item.text1
             holder.text2.text = item.text2

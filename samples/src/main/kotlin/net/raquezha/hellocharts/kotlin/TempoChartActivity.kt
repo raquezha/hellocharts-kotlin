@@ -102,7 +102,7 @@ class TempoChartActivity : HelloChartsActivity() {
             distanceAxis.formatter = SimpleAxisValueFormatter().setAppendedText("km".toCharArray())
             distanceAxis.setHasLines(true)
             distanceAxis.setHasTiltedLabels(true)
-            data.axisXBottom = distanceAxis
+            data.setAxisXBottom(distanceAxis)
 
             // Tempo uses minutes so I can't use auto-generated axis because auto-generation works only for decimal
             // system. So generate custom axis values for example every 15 seconds and set custom labels in format
@@ -119,18 +119,22 @@ class TempoChartActivity : HelloChartsActivity() {
             val tempoAxis =
                 Axis(axisValues).setName("Tempo [min/km]").setHasLines(true).setMaxLabelChars(4)
                     .setTextColor(ChartUtils.COLOR_RED)
-            data.axisYLeft = tempoAxis
+            data.setAxisYLeft(tempoAxis)
 
             // *** Same as in Speed/Height chart.
             // Height axis, this axis need custom formatter that will translate values back to real height values.
-            data.axisYRight = Axis().setName("Height [m]").setMaxLabelChars(3)
-                .setFormatter(
-                    HeightValueFormatter(
-                        scale,
-                        sub,
-                        0
+            data.setAxisYRight(
+                Axis()
+                    .setName("Height [m]")
+                    .setMaxLabelChars(3)
+                    .setFormatter(
+                        HeightValueFormatter(
+                            scale = scale,
+                            sub = sub,
+                            decimalDigits = 0
+                        )
                     )
-                )
+            )
 
             // Set data
             binding.chart.lineChartData = data
@@ -138,10 +142,12 @@ class TempoChartActivity : HelloChartsActivity() {
             // Important: adjust viewport,
             // you could skip this step but in this case it will looks better with custom viewport.
             // Set viewport with Y range 0-12;
-            val viewport = binding.chart.maximumViewport
-            viewport[viewport.left, tempoRange, viewport.right] = 0f
-            binding.chart.maximumViewport = viewport
-            binding.chart.currentViewport = viewport
+            binding.chart.getMaximumViewport()?.let { viewport ->
+                viewport[viewport.left, tempoRange, viewport.right] = 0f
+                binding.chart.setMaximumViewport(viewport)
+                binding.chart.setCurrentViewport(viewport)
+
+            }
         }
 
         private fun formatMinutes(value: Float): String {

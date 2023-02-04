@@ -71,16 +71,16 @@ class LineColumnDependencyActivity : HelloChartsActivity() {
                 columns.add(Column(values).setHasLabelsOnlyForSelected(true))
             }
             val columnData = ColumnChartData(columns)
-            columnData.axisXBottom = Axis(axisValues).setHasLines(true)
-            columnData.axisYLeft = Axis().setHasLines(true).setMaxLabelChars(2)
+            columnData.setAxisXBottom(Axis(axisValues).setHasLines(true))
+            columnData.setAxisYLeft(Axis().setHasLines(true).setMaxLabelChars(2))
             binding.chartBottom.columnChartData = columnData
 
             // Set value touch listener that will trigger changes for chartTop.
             binding.chartBottom.onValueTouchListener = ValueTouchListener()
 
             // Set selection mode to keep selected month column highlighted.
-            binding.chartBottom.isValueSelectionEnabled = true
-            binding.chartBottom.zoomType = HORIZONTAL
+            binding.chartBottom.setValueSelectionEnabled(true)
+            binding.chartBottom.setZoomType(HORIZONTAL)
         }
 
         /**
@@ -102,18 +102,18 @@ class LineColumnDependencyActivity : HelloChartsActivity() {
             val lines: MutableList<Line> = ArrayList()
             lines.add(line)
             lineData = LineChartData(lines)
-            lineData.axisXBottom = Axis(axisValues).setHasLines(true)
-            lineData.axisYLeft = Axis().setHasLines(true).setMaxLabelChars(3)
+            lineData.setAxisXBottom(Axis(axisValues).setHasLines(true))
+            lineData.setAxisYLeft(Axis().setHasLines(true).setMaxLabelChars(3))
             binding.chartTop.lineChartData = lineData
 
             // For build-up animation you have to disable viewport recalculation.
-            binding.chartTop.isViewportCalculationEnabled = false
+            binding.chartTop.setViewportCalculationEnabled(false)
 
             // And set initial max viewport and current viewport- remember to set viewports after data.
             val v = Viewport(0f, 110f, 6f, 0f)
-            binding.chartTop.maximumViewport = v
-            binding.chartTop.currentViewport = v
-            binding.chartTop.zoomType = HORIZONTAL
+            binding.chartTop.setMaximumViewport(v)
+            binding.chartTop.setCurrentViewport(v)
+            binding.chartTop.setZoomType(HORIZONTAL)
         }
 
         private fun generateLineData(color: Int, range: Float) {

@@ -1,95 +1,95 @@
-package lecho.lib.hellocharts.gesture;
+package lecho.lib.hellocharts.gesture
 
-import android.graphics.PointF;
-import android.view.MotionEvent;
-
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.model.Viewport;
+import android.graphics.PointF
+import android.view.MotionEvent
+import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.model.Viewport
 
 /**
  * Encapsulates zooming functionality.
  */
-public class ChartZoomer {
-    public static final float ZOOM_AMOUNT = 0.25f;
-    private final ZoomerCompat zoomer;
-    private ZoomType zoomType;
-    private final PointF zoomFocalPoint = new PointF();// Used for double tap zoom
-    private final PointF viewportFocus = new PointF();
-    private final Viewport scrollerStartViewport = new Viewport(); // Used only for zooms and flings
+class ChartZoomer(zoomType: ZoomType) {
+    private val zoomer: ZoomerCompat
+    var zoomType: ZoomType
+    private val zoomFocalPoint = PointF() // Used for double tap zoom
+    private val viewportFocus = PointF()
+    private val scrollerStartViewport = Viewport() // Used only for zooms and flings
 
-    public ChartZoomer(ZoomType zoomType) {
-        zoomer = new ZoomerCompat();
-        this.zoomType = zoomType;
+    init {
+        zoomer = ZoomerCompat()
+        this.zoomType = zoomType
     }
 
-    public boolean startZoom(MotionEvent e, ChartComputator computator) {
-        zoomer.forceFinished(true);
-        scrollerStartViewport.set(computator.getCurrentViewport());
-        if (!computator.rawPixelsToDataPoint(e.getX(), e.getY(), zoomFocalPoint)) {
+    fun startZoom(e: MotionEvent, computator: ChartComputator): Boolean {
+        zoomer.forceFinished(true)
+        scrollerStartViewport.set(computator.getCurrentViewport())
+        if (!computator.rawPixelsToDataPoint(e.x, e.y, zoomFocalPoint)) {
             // Focus point is not within content area.
-            return false;
+            return false
         }
-        zoomer.startZoom(ZOOM_AMOUNT);
-        return true;
+        zoomer.startZoom(ZOOM_AMOUNT)
+        return true
     }
 
-    public boolean computeZoom(ChartComputator computator) {
+    fun computeZoom(computator: ChartComputator): Boolean {
         if (zoomer.computeZoom()) {
             // Performs the zoom since a zoom is in progress.
-            final float newWidth = (1.0f - zoomer.getCurrZoom()) * scrollerStartViewport.width();
-            final float newHeight = (1.0f - zoomer.getCurrZoom()) * scrollerStartViewport.height();
-            final float pointWithinViewportX = (zoomFocalPoint.x - scrollerStartViewport.left)
-                    / scrollerStartViewport.width();
-            final float pointWithinViewportY = (zoomFocalPoint.y - scrollerStartViewport.bottom)
-                    / scrollerStartViewport.height();
-
-            float left = zoomFocalPoint.x - newWidth * pointWithinViewportX;
-            float top = zoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
-            float right = zoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
-            float bottom = zoomFocalPoint.y - newHeight * pointWithinViewportY;
-            setCurrentViewport(computator, left, top, right, bottom);
-            return true;
+            val newWidth = (1.0f - zoomer.currZoom) * scrollerStartViewport.width()
+            val newHeight = (1.0f - zoomer.currZoom) * scrollerStartViewport.height()
+            val pointWithinViewportX = ((zoomFocalPoint.x - scrollerStartViewport.left)
+                / scrollerStartViewport.width())
+            val pointWithinViewportY = ((zoomFocalPoint.y - scrollerStartViewport.bottom)
+                / scrollerStartViewport.height())
+            val left = zoomFocalPoint.x - newWidth * pointWithinViewportX
+            val top = zoomFocalPoint.y + newHeight * (1 - pointWithinViewportY)
+            val right = zoomFocalPoint.x + newWidth * (1 - pointWithinViewportX)
+            val bottom = zoomFocalPoint.y - newHeight * pointWithinViewportY
+            setCurrentViewport(computator, left, top, right, bottom)
+            return true
         }
-        return false;
+        return false
     }
 
-    public boolean scale(ChartComputator computator, float focusX, float focusY, float scale) {
+    fun scale(computator: ChartComputator, focusX: Float, focusY: Float, scale: Float): Boolean {
         /*
           Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
          */
-        final float newWidth = scale * computator.getCurrentViewport().width();
-        final float newHeight = scale * computator.getCurrentViewport().height();
+        val newWidth = scale * computator.getCurrentViewport().width()
+        val newHeight = scale * computator.getCurrentViewport().height()
         if (!computator.rawPixelsToDataPoint(focusX, focusY, viewportFocus)) {
             // Focus point is not within content area.
-            return false;
+            return false
         }
-
-        float left = viewportFocus.x - (focusX - computator.getContentRectMinusAllMargins().left)
-                * (newWidth / computator.getContentRectMinusAllMargins().width());
-        float top = viewportFocus.y + (focusY - computator.getContentRectMinusAllMargins().top)
-                * (newHeight / computator.getContentRectMinusAllMargins().height());
-        float right = left + newWidth;
-        float bottom = top - newHeight;
-        setCurrentViewport(computator, left, top, right, bottom);
-        return true;
+        val contentMarginLeft = (focusX - computator.contentRectMinusAllMargins.left)
+        val contentMarginTop = (focusY - computator.contentRectMinusAllMargins.top)
+        val newWidthAllMargin = (newWidth / computator.contentRectMinusAllMargins.width())
+        val newHeightAllMargin = (newHeight / computator.contentRectMinusAllMargins.height())
+        val left = viewportFocus.x - contentMarginLeft * newWidthAllMargin
+        val top = viewportFocus.y + contentMarginTop * newHeightAllMargin
+        val right = left + newWidth
+        val bottom = top - newHeight
+        setCurrentViewport(computator, left, top, right, bottom)
+        return true
     }
 
-    private void setCurrentViewport(ChartComputator computator, float left, float top, float right, float bottom) {
-        Viewport currentViewport = computator.getCurrentViewport();
-        if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
-            computator.setCurrentViewport(left, top, right, bottom);
-        } else if (ZoomType.HORIZONTAL == zoomType) {
-            computator.setCurrentViewport(left, currentViewport.top, right, currentViewport.bottom);
-        } else if (ZoomType.VERTICAL == zoomType) {
-            computator.setCurrentViewport(currentViewport.left, top, currentViewport.right, bottom);
+    private fun setCurrentViewport(
+        computator: ChartComputator,
+        left: Float,
+        top: Float,
+        right: Float,
+        bottom: Float
+    ) {
+        val currentViewport = computator.getCurrentViewport()
+        if (ZoomType.HORIZONTAL_AND_VERTICAL === zoomType) {
+            computator.setCurrentViewport(left, top, right, bottom)
+        } else if (ZoomType.HORIZONTAL === zoomType) {
+            computator.setCurrentViewport(left, currentViewport.top, right, currentViewport.bottom)
+        } else if (ZoomType.VERTICAL === zoomType) {
+            computator.setCurrentViewport(currentViewport.left, top, currentViewport.right, bottom)
         }
     }
 
-    public ZoomType getZoomType() {
-        return zoomType;
-    }
-
-    public void setZoomType(ZoomType zoomType) {
-        this.zoomType = zoomType;
+    companion object {
+        const val ZOOM_AMOUNT = 0.25f
     }
 }

@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import lecho.lib.hellocharts.animation.ChartAnimationListener;
@@ -188,6 +190,7 @@ public abstract class AbstractChartView extends View implements Chart {
         return axesRenderer;
     }
 
+    @NonNull
     @Override
     public ChartComputator getChartComputator() {
         return chartComputator;
@@ -210,22 +213,22 @@ public abstract class AbstractChartView extends View implements Chart {
 
     @Override
     public boolean isZoomEnabled() {
-        return touchHandler.isZoomEnabled();
+        return touchHandler.isZoomEnabled;
     }
 
     @Override
     public void setZoomEnabled(boolean isZoomEnabled) {
-        touchHandler.setZoomEnabled(isZoomEnabled);
+        touchHandler.isZoomEnabled = isZoomEnabled;
     }
 
     @Override
     public boolean isScrollEnabled() {
-        return touchHandler.isScrollEnabled();
+        return touchHandler.isScrollEnabled;
     }
 
     @Override
     public void setScrollEnabled(boolean isScrollEnabled) {
-        touchHandler.setScrollEnabled(isScrollEnabled);
+        touchHandler.isScrollEnabled = isScrollEnabled;
     }
 
     @Override
@@ -245,9 +248,9 @@ public abstract class AbstractChartView extends View implements Chart {
         Viewport currentViewport = getCurrentViewport();
         Viewport scrollViewport = new Viewport(currentViewport);
 
-        if (maxViewport.contains(x, y)) {
-            final float width = currentViewport.width();
-            final float height = currentViewport.height();
+        if (maxViewport != null && maxViewport.contains(x, y)) {
+            final float width = currentViewport != null ? currentViewport.width() : 0;
+            final float height = currentViewport != null ? currentViewport.height() : 0;
 
             final float halfWidth = width / 2;
             final float halfHeight = height / 2;
@@ -266,12 +269,12 @@ public abstract class AbstractChartView extends View implements Chart {
 
     @Override
     public boolean isValueTouchEnabled() {
-        return touchHandler.isValueTouchEnabled();
+        return touchHandler.isValueTouchEnabled;
     }
 
     @Override
     public void setValueTouchEnabled(boolean isValueTouchEnabled) {
-        touchHandler.setValueTouchEnabled(isValueTouchEnabled);
+        touchHandler.isValueTouchEnabled = isValueTouchEnabled;
 
     }
 
@@ -301,8 +304,7 @@ public abstract class AbstractChartView extends View implements Chart {
         Viewport maxViewport = getMaximumViewport();
         Viewport currentViewport = getCurrentViewport();
 
-        return Math.max(maxViewport.width() / currentViewport.width(), maxViewport.height() / currentViewport.height());
-
+        return Math.max((maxViewport != null ? maxViewport.width() : 0) / (currentViewport != null ? currentViewport.width() : 0), (maxViewport != null ? maxViewport.height() : 0) / (currentViewport != null ? currentViewport.height() : 0));
     }
 
     @Override
@@ -321,7 +323,7 @@ public abstract class AbstractChartView extends View implements Chart {
         final Viewport maxViewport = getMaximumViewport();
         Viewport zoomViewport = new Viewport(getMaximumViewport());
 
-        if (maxViewport.contains(x, y)) {
+        if (maxViewport != null && maxViewport.contains(x, y)) {
 
             if (zoomLevel < 1) {
                 zoomLevel = 1;
@@ -371,6 +373,7 @@ public abstract class AbstractChartView extends View implements Chart {
         return zoomViewport;
     }
 
+    @Nullable
     @Override
     public Viewport getMaximumViewport() {
         return chartRenderer.getMaximumViewport();
@@ -400,7 +403,9 @@ public abstract class AbstractChartView extends View implements Chart {
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
+
     @Override
+    @Nullable
     public Viewport getCurrentViewport() {
         return getChartRenderer().getCurrentViewport();
     }
@@ -431,12 +436,12 @@ public abstract class AbstractChartView extends View implements Chart {
 
     @Override
     public boolean isValueSelectionEnabled() {
-        return touchHandler.isValueSelectionEnabled();
+        return touchHandler.isValueSelectionEnabled;
     }
 
     @Override
     public void setValueSelectionEnabled(boolean isValueSelectionEnabled) {
-        touchHandler.setValueSelectionEnabled(isValueSelectionEnabled);
+        touchHandler.isValueSelectionEnabled = isValueSelectionEnabled;
     }
 
     @Override

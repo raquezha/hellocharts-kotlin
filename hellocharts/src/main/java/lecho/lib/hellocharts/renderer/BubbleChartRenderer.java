@@ -121,7 +121,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
         selectedValue.clear();
         final BubbleChartData data = dataProvider.getBubbleChartData();
         int valueIndex = 0;
-        for (BubbleValue bubbleValue : data.getValues()) {
+        for (BubbleValue bubbleValue : data.values) {
             float rawRadius = processBubble(bubbleValue);
 
             if (ValueShape.SQUARE.equals(bubbleValue.getShape())) {
@@ -181,7 +181,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
     private void drawBubbles(Canvas canvas) {
         final BubbleChartData data = dataProvider.getBubbleChartData();
-        for (BubbleValue bubbleValue : data.getValues()) {
+        for (BubbleValue bubbleValue : data.values) {
             drawBubble(canvas, bubbleValue);
         }
     }
@@ -220,7 +220,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
     private void highlightBubbles(Canvas canvas) {
         final BubbleChartData data = dataProvider.getBubbleChartData();
-        BubbleValue bubbleValue = data.getValues().get(selectedValue.getFirstIndex());
+        BubbleValue bubbleValue = data.values.get(selectedValue.getFirstIndex());
         highlightBubble(canvas, bubbleValue);
     }
 
@@ -302,7 +302,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
         tempMaximumViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
         BubbleChartData data = dataProvider.getBubbleChartData();
         // TODO: Optimize.
-        for (BubbleValue bubbleValue : data.getValues()) {
+        for (BubbleValue bubbleValue : data.values) {
             if (Math.abs(bubbleValue.getZ()) > maxZ) {
                 maxZ = Math.abs(bubbleValue.getZ());
             }

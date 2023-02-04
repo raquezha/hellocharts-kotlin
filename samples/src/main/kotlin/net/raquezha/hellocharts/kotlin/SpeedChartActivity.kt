@@ -96,23 +96,29 @@ class SpeedChartActivity : HelloChartsActivity() {
             distanceAxis.formatter = SimpleAxisValueFormatter().setAppendedText("km".toCharArray())
             distanceAxis.setHasLines(true)
             distanceAxis.isInside = true
-            data!!.axisXBottom = distanceAxis
+            data!!.setAxisXBottom(distanceAxis)
 
             // Speed axis
-            data!!.axisYLeft = Axis().setName("Speed [km/h]").setHasLines(true)
-                .setMaxLabelChars(3)
-                .setTextColor(ChartUtils.COLOR_RED).setInside(true)
+            data!!.setAxisYLeft(
+                Axis()
+                    .setName("Speed [km/h]")
+                    .setHasLines(true)
+                    .setMaxLabelChars(3)
+                    .setTextColor(ChartUtils.COLOR_RED).setInside(true)
+            )
 
             // Height axis, this axis need custom formatter that will translate values back to real height values.
-            data!!.axisYRight = Axis().setName("Height [m]").setMaxLabelChars(3)
-                .setTextColor(ChartUtils.COLOR_BLUE)
-                .setFormatter(
-                    HeightValueFormatter(
-                        scale,
-                        sub,
-                        0
-                    )
-                ).setInside(true)
+            data!!.setAxisYRight(
+                Axis().setName("Height [m]").setMaxLabelChars(3)
+                    .setTextColor(ChartUtils.COLOR_BLUE)
+                    .setFormatter(
+                        HeightValueFormatter(
+                            scale,
+                            sub,
+                            0
+                        )
+                    ).setInside(true)
+            )
 
             // Set data
             binding.chart.lineChartData = data
@@ -120,10 +126,11 @@ class SpeedChartActivity : HelloChartsActivity() {
             // Important: adjust viewport, you could skip this step but in this case it will looks better with custom
             // viewport. Set
             // viewport with Y range 0-55;
-            val viewport = binding.chart.maximumViewport
-            viewport[viewport.left, speedRange, viewport.right] = 0f
-            binding.chart.maximumViewport = viewport
-            binding.chart.currentViewport = viewport
+            binding.chart.getMaximumViewport()?.let { viewport ->
+                viewport[viewport.left, speedRange, viewport.right] = 0f
+                binding.chart.setMaximumViewport(viewport)
+                binding.chart.setCurrentViewport(viewport)
+            }
         }
 
         /**

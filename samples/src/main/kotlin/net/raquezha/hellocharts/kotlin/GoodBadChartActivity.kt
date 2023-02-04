@@ -38,11 +38,13 @@ class GoodBadChartActivity : HelloChartsActivity() {
             binding.chart.lineChartData = data
 
             // Increase viewport height for better look
-            val v = binding.chart.maximumViewport
-            val dy = v.height() * 0.2f
-            v.inset(0f, -dy)
-            binding.chart.maximumViewport = v
-            binding.chart.currentViewport = v
+            binding.chart.getMaximumViewport().let {
+                val dy = it?.height()?.times(0.2f) ?: 0f
+                it?.inset(0f, -dy)
+                binding.chart.setMaximumViewport(it)
+                binding.chart.setCurrentViewport(it)
+            }
+
             return binding.root
         }
 
@@ -56,6 +58,7 @@ class GoodBadChartActivity : HelloChartsActivity() {
             // be set to 0. That is default base value but if you want to be sure you can call data.setBaseValue(0)
             // method.
             var line: Line
+
             var values: MutableList<PointValue?>
             val lines: MutableList<Line> = ArrayList()
 

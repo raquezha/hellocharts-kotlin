@@ -91,25 +91,25 @@ class BubbleChartActivity : HelloChartsActivity() {
                 }
                 R.id.action_toggle_selection_mode -> {
                     toggleLabelForSelected()
-                    showToast("Selection mode set to " + binding.chart.isValueSelectionEnabled
+                    showToast("Selection mode set to " + binding.chart.isValueSelectionEnabled()
                         + " select any point.")
                     return true
                 }
                 R.id.action_toggle_touch_zoom -> {
-                    binding.chart.isZoomEnabled = !binding.chart.isZoomEnabled
-                    showToast("IsZoomEnabled " + binding.chart.isZoomEnabled)
+                    binding.chart.setZoomEnabled(!binding.chart.isZoomEnabled())
+                    showToast("IsZoomEnabled " + binding.chart.isZoomEnabled())
                     return true
                 }
                 R.id.action_zoom_both -> {
-                    binding.chart.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL
+                    binding.chart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL)
                     return true
                 }
                 R.id.action_zoom_horizontal -> {
-                    binding.chart.zoomType = ZoomType.HORIZONTAL
+                    binding.chart.setZoomType(ZoomType.HORIZONTAL)
                     return true
                 }
                 R.id.action_zoom_vertical -> {
-                    binding.chart.zoomType = ZoomType.VERTICAL
+                    binding.chart.setZoomType(ZoomType.VERTICAL)
                     return true
                 }
             }
@@ -122,7 +122,7 @@ class BubbleChartActivity : HelloChartsActivity() {
             shape = ValueShape.CIRCLE
             hasLabels = false
             hasLabelForSelected = false
-            binding.chart.isValueSelectionEnabled = hasLabelForSelected
+            binding.chart.setValueSelectionEnabled(hasLabelForSelected)
         }
 
         private fun generateData() {
@@ -147,11 +147,11 @@ class BubbleChartActivity : HelloChartsActivity() {
                     axisX.name = "Axis X"
                     axisY.name = "Axis Y"
                 }
-                data.axisXBottom = axisX
-                data.axisYLeft = axisY
+                data.setAxisXBottom(axisX)
+                data.setAxisYLeft(axisY)
             } else {
-                data.axisXBottom = null
-                data.axisYLeft = null
+                data.setAxisXBottom(null)
+                data.setAxisYLeft(null)
             }
             binding.chart.bubbleChartData = data
         }
@@ -170,14 +170,14 @@ class BubbleChartActivity : HelloChartsActivity() {
             hasLabels = !hasLabels
             if (hasLabels) {
                 hasLabelForSelected = false
-                binding.chart.isValueSelectionEnabled = hasLabelForSelected
+                binding.chart.setValueSelectionEnabled(hasLabelForSelected)
             }
             generateData()
         }
 
         private fun toggleLabelForSelected() {
             hasLabelForSelected = !hasLabelForSelected
-            binding.chart.isValueSelectionEnabled = hasLabelForSelected
+            binding.chart.setValueSelectionEnabled(hasLabelForSelected)
             if (hasLabelForSelected) {
                 hasLabels = false
             }

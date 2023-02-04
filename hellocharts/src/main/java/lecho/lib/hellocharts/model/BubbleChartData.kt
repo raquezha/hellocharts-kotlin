@@ -9,9 +9,12 @@ import lecho.lib.hellocharts.formatter.SimpleBubbleChartValueFormatter
  * Data for BubbleChart.
  */
 class BubbleChartData : AbstractChartData {
+
     var formatter: BubbleChartValueFormatter = SimpleBubbleChartValueFormatter()
-    private var hasLabels = false
-    private var hasLabelsOnlyForSelected = false
+
+    var hasLabels = false
+
+    var hasLabelsOnlyForSelected = false
 
     /**
      * Set minimal bubble radius in dp, helpful when you want small bubbles(bubbles with very small z values compared to
@@ -25,6 +28,7 @@ class BubbleChartData : AbstractChartData {
      */
     var bubbleScale = DEFAULT_BUBBLE_SCALE
 
+    @JvmField
     var values: MutableList<BubbleValue> = arrayListOf()
 
     constructor()

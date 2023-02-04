@@ -80,7 +80,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
             if (SelectedValueType.COLUMN.equals(selectedValue.getType())) {
 
                 SubcolumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex())
-                        .getValues().get(selectedValue.getSecondIndex());
+                        .values.get(selectedValue.getSecondIndex());
                 onValueTouchListener.onColumnValueSelected(selectedValue.getFirstIndex(),
                         selectedValue.getSecondIndex(), value);
 

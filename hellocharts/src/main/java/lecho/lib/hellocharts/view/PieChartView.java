@@ -6,10 +6,13 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import lecho.lib.hellocharts.animation.PieChartRotationAnimator;
 import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV14;
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.gesture.PieChartTouchHandler;
 import lecho.lib.hellocharts.listener.DummyPieChartOnValueSelectListener;
 import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
@@ -18,6 +21,7 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.provider.PieChartDataProvider;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.PieChartRenderer;
 
 /**
@@ -175,5 +179,36 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
     public void setCircleFillRatio(float fillRatio) {
         pieChartRenderer.setCircleFillRatio(fillRatio);
         ViewCompat.postInvalidateOnAnimation(this);
+    }
+
+    @Override
+    public void setChartData(@Nullable ChartData chartData) {
+        this.chartData = chartData;
+    }
+
+    @Override
+    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
+        this.axesRenderer = axesRenderer;
+    }
+
+    @Override
+    public void setChartComputator(@Nullable ChartComputator chartComputator) {
+        this.chartComputator = chartComputator;
+    }
+
+    @Nullable
+    @Override
+    public ChartTouchHandler setTouchHandler() {
+        return touchHandler;
+    }
+
+    @Override
+    public boolean getInteractive() {
+        return isInteractive;
+    }
+
+    @Override
+    public void setContainerScrollEnabled(boolean isEnabled) {
+        this.isContainerScrollEnabled = isEnabled;
     }
 }

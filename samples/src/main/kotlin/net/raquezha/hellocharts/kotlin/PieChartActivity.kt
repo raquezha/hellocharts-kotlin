@@ -109,7 +109,7 @@ class PieChartActivity : HelloChartsActivity() {
                 R.id.action_toggle_selection_mode -> {
                     toggleLabelForSelected()
                     val text = "Selection mode set " +
-                        "to " + binding.chart.isValueSelectionEnabled +
+                        "to " + binding.chart.isValueSelectionEnabled() +
                         " select any point."
                     showToast(text)
                     return true
@@ -143,7 +143,7 @@ class PieChartActivity : HelloChartsActivity() {
             data.setHasLabelsOutside(hasLabelsOutside)
             data.setHasCenterCircle(hasCenterCircle)
             if (isExploded) {
-                data.slicesSpacing = 24
+                data.setSlicesSpacing(24)
             }
             if (hasCenterText1) {
                 data.centerText1 = "Hello!"
@@ -181,7 +181,7 @@ class PieChartActivity : HelloChartsActivity() {
             if (hasLabelsOutside) {
                 hasLabels = true
                 hasLabelForSelected = false
-                binding.chart.isValueSelectionEnabled = hasLabelForSelected
+                binding.chart.setValueSelectionEnabled(hasLabelForSelected)
             }
             if (hasLabelsOutside) {
                 binding.chart.circleFillRatio = 0.7f
@@ -195,7 +195,7 @@ class PieChartActivity : HelloChartsActivity() {
             hasLabels = !hasLabels
             if (hasLabels) {
                 hasLabelForSelected = false
-                binding.chart.isValueSelectionEnabled = hasLabelForSelected
+                binding.chart.setValueSelectionEnabled(hasLabelForSelected)
                 if (hasLabelsOutside) {
                     binding.chart.circleFillRatio = 0.7f
                 } else {
@@ -207,7 +207,7 @@ class PieChartActivity : HelloChartsActivity() {
 
         private fun toggleLabelForSelected() {
             hasLabelForSelected = !hasLabelForSelected
-            binding.chart.isValueSelectionEnabled = hasLabelForSelected
+            binding.chart.setValueSelectionEnabled(hasLabelForSelected)
             if (hasLabelForSelected) {
                 hasLabels = false
                 hasLabelsOutside = false

@@ -135,11 +135,11 @@ class ComboLineColumnChartActivity : HelloChartsActivity() {
                     axisX.name = "Axis X"
                     axisY.name = "Axis Y"
                 }
-                data.axisXBottom = axisX
-                data.axisYLeft = axisY
+                data.setAxisXBottom(axisX)
+                data.setAxisYLeft(axisY)
             } else {
-                data.axisXBottom = null
-                data.axisYLeft = null
+                data.setAxisXBottom(null)
+                data.setAxisYLeft(null)
             }
             binding.chart.comboLineColumnChartData = data
         }

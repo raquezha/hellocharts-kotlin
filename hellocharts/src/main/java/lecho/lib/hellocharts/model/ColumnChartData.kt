@@ -16,9 +16,11 @@ class ColumnChartData : AbstractChartData {
      * @see setBaseValue
      */
     var baseValue = DEFAULT_BASE_VALUE
-        private set
+
     var columns: MutableList<Column> = ArrayList()
+
     var isStacked = false
+
     var isRoundedCorner: Boolean = false
 
     constructor(columns: MutableList<Column>? = null) {

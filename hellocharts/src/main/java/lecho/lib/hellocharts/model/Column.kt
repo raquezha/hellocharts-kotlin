@@ -13,11 +13,13 @@ import lecho.lib.hellocharts.formatter.SimpleColumnChartValueFormatter
  * If you want to display AxisValue for given column you should initialize AxisValue with X value of that column.
  */
 class Column {
-    private var hasLabels = false
-    private var hasLabelsOnlyForSelected = false
-    var formatter: ColumnChartValueFormatter = SimpleColumnChartValueFormatter()
-        private set
+    var hasLabels = false
 
+    var hasLabelsOnlyForSelected = false
+
+    var formatter: ColumnChartValueFormatter = SimpleColumnChartValueFormatter()
+
+    @JvmField
     var values: MutableList<SubcolumnValue> = arrayListOf()
 
     constructor(values: MutableList<SubcolumnValue>?) {

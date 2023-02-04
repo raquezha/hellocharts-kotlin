@@ -52,8 +52,8 @@ class PreviewColumnChartActivity : HelloChartsActivity() {
             binding.chart.columnChartData = data
             // Disable zoom/scroll for previewed chart, visible chart ranges depends on preview chart viewport so
             // zoom/scroll is unnecessary.
-            binding.chart.isZoomEnabled = false
-            binding.chart.isScrollEnabled = false
+            binding.chart.setZoomEnabled(false)
+            binding.chart.setScrollEnabled(false)
             binding.previewChart.columnChartData = previewData
             binding.previewChart.setViewportChangeListener(ViewportListener())
             previewX(false)
@@ -73,7 +73,7 @@ class PreviewColumnChartActivity : HelloChartsActivity() {
                 }
                 R.id.action_preview_both -> {
                     previewXY()
-                    binding.previewChart.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL
+                    binding.previewChart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL)
                     return true
                 }
                 R.id.action_preview_horizontal -> {
@@ -114,8 +114,8 @@ class PreviewColumnChartActivity : HelloChartsActivity() {
                 columns.add(Column(values))
             }
             data = ColumnChartData(columns)
-            data.axisXBottom = Axis()
-            data.axisYLeft = Axis().setHasLines(true)
+            data.setAxisXBottom(Axis())
+            data.setAxisYLeft(Axis().setHasLines(true))
 
             // prepare preview data, is better to use separate deep copy for preview chart.
             // set color to grey to make preview area more visible.
@@ -128,28 +128,28 @@ class PreviewColumnChartActivity : HelloChartsActivity() {
         }
 
         private fun previewY() {
-            val tempViewport = Viewport(binding.chart.maximumViewport)
+            val tempViewport = Viewport(binding.chart.getMaximumViewport())
             val dy = tempViewport.height() / 4
             tempViewport.inset(0f, dy)
             binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
-            binding.previewChart.zoomType = ZoomType.VERTICAL
+            binding.previewChart.setZoomType(ZoomType.VERTICAL)
         }
 
         private fun previewX(animate: Boolean) {
-            val tempViewport = Viewport(binding.chart.maximumViewport)
+            val tempViewport = Viewport(binding.chart.getMaximumViewport())
             val dx = tempViewport.width() / 4
             tempViewport.inset(dx, 0f)
             if (animate) {
                 binding.previewChart.setCurrentViewportWithAnimation(tempViewport)
             } else {
-                binding.previewChart.currentViewport = tempViewport
+                binding.previewChart.setCurrentViewport(tempViewport)
             }
-            binding.previewChart.zoomType = ZoomType.HORIZONTAL
+            binding.previewChart.setZoomType(ZoomType.HORIZONTAL)
         }
 
         private fun previewXY() {
             // Better to not modify viewport of any chart directly so create a copy.
-            val tempViewport = Viewport(binding.chart.maximumViewport)
+            val tempViewport = Viewport(binding.chart.getMaximumViewport())
             // Make temp viewport smaller.
             val dx = tempViewport.width() / 4
             val dy = tempViewport.height() / 4
@@ -165,7 +165,7 @@ class PreviewColumnChartActivity : HelloChartsActivity() {
             override fun onViewportChanged(newViewport: Viewport) {
                 // don't use animation, it is unnecessary when using preview chart because usually viewport changes
                 // happens to often.
-                binding.chart.currentViewport = newViewport
+                binding.chart.setCurrentViewport(newViewport)
             }
         }
     }
