@@ -1,287 +1,262 @@
-package lecho.lib.hellocharts.view;
+package lecho.lib.hellocharts.view
 
-import lecho.lib.hellocharts.animation.ChartAnimationListener;
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.gesture.ContainerScrollType;
-import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.listener.ViewportChangeListener;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.renderer.AxesRenderer;
-import lecho.lib.hellocharts.renderer.ChartRenderer;
+import lecho.lib.hellocharts.animation.ChartAnimationListener
+import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.gesture.ChartTouchHandler
+import lecho.lib.hellocharts.gesture.ContainerScrollType
+import lecho.lib.hellocharts.gesture.ZoomType
+import lecho.lib.hellocharts.listener.ViewportChangeListener
+import lecho.lib.hellocharts.model.ChartData
+import lecho.lib.hellocharts.model.SelectedValue
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.renderer.AxesRenderer
+import lecho.lib.hellocharts.renderer.ChartRenderer
 
 /**
- * Interface for all charts. Every chart must implements this interface but chart doesn't really have to extends View or
- * ViewGroup class. It can be any java class for example chart that only draw on in-memory bitmap and saves it on sd
- * card.
+ * Interface for all charts. Every chart must implements this interface but chart doesn't really
+ * have to extends View or ViewGroup class. It can be any java class for example chart that only
+ * draw on in-memory bitmap and saves it on sd card.
  */
-@SuppressWarnings("unused")
-public interface Chart {
+@Suppress("unused")
+interface Chart {
 
     /**
-     * Returns generic chart data. For specific class call get*ChartData method from data provider implementation.
+     * Returns generic chart data. For specific class call get*ChartData method from data provider
+     * implementation.
      */
-    ChartData getChartData();
+    fun getChartData(): ChartData?
 
-    ChartRenderer getChartRenderer();
+    fun setChartData(chartData: ChartData?)
 
-    void setChartRenderer(ChartRenderer renderer);
+    fun getChartRenderer(): ChartRenderer?
 
-    AxesRenderer getAxesRenderer();
+    fun setChartRenderer(chartRenderer: ChartRenderer?)
 
-    ChartComputator getChartComputator();
+    fun getAxesRenderer(): AxesRenderer?
 
-    ChartTouchHandler getTouchHandler();
+    fun setAxesRenderer(axesRenderer: AxesRenderer?)
+
+    fun setChartComputator(chartComputator: ChartComputator?)
+
+    fun getChartComputator(): ChartComputator?
+
+    fun getTouchHandler(): ChartTouchHandler?
+
+    fun setTouchHandler(): ChartTouchHandler?
 
     /**
      * Updates chart data with given scale. Called during chart data animation update.
      */
-    void animationDataUpdate(float scale);
+    fun animationDataUpdate(scale: Float)
 
     /**
      * Called when data animation finished.
      */
-    void animationDataFinished();
+    fun animationDataFinished()
 
     /**
-     * Starts chart data animation for given duration. Before you call this method you should change target values of
-     * chart data.
+     * Starts chart data animation for given duration. Before you call this method you should change
+     * target values of chart data.
      */
-    void startDataAnimation();
+    fun startDataAnimation()
 
     /**
-     * Starts chart data animation for given duration. If duration is negative the default value of 500ms will be used.
-     * Before you call this method you should change target values of chart data.
+     * Starts chart data animation for given duration. If duration is negative the default value of
+     * 500ms will be used. Before you call this method you should change target values of chart data.
      */
-    void startDataAnimation(long duration);
+    fun startDataAnimation(duration: Long)
 
     /**
      * Stops chart data animation. All chart data values are set to their target values.
      */
-    void cancelDataAnimation();
-
+    fun cancelDataAnimation()
     /**
      * Return true if auto viewports recalculations are enabled, false otherwise.
      */
-    boolean isViewportCalculationEnabled();
+    /**
+     * Set true to enable viewports(max and current) recalculations during animations or after
+     * setChartData method is called. If you disable viewports calculations viewports will not
+     * change until you change them manually or enable calculations again. Disabled viewport
+     * calculations is usefully if you want show only part of chart by setting custom viewport and
+     * don't want any operation to change that viewport
+     */
+    fun isViewportCalculationEnabled(): Boolean
+
+    fun setViewportCalculationEnabled(isEnabled: Boolean)
 
     /**
-     * Set true to enable viewports(max and current) recalculations during animations or after set*ChartData method is
-     * called. If you disable viewports calculations viewports will not change until you change them manually or enable
-     * calculations again. Disabled viewport calculations is usefull if you want show only part of chart by setting
-     * custom viewport and don't want any operation to change that viewport
+     * Set listener for data animation to be notified when data animation started and finished.
+     * By default that flag is set to true so be careful with animation and custom viewports.
      */
-    void setViewportCalculationEnabled(boolean isEnabled);
-
-    /**
-     * Set listener for data animation to be notified when data animation started and finished. By default that flag is
-     * set to true so be careful with animation and custom viewports.
-     */
-    void setDataAnimationListener(ChartAnimationListener animationListener);
+    fun setDataAnimationListener(animationListener: ChartAnimationListener?)
 
     /**
      * Set listener for viewport animation to be notified when viewport animation started and finished.
      */
-    void setViewportAnimationListener(ChartAnimationListener animationListener);
+    fun setViewportAnimationListener(animationListener: ChartAnimationListener?)
 
     /**
-     * Set listener for current viewport changes. It will be called when viewport change either by gesture or
-     * programmatically. Note! This method works only for preview charts. It is intentionally disabled for other types
-     * of charts to avoid unnecessary method calls during invalidation.
+     * Set listener for current viewport changes. It will be called when viewport change either
+     * by gesture or programmatically. Note! This method works only for preview charts.
+     * It is intentionally disabled for other types of charts to avoid unnecessary method calls
+     * during invalidation.
      */
-    void setViewportChangeListener(ViewportChangeListener viewportChangeListener);
+    fun setViewportChangeListener(viewportChangeListener: ViewportChangeListener?)
 
-    void callTouchListener();
+    fun callTouchListener()
 
-    /**
-     * Returns true if chart is interactive.
-     *
-     * @see #setInteractive(boolean)
-     */
-    boolean isInteractive();
+    fun getInteractive(): Boolean
 
     /**
-     * Set true to allow user use touch gestures. If set to false user will not be able zoom, scroll or select/touch
-     * value. By default true.
+     * Set true to allow user use touch gestures. If set to false user will not be able zoom,
+     * scroll or select/touch value. By default true.
      */
-    void setInteractive(boolean isInteractive);
+    fun setInteractive(isInteractive: Boolean)
 
-    /**
-     * Returns true if pitch to zoom and double tap zoom is enabled.
-     *
-     * @see #setZoomEnabled(boolean)
-     */
-    boolean isZoomEnabled();
+    fun isInteractive(): Boolean
 
     /**
      * Set true to enable zoom, false to disable, by default true;
      */
-    void setZoomEnabled(boolean isZoomEnabled);
+    fun isZoomEnabled(): Boolean
 
-    /**
-     * Returns true if scrolling is enabled.
-     *
-     * @see #setScrollEnabled(boolean)
-     */
-    boolean isScrollEnabled();
+    fun setZoomEnabled(isEnabled: Boolean)
 
     /**
      * Set true to enable touch scroll/fling, false to disable touch scroll/fling, by default true;
      */
-    void setScrollEnabled(boolean isScrollEnabled);
+    fun isScrollEnabled(): Boolean
+
+    fun setScrollEnabled(isEnabled: Boolean)
 
     /**
-     * Move Sccoll viewport to position x,y(that position must be within maximum chart viewport).
+     * Move Scroll viewport to position x,y(that position must be within maximum chart viewport).
      * If possible viewport will be centered at this point.
      * Width and height of viewport will not be modified.
+     */
+    fun moveTo(x: Float, y: Float)
+
+    /**
+     * Animate viewport to position x,y(that position must be within maximum chart viewport).
+     * If possible viewport will be centered at this point. Width and height of viewport will not
+     * be modified.
      *
-     * @see #setCurrentViewport(Viewport)
+     * @see .setCurrentViewport
      */
-    void moveTo(float x, float y);
+    fun moveToWithAnimation(x: Float, y: Float)
 
     /**
-     * Animate viewport to position x,y(that position must be within maximum chart viewport). If possible viewport
-     * will be centered at this point. Width and height of viewport will not be modified.
-     *
-     * @see #setCurrentViewport(Viewport) ;
+     * Set zoom type, available options:
+     * ZoomType.HORIZONTAL_AND_VERTICAL,
+     * ZoomType.HORIZONTAL, ZoomType.VERTICAL.
+     * By default HORIZONTAL_AND_VERTICAL.
      */
-    void moveToWithAnimation(float x, float y);
+    fun getZoomType(): ZoomType?
 
-    /**
-     * Returns current zoom type for this chart.
-     *
-     * @see #setZoomType(ZoomType)
-     */
-    ZoomType getZoomType();
-
-    /**
-     * Set zoom type, available options: ZoomType.HORIZONTAL_AND_VERTICAL, ZoomType.HORIZONTAL, ZoomType.VERTICAL. By
-     * default HORIZONTAL_AND_VERTICAL.
-     */
-    void setZoomType(ZoomType zoomType);
-
-    /**
-     * Returns current maximum zoom value.
-     */
-    float getMaxZoom();
+    fun setZoomType(zoomType: ZoomType?)
 
     /**
      * Set max zoom value. Default maximum zoom is 20.
      */
-    void setMaxZoom(float maxZoom);
+    fun getMaxZoom(): Float
+
+    fun setMaxZoom(zoomLevel: Float)
 
     /**
      * Returns current zoom level.
      */
-    float getZoomLevel();
+    fun getZoomLevel(): Float
 
     /**
-     * Programatically zoom chart to given point(viewport point). Call this method after chart data had been set.
+     * Programmatically zoom chart to given point(viewport point). Call this method after
+     * chart data had been set.
      *
      * @param x         x within chart maximum viewport
      * @param y         y within chart maximum viewport
      * @param zoomLevel value from 1 to maxZoom(default 20). 1 means chart has no zoom.
      */
-    void setZoomLevel(float x, float y, float zoomLevel);
+    fun setZoomLevel(x: Float, y: Float, zoomLevel: Float)
 
     /**
-     * Programatically zoom chart to given point(viewport point) with animation. Call this method after chart data
-     * had been set.
+     * Programmatically zoom chart to given point(viewport point) with animation. Call this method
+     * after chart data had been set.
      *
      * @param x         x within chart maximum viewport
      * @param y         y within chart maximum viewport
      * @param zoomLevel value from 1 to maxZoom(default 20). 1 means chart has no zoom.
      */
-    void setZoomLevelWithAnimation(float x, float y, float zoomLevel);
+    fun setZoomLevelWithAnimation(x: Float, y: Float, zoomLevel: Float)
 
     /**
-     * Return true if chart value can be touched.
-     *
-     * @see #setValueTouchEnabled(boolean)
+     * Set true if you want allow user to click value on chart, set false to disable that option.
+     * By default true.
      */
-    boolean isValueTouchEnabled();
+    fun isValueTouchEnabled(): Boolean
+
+    fun setValueTouchEnabled(isEnabled: Boolean)
 
     /**
-     * Set true if you want allow user to click value on chart, set false to disable that option. By default true.
+     * Set maximum viewport. If you set bigger maximum viewport data will be more concentrate and
+     * there will be more empty spaces on sides. Note. MaxViewport have to be set after chartData
+     * has been set.
      */
-    void setValueTouchEnabled(boolean isValueTouchEnabled);
+    fun getMaximumViewport(): Viewport?
 
-    /**
-     * Returns maximum viewport for this chart. Don't modify it directly, use {@link #setMaximumViewport(Viewport)}
-     * instead.
-     *
-     * @see #setMaximumViewport(Viewport)
-     */
-    Viewport getMaximumViewport();
-
-    /**
-     * Set maximum viewport. If you set bigger maximum viewport data will be more concentrate and there will be more
-     * empty spaces on sides. Note. MaxViewport have to be set after chartData has been set.
-     */
-    void setMaximumViewport(Viewport maxViewport);
-
-    /**
-     * Returns current viewport. Don't modify it directly, use {@link #setCurrentViewport(Viewport)} instead.
-     *
-     * @see #setCurrentViewport(Viewport)
-     */
-    Viewport getCurrentViewport();
+    fun setMaximumViewport(maxViewport: Viewport?)
 
     /**
      * Sets current viewport. Note. viewport have to be set after chartData has been set.
      */
-    void setCurrentViewport(Viewport targetViewport);
+    fun getCurrentViewport(): Viewport?
+
+    fun setCurrentViewport(viewport: Viewport?)
 
     /**
      * Sets current viewport with animation. Note. viewport have to be set after chartData has been set.
      */
-    void setCurrentViewportWithAnimation(Viewport targetViewport);
+    fun setCurrentViewportWithAnimation(targetViewport: Viewport?)
 
     /**
      * Sets current viewport with animation. Note. viewport have to be set after chartData has been set.
      */
-    void setCurrentViewportWithAnimation(Viewport targetViewport, long duration);
+    fun setCurrentViewportWithAnimation(targetViewport: Viewport?, duration: Long)
 
     /**
-     * Reset maximum viewport and current viewport. Values for both viewports will be auto-calculated using current
-     * chart data ranges.
+     * Reset maximum viewport and current viewport. Values for both viewports will be auto-calculated
+     * using current chart data ranges.
      */
-    void resetViewports();
+    fun resetViewports()
 
     /**
-     * Return true if value selection mode is enabled.
-     *
-     * @see #setValueSelectionEnabled(boolean)
+     * Set true if you want value selection with touch - value will stay selected until you touch
+     * somewhere else on the chart area. By default false and value is automatically unselected
+     * when user stop pressing on it.
      */
-    boolean isValueSelectionEnabled();
+    fun isValueSelectionEnabled(): Boolean
+
+    fun setValueSelectionEnabled(isEnabled: Boolean)
 
     /**
-     * Set true if you want value selection with touch - value will stay selected until you touch somewhere else on the
-     * chart area. By default false and value is automatically unselected when user stop pressing on it.
+     * Select single value on chart.
+     * If indexes are not valid IndexOutOfBoundsException will be thrown.
      */
-    void setValueSelectionEnabled(boolean isValueSelectionEnabled);
-
-    /**
-     * Select single value on chart. If indexes are not valid IndexOutOfBoundsException will be thrown.
-     */
-    void selectValue(SelectedValue selectedValue);
+    fun setSelectedValue(selectedValue: SelectedValue?)
 
     /**
      * Return currently selected value indexes.
      */
-    SelectedValue getSelectedValue();
+    fun getSelectedValue(): SelectedValue?
+
+    fun isContainerScrollEnabled(): Boolean
+
+    fun setContainerScrollEnabled(isEnabled: Boolean)
 
     /**
-     * @see #setContainerScrollEnabled(boolean, ContainerScrollType)
+     * Set isContainerScrollEnabled to true and containerScrollType to HORIZONTAL or VERTICAL
+     * if you are using chart within scroll container.
      */
-    boolean isContainerScrollEnabled();
-
-    /**
-     * Set isContainerScrollEnabled to true and containerScrollType to HORIZONTAL or VERTICAL if you are using chart
-     * within scroll container.
-     */
-    void setContainerScrollEnabled(boolean isContainerScrollEnabled, ContainerScrollType containerScrollType);
-
+    fun setContainerScrollEnabled(
+        isContainerScrollEnabled: Boolean,
+        containerScrollType: ContainerScrollType?
+    )
 }

@@ -17,7 +17,6 @@ import lecho.lib.hellocharts.model.PointValue
 import lecho.lib.hellocharts.model.ValueShape
 import lecho.lib.hellocharts.model.Viewport
 import lecho.lib.hellocharts.util.ChartUtils
-import lecho.lib.hellocharts.view.LineChartView
 import net.raquezha.hellocharts.kotlin.databinding.FragmentLineChartBinding
 
 class LineChartActivity : HelloChartsActivity() {
@@ -65,7 +64,7 @@ class LineChartActivity : HelloChartsActivity() {
             generateData()
 
             // Disable viewport recalculations, see toggleCubic() method for more info.
-            binding.chart.isViewportCalculationEnabled = false
+            binding.chart.setViewportCalculationEnabled(false)
             resetViewport()
             return binding.root
         }
@@ -139,26 +138,26 @@ class LineChartActivity : HelloChartsActivity() {
                 R.id.action_toggle_selection_mode -> {
                     toggleLabelForSelected()
                     showToast(
-                        "Selection mode set to " + binding.chart.isValueSelectionEnabled
+                        "Selection mode set to " + binding.chart.isValueSelectionEnabled()
                             + " select any point."
                     )
                     return true
                 }
                 R.id.action_toggle_touch_zoom -> {
-                    binding.chart.isZoomEnabled = !binding.chart.isZoomEnabled
-                    showToast("IsZoomEnabled " + binding.chart.isZoomEnabled)
+                    binding.chart.setZoomEnabled(!binding.chart.isZoomEnabled())
+                    showToast("IsZoomEnabled " + binding.chart.isZoomEnabled())
                     return true
                 }
                 R.id.action_zoom_both -> {
-                    binding.chart.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL
+                    binding.chart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL)
                     return true
                 }
                 R.id.action_zoom_horizontal -> {
-                    binding.chart.zoomType = ZoomType.HORIZONTAL
+                    binding.chart.setZoomType(ZoomType.HORIZONTAL)
                     return true
                 }
                 R.id.action_zoom_vertical -> {
-                    binding.chart.zoomType = ZoomType.VERTICAL
+                    binding.chart.setZoomType(ZoomType.VERTICAL)
                     return true
                 }
                 else -> return false
@@ -185,19 +184,19 @@ class LineChartActivity : HelloChartsActivity() {
             isCubic = false
             hasLabelForSelected = false
             pointsHaveDifferentColor = false
-            binding.chart.isValueSelectionEnabled = hasLabelForSelected
+            binding.chart.setValueSelectionEnabled(hasLabelForSelected)
             resetViewport()
         }
 
         private fun resetViewport() {
             // Reset viewport height range to (0,100)
-            val v = Viewport(binding.chart.maximumViewport)
+            val v = Viewport(binding.chart.getMaximumViewport())
             v.bottom = 0f
             v.top = 100f
             v.left = 0f
             v.right = (numberOfPoints - 1).toFloat()
-            binding.chart.maximumViewport = v
-            binding.chart.currentViewport = v
+            binding.chart.setMaximumViewport(v)
+            binding.chart.setCurrentViewport(v)
         }
 
         private fun generateData() {
@@ -230,11 +229,11 @@ class LineChartActivity : HelloChartsActivity() {
                     axisX.name = "Axis X"
                     axisY.name = "Axis Y"
                 }
-                data!!.axisXBottom = axisX
-                data!!.axisYLeft = axisY
+                data!!.setAxisXBottom(axisX)
+                data!!.setAxisYLeft(axisY)
             } else {
-                data!!.axisXBottom = null
-                data!!.axisYLeft = null
+                data!!.setAxisXBottom(null)
+                data!!.setAxisYLeft(null)
             }
             data!!.baseValue = Float.NEGATIVE_INFINITY
             binding.chart.lineChartData = data
@@ -242,7 +241,7 @@ class LineChartActivity : HelloChartsActivity() {
 
         /**
          * Adds lines to data, after that data should be set again with
-         * [LineChartView.setLineChartData]. Last 4th line has non-monotonically x values.
+         * [lecho.lib.hellocharts.view.LineChartView.lineChartData]. Last 4th line has non-monotonically x values.
          */
         private fun addLineToData() {
             if (data!!.lines.size >= maxNumberOfLines) {
@@ -281,16 +280,16 @@ class LineChartActivity : HelloChartsActivity() {
                 // To make this works during animations you should use Chart.setViewportCalculationEnabled(false) before
                 // modifying viewport.
                 // Remember to set viewport after you call setLineChartData().
-                val v = Viewport(binding.chart.maximumViewport)
+                val v = Viewport(binding.chart.getMaximumViewport())
                 v.bottom = -5f
                 v.top = 105f
                 // You have to set max and current viewports separately.
-                binding.chart.maximumViewport = v
+                binding.chart.setMaximumViewport(v)
                 // I changing current viewport with animation in this case.
                 binding.chart.setCurrentViewportWithAnimation(v)
             } else {
                 // If not cubic restore viewport to (0,100) range.
-                val v = Viewport(binding.chart.maximumViewport)
+                val v = Viewport(binding.chart.getMaximumViewport())
                 v.bottom = 0f
                 v.top = 100f
 
@@ -304,7 +303,7 @@ class LineChartActivity : HelloChartsActivity() {
 
                     override fun onAnimationFinished() {
                         // Set max viewport and remove listener.
-                        binding.chart.maximumViewport = v
+                        binding.chart.setMaximumViewport(v)
                         binding.chart.setViewportAnimationListener(null)
                     }
                 })
@@ -342,14 +341,14 @@ class LineChartActivity : HelloChartsActivity() {
             hasLabels = !hasLabels
             if (hasLabels) {
                 hasLabelForSelected = false
-                binding.chart.isValueSelectionEnabled = hasLabelForSelected
+                binding.chart.setValueSelectionEnabled(hasLabelForSelected)
             }
             generateData()
         }
 
         private fun toggleLabelForSelected() {
             hasLabelForSelected = !hasLabelForSelected
-            binding.chart.isValueSelectionEnabled = hasLabelForSelected
+            binding.chart.setValueSelectionEnabled(hasLabelForSelected)
             if (hasLabelForSelected) {
                 hasLabels = false
             }
@@ -371,7 +370,7 @@ class LineChartActivity : HelloChartsActivity() {
          * [lecho.lib.hellocharts.view.Chart.startDataAnimation]
          * method(don't confuse with View.animate()).
          * If you operate on data that was set before you don't have to call
-         * [LineChartView.setLineChartData] again.
+         * [lecho.lib.hellocharts.view.LineChartView.lineChartData] again.
          */
         private fun prepareDataAnimation() {
             for (line in data!!.lines) {

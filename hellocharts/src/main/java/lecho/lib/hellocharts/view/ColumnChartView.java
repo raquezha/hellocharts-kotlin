@@ -5,14 +5,19 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import lecho.lib.hellocharts.BuildConfig;
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
 import lecho.lib.hellocharts.listener.DummyColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 
 /**
@@ -82,5 +87,36 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
         if (null != touchListener) {
             this.onValueTouchListener = touchListener;
         }
+    }
+
+    @Override
+    public void setChartData(@Nullable ChartData chartData) {
+        this.chartData = chartData;
+    }
+
+    @Override
+    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
+        this.axesRenderer = axesRenderer;
+    }
+
+    @Override
+    public void setChartComputator(@Nullable ChartComputator chartComputator) {
+        this.chartComputator = chartComputator;
+    }
+
+    @Nullable
+    @Override
+    public ChartTouchHandler setTouchHandler() {
+        return this.touchHandler;
+    }
+
+    @Override
+    public boolean getInteractive() {
+        return isInteractive();
+    }
+
+    @Override
+    public void setContainerScrollEnabled(boolean isEnabled) {
+
     }
 }

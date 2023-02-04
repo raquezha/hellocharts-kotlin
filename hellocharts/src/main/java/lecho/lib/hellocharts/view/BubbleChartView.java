@@ -5,9 +5,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import lecho.lib.hellocharts.BuildConfig;
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.listener.BubbleChartOnValueSelectListener;
 import lecho.lib.hellocharts.listener.DummyBubbleChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.BubbleChartData;
@@ -15,6 +18,7 @@ import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.BubbleChartRenderer;
 
 /**
@@ -96,5 +100,36 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
     public void removeMargins() {
         bubbleChartRenderer.removeMargins();
         ViewCompat.postInvalidateOnAnimation(this);
+    }
+
+    @Override
+    public void setChartData(@Nullable ChartData chartData) {
+        this.chartData = chartData;
+    }
+
+    @Override
+    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
+        this.axesRenderer = axesRenderer;
+    }
+
+    @Override
+    public void setChartComputator(@Nullable ChartComputator chartComputator) {
+        this.chartComputator = chartComputator;
+    }
+
+    @Nullable
+    @Override
+    public ChartTouchHandler setTouchHandler() {
+        return touchHandler;
+    }
+
+    @Override
+    public boolean getInteractive() {
+        return isInteractive;
+    }
+
+    @Override
+    public void setContainerScrollEnabled(boolean isEnabled) {
+        this.isContainerScrollEnabled = isEnabled;
     }
 }

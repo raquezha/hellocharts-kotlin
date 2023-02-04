@@ -50,12 +50,12 @@ class ChartViewportAnimatorV14(private val chart: Chart) : ChartViewportAnimator
         val diffBottom = (targetViewport.bottom - startViewport.bottom) * scale
         newViewport[startViewport.left + diffLeft, startViewport.top + diffTop, startViewport.right + diffRight] =
             startViewport.bottom + diffBottom
-        chart.currentViewport = newViewport
+        chart.setCurrentViewport(newViewport)
     }
 
     override fun onAnimationCancel(animation: Animator) {}
     override fun onAnimationEnd(animation: Animator) {
-        chart.currentViewport = targetViewport
+        chart.setCurrentViewport(targetViewport)
         animationListener.onAnimationFinished()
     }
 

@@ -18,6 +18,7 @@ import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.listener.ViewportChangeListener;
+import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
@@ -34,6 +35,7 @@ public abstract class AbstractChartView extends View implements Chart {
     protected AxesRenderer axesRenderer;
     protected ChartTouchHandler touchHandler;
     protected ChartRenderer chartRenderer;
+    protected ChartData chartData;
     protected ChartDataAnimator dataAnimator;
     protected ChartViewportAnimator viewportAnimator;
     protected boolean isInteractive = true;
@@ -142,14 +144,14 @@ public abstract class AbstractChartView extends View implements Chart {
 
     @Override
     public void animationDataUpdate(float scale) {
-        getChartData().update(scale);
+        chartData.update(scale);
         chartRenderer.onChartViewportChanged();
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
     @Override
     public void animationDataFinished() {
-        getChartData().finish();
+        chartData.finish();
         chartRenderer.onChartViewportChanged();
         ViewCompat.postInvalidateOnAnimation(this);
     }
@@ -438,7 +440,7 @@ public abstract class AbstractChartView extends View implements Chart {
     }
 
     @Override
-    public void selectValue(SelectedValue selectedValue) {
+    public void setSelectedValue(SelectedValue selectedValue) {
         chartRenderer.selectValue(selectedValue);
         callTouchListener();
         ViewCompat.postInvalidateOnAnimation(this);

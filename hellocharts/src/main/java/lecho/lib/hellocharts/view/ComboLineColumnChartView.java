@@ -4,7 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.listener.ComboLineColumnChartOnValueSelectListener;
 import lecho.lib.hellocharts.listener.DummyCompoLineColumnChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.ChartData;
@@ -18,6 +21,7 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.ComboLineColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 import lecho.lib.hellocharts.renderer.ComboLineColumnChartRenderer;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
@@ -111,6 +115,37 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 
     public void setLineChartRenderer(Context context, LineChartRenderer lineChartRenderer){
         setChartRenderer(new ComboLineColumnChartRenderer(context, this, columnChartDataProvider, lineChartRenderer));
+    }
+
+    @Override
+    public void setChartData(@Nullable ChartData chartData) {
+        this.chartData = chartData;
+    }
+
+    @Override
+    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
+        this.axesRenderer = axesRenderer;
+    }
+
+    @Override
+    public void setChartComputator(@Nullable ChartComputator chartComputator) {
+        this.chartComputator = chartComputator;
+    }
+
+    @Nullable
+    @Override
+    public ChartTouchHandler setTouchHandler() {
+        return touchHandler;
+    }
+
+    @Override
+    public boolean getInteractive() {
+        return this.isInteractive;
+    }
+
+    @Override
+    public void setContainerScrollEnabled(boolean isEnabled) {
+        this.isContainerScrollEnabled = isEnabled;
     }
 
     private class ComboLineChartDataProvider implements LineChartDataProvider {

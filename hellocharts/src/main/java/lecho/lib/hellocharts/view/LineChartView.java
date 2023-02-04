@@ -5,8 +5,11 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import lecho.lib.hellocharts.BuildConfig;
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.listener.DummyLineChartOnValueSelectListener;
 import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.ChartData;
@@ -14,6 +17,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
 
 /**
@@ -66,6 +70,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
         SelectedValue selectedValue = chartRenderer.getSelectedValue();
 
         if (selectedValue.isSet()) {
+
             PointValue point = data.getLines().get(selectedValue.getFirstIndex()).getValues()
                     .get(selectedValue.getSecondIndex());
             onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
@@ -82,5 +87,36 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
         if (null != touchListener) {
             this.onValueTouchListener = touchListener;
         }
+    }
+
+    @Override
+    public void setChartData(@Nullable ChartData chartData) {
+        this.chartData = chartData;
+    }
+
+    @Override
+    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
+        this.axesRenderer = axesRenderer;
+    }
+
+    @Override
+    public void setChartComputator(@Nullable ChartComputator chartComputator) {
+        this.chartComputator = chartComputator;
+    }
+
+    @Nullable
+    @Override
+    public ChartTouchHandler setTouchHandler() {
+        return touchHandler;
+    }
+
+    @Override
+    public boolean getInteractive() {
+        return isInteractive;
+    }
+
+    @Override
+    public void setContainerScrollEnabled(boolean isEnabled) {
+        this.isContainerScrollEnabled = isEnabled;
     }
 }

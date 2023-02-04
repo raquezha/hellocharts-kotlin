@@ -5,13 +5,14 @@ package lecho.lib.hellocharts.model
  */
 @Suppress("unused")
 class LineChartData : AbstractChartData {
-    private var lines: MutableList<Line> = ArrayList()
+
+    @JvmField
+    var lines: MutableList<Line> = ArrayList()
 
     /**
      * @see .setBaseValue
      */
     var baseValue = DEFAULT_BASE_VALUE
-        private set
 
     constructor()
     constructor(lines: MutableList<Line>?) {
