@@ -1,168 +1,149 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.model
 
-import android.graphics.Color;
-import android.graphics.Typeface;
-
-import lecho.lib.hellocharts.util.ChartUtils;
+import android.graphics.Color
+import android.graphics.Typeface
+import lecho.lib.hellocharts.util.ChartUtils
+import lecho.lib.hellocharts.util.ChartUtils.darkenColor
 
 /**
  * Base class for most chart data models.
  */
-public abstract class AbstractChartData implements ChartData {
-    public static final int DEFAULT_TEXT_SIZE_SP = 12;
-    protected Axis axisXBottom;
-    protected Axis axisYLeft;
-    protected Axis axisXTop;
-    protected Axis axisYRight;
-    protected int valueLabelTextColor = Color.WHITE;
-    protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
-    protected Typeface valueLabelTypeface;
+abstract class AbstractChartData : ChartData {
+    protected var axisXBottom: Axis? = null
+    protected var axisYLeft: Axis? = null
+    protected var axisXTop: Axis? = null
+    protected var axisYRight: Axis? = null
+    protected var valueLabelTextColor = Color.WHITE
+    protected var valueLabelTextSize = DEFAULT_TEXT_SIZE_SP
+    protected var valueLabelTypeface: Typeface? = null
 
     /**
      * If true each value label will have background rectangle
      */
-    protected boolean isValueLabelBackgroundEnabled = true;
+    protected var isValueLabelBackgroundEnabled = true
 
     /**
-     * If true and {@link #isValueLabelBackgroundEnabled} is true each label will have background rectangle and that
+     * If true and [.isValueLabelBackgroundEnabled] is true each label will have background rectangle and that
      * rectangle will be filled with color specified for given value.
      */
-    protected boolean isValueLabelBackgroundAuto = true;
+    protected var isValueLabelBackgroundAuto = true
 
     /**
-     * If {@link #isValueLabelBackgroundEnabled} is true and {@link #isValueLabelBackgroundAuto} is false each label
+     * If [.isValueLabelBackgroundEnabled] is true and [.isValueLabelBackgroundAuto] is false each label
      * will have background rectangle and that rectangle will be filled with this color. Helpful if you want all labels
      * to have the same background color.
      */
-    protected int valueLabelBackgroundColor = ChartUtils.darkenColor(ChartUtils.DEFAULT_DARKEN_COLOR);
+    protected var valueLabelBackgroundColor = darkenColor(ChartUtils.DEFAULT_DARKEN_COLOR)
 
-    public AbstractChartData() {
-
-    }
+    constructor()
 
     /**
      * Copy constructor for deep copy.
      *
      * @param data the abstract data
      */
-    public AbstractChartData(AbstractChartData data) {
+    constructor(data: AbstractChartData) {
         if (null != data.axisXBottom) {
-            this.axisXBottom = new Axis(data.axisXBottom);
+            axisXBottom = Axis(data.axisXBottom!!)
         }
         if (null != data.axisXTop) {
-            this.axisXTop = new Axis(data.axisXTop);
+            axisXTop = Axis(data.axisXTop!!)
         }
         if (null != data.axisYLeft) {
-            this.axisYLeft = new Axis(data.axisYLeft);
+            axisYLeft = Axis(data.axisYLeft!!)
         }
         if (null != data.axisYRight) {
-            this.axisYRight = new Axis(data.axisYRight);
+            axisYRight = Axis(data.axisYRight!!)
         }
-        this.valueLabelTextColor = data.valueLabelTextColor;
-        this.valueLabelTextSize = data.valueLabelTextSize;
-        this.valueLabelTypeface = data.valueLabelTypeface;
-        this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled;
-        this.isValueLabelBackgroundAuto = data.isValueLabelBackgroundAuto;
-        this.valueLabelBackgroundColor = data.valueLabelBackgroundColor;
+        valueLabelTextColor = data.valueLabelTextColor
+        valueLabelTextSize = data.valueLabelTextSize
+        valueLabelTypeface = data.valueLabelTypeface
+        isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled
+        isValueLabelBackgroundAuto = data.isValueLabelBackgroundAuto
+        valueLabelBackgroundColor = data.valueLabelBackgroundColor
     }
 
-    @Override
-    public Axis getAxisXBottom() {
-        return axisXBottom;
+    override fun getAxisXBottom(): Axis? {
+        return axisXBottom
     }
 
-    @Override
-    public void setAxisXBottom(Axis axisX) {
-        this.axisXBottom = axisX;
+    override fun setAxisXBottom(axis: Axis?) {
+        axisXBottom = axis
     }
 
-    @Override
-    public Axis getAxisYLeft() {
-        return axisYLeft;
+    override fun getAxisYLeft(): Axis? {
+        return axisYLeft
     }
 
-    @Override
-    public void setAxisYLeft(Axis axisY) {
-        this.axisYLeft = axisY;
+    override fun setAxisYLeft(axis: Axis?) {
+        axisYLeft = axis
     }
 
-    @Override
-    public Axis getAxisXTop() {
-        return axisXTop;
+    override fun getAxisXTop(): Axis? {
+        return axisXTop
     }
 
-    @Override
-    public void setAxisXTop(Axis axisX) {
-        this.axisXTop = axisX;
+    override fun setAxisXTop(axis: Axis?) {
+        axisXTop = axis
     }
 
-    @Override
-    public Axis getAxisYRight() {
-        return axisYRight;
+    override fun getAxisYRight(): Axis? {
+        return axisYRight
     }
 
-    @Override
-    public void setAxisYRight(Axis axisY) {
-        this.axisYRight = axisY;
+    override fun setAxisYRight(axis: Axis?) {
+        axisYRight = axis
     }
 
-    @Override
-    public int getValueLabelTextColor() {
-        return valueLabelTextColor;
+    override fun getValueLabelTextColor(): Int {
+        return valueLabelTextColor
     }
 
-    @Override
-    public void setValueLabelsTextColor(int valueLabelTextColor) {
-        this.valueLabelTextColor = valueLabelTextColor;
+    override fun setValueLabelsTextColor(color: Int) {
+        this.valueLabelTextColor = color
     }
 
-    @Override
-    public int getValueLabelTextSize() {
-        return valueLabelTextSize;
+    override fun getValueLabelTextSize(): Int {
+        return valueLabelTextSize
     }
 
-    @Override
-    public void setValueLabelTextSize(int valueLabelTextSize) {
-        this.valueLabelTextSize = valueLabelTextSize;
+    override fun setValueLabelTextSize(size: Int) {
+        this.valueLabelTextSize = size
     }
 
-    @Override
-    public Typeface getValueLabelTypeface() {
-        return valueLabelTypeface;
+    override fun getValueLabelTypeface(): Typeface? {
+        return valueLabelTypeface
     }
 
-    @Override
-    public void setValueLabelTypeface(Typeface typeface) {
-        this.valueLabelTypeface = typeface;
+    override fun setValueLabelTypeface(typeface: Typeface?) {
+        valueLabelTypeface = typeface
     }
 
-    @Override
-    public boolean isValueLabelBackgroundEnabled() {
-        return isValueLabelBackgroundEnabled;
+    override fun isValueLabelBackgroundEnabled(): Boolean {
+        return isValueLabelBackgroundEnabled
     }
 
-    @Override
-    public void setValueLabelBackgroundEnabled(boolean isValueLabelBackgroundEnabled) {
-        this.isValueLabelBackgroundEnabled = isValueLabelBackgroundEnabled;
+    override fun setValueLabelBackgroundEnabled(isEnabled: Boolean) {
+        this.isValueLabelBackgroundEnabled = isEnabled
     }
 
-    @Override
-    public boolean isValueLabelBackgroundAuto() {
-        return isValueLabelBackgroundAuto;
+    override fun isValueLabelBackgroundAuto(): Boolean {
+        return isValueLabelBackgroundAuto
     }
 
-    @Override
-    public void setValueLabelBackgroundAuto(boolean isValueLabelBackgroundAuto) {
-        this.isValueLabelBackgroundAuto = isValueLabelBackgroundAuto;
+    override fun setValueLabelBackgroundAuto(isValueLabelBackgroundAuto: Boolean) {
+        this.isValueLabelBackgroundAuto = isValueLabelBackgroundAuto
     }
 
-    @Override
-    public int getValueLabelBackgroundColor() {
-        return valueLabelBackgroundColor;
+    override fun getValueLabelBackgroundColor(): Int {
+        return valueLabelBackgroundColor
     }
 
-    @Override
-    public void setValueLabelBackgroundColor(int valueLabelBackgroundColor) {
-        this.valueLabelBackgroundColor = valueLabelBackgroundColor;
+    override fun setValueLabelBackgroundColor(valueLabelBackgroundColor: Int) {
+        this.valueLabelBackgroundColor = valueLabelBackgroundColor
+    }
+
+    companion object {
+        const val DEFAULT_TEXT_SIZE_SP = 12
     }
 }

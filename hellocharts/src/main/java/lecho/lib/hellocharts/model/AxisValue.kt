@@ -1,36 +1,30 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.model
 
-import java.util.Arrays;
+import java.util.Arrays
 
 /**
  * Single axis value, use it to manually set axis labels position.You can use label attribute
  * to display text instead of number but value formatter implementation have to handle it.
  */
-public class AxisValue {
-    private float value;
-    private char[] label;
+class AxisValue {
+    var value = 0f
+        private set
 
-    public AxisValue(float value) {
-        setValue(value);
+    @get:Deprecated("")
+    var labelAsChars: CharArray? = null
+
+    constructor(value: Float) {
+        setValue(value)
     }
 
-    public AxisValue(AxisValue axisValue) {
-        this.value = axisValue.value;
-        this.label = axisValue.label;
+    constructor(axisValue: AxisValue) {
+        value = axisValue.value
+        labelAsChars = axisValue.labelAsChars
     }
 
-    public float getValue() {
-        return value;
-    }
-
-    public AxisValue setValue(float value) {
-        this.value = value;
-        return this;
-    }
-
-    @Deprecated
-    public char[] getLabel() {
-        return label;
+    fun setValue(value: Float): AxisValue {
+        this.value = value
+        return this
     }
 
     /**
@@ -38,13 +32,9 @@ public class AxisValue {
      *
      * @param label label
      */
-    public AxisValue setLabel(String label) {
-        this.label = label.toCharArray();
-        return this;
-    }
-
-    public char[] getLabelAsChars() {
-        return label;
+    fun setLabel(label: String): AxisValue {
+        labelAsChars = label.toCharArray()
+        return this
     }
 
     /**
@@ -52,27 +42,24 @@ public class AxisValue {
      *
      * @param label label
      */
-    @Deprecated
-    public AxisValue setLabel(char[] label) {
-        this.label = label;
-        return this;
+    @Deprecated("")
+    fun setLabel(label: CharArray?): AxisValue {
+        labelAsChars = label
+        return this
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AxisValue axisValue = (AxisValue) o;
-
-        if (Float.compare(axisValue.value, value) != 0) return false;
-        return Arrays.equals(label, axisValue.label);
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val axisValue = other as AxisValue
+        return if (axisValue.value.compareTo(value) != 0) false else Arrays.equals(
+            labelAsChars, axisValue.labelAsChars
+        )
     }
 
-    @Override
-    public int hashCode() {
-        int result = (value != 0.0f ? Float.floatToIntBits(value) : 0);
-        result = 31 * result + (label != null ? Arrays.hashCode(label) : 0);
-        return result;
+    override fun hashCode(): Int {
+        var result = if (value != 0.0f) java.lang.Float.floatToIntBits(value) else 0
+        result = 31 * result + if (labelAsChars != null) Arrays.hashCode(labelAsChars) else 0
+        return result
     }
 }
