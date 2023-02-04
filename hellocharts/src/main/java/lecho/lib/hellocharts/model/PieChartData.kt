@@ -1,302 +1,254 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.model
 
-import android.graphics.Color;
-import android.graphics.Typeface;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import lecho.lib.hellocharts.formatter.PieChartValueFormatter;
-import lecho.lib.hellocharts.formatter.SimplePieChartValueFormatter;
-import lecho.lib.hellocharts.view.Chart;
-import lecho.lib.hellocharts.view.PieChartView;
+import android.graphics.Color
+import android.graphics.Typeface
+import lecho.lib.hellocharts.formatter.PieChartValueFormatter
+import lecho.lib.hellocharts.formatter.SimplePieChartValueFormatter
 
 /**
  * Data for PieChart, by default it doesn't have axes.
  */
-@SuppressWarnings({"unused", "UnusedReturnValue"})
-public class PieChartData extends AbstractChartData {
-    public static final int DEFAULT_CENTER_TEXT1_SIZE_SP = 42;
-    public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 16;
-    public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
-    private static final int DEFAULT_SLICE_SPACING_DP = 2;
-    private int centerText1FontSize = DEFAULT_CENTER_TEXT1_SIZE_SP;
-    private int centerText2FontSize = DEFAULT_CENTER_TEXT2_SIZE_SP;
-    private float centerCircleScale = DEFAULT_CENTER_CIRCLE_SCALE;
-    private int slicesSpacing = DEFAULT_SLICE_SPACING_DP;
-    private PieChartValueFormatter formatter = new SimplePieChartValueFormatter();
-    private boolean hasLabels = false;
-    private boolean hasLabelsOnlyForSelected = false;
-    private boolean hasLabelsOutside = false;
-    private boolean hasCenterCircle = false;
-    private int centerCircleColor = Color.TRANSPARENT;
-    private int centerText1Color = Color.BLACK;
-    private Typeface centerText1Typeface;
-    private String centerText1;
-    private int centerText2Color = Color.BLACK;
-    private Typeface centerText2Typeface;
-    private String centerText2;
+@Suppress("unused")
+class PieChartData : AbstractChartData {
+    var centerText1FontSize = DEFAULT_CENTER_TEXT1_SIZE_SP
+        private set
+    var centerText2FontSize = DEFAULT_CENTER_TEXT2_SIZE_SP
+        private set
+    var centerCircleScale = DEFAULT_CENTER_CIRCLE_SCALE
+        private set
+    var slicesSpacing = DEFAULT_SLICE_SPACING_DP
+        private set
+    var formatter: PieChartValueFormatter = SimplePieChartValueFormatter()
+        private set
+    private var hasLabels = false
+    private var hasLabelsOnlyForSelected = false
+    private var hasLabelsOutside = false
+    private var hasCenterCircle = false
+    var centerCircleColor = Color.TRANSPARENT
+        private set
+    var centerText1Color = Color.BLACK
+        private set
+    var centerText1Typeface: Typeface? = null
+        private set
+    var centerText1: String? = null
+        private set
+    var centerText2Color = Color.BLACK
+        private set
+    var centerText2Typeface: Typeface? = null
+        private set
+    var centerText2: String? = null
+        private set
+    private var values: MutableList<SliceValue> = ArrayList()
 
-    private List<SliceValue> values = new ArrayList<>();
-
-    public PieChartData() {
-        setAxisXBottom(null);
-        setAxisYLeft(null);
+    constructor() {
+        setAxisXBottom(null)
+        setAxisYLeft(null)
     }
 
-    public PieChartData(List<SliceValue> values) {
-        setValues(values);
+    constructor(values: MutableList<SliceValue>?) {
+        setValues(values)
         // Empty axes. Pie chart don't need axes.
-        setAxisXBottom(null);
-        setAxisYLeft(null);
+        setAxisXBottom(null)
+        setAxisYLeft(null)
     }
 
-    public PieChartData(PieChartData data) {
-        super(data);
-        this.formatter = data.formatter;
-        this.hasLabels = data.hasLabels;
-        this.hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected;
-        this.hasLabelsOutside = data.hasLabelsOutside;
-
-        this.hasCenterCircle = data.hasCenterCircle;
-        this.centerCircleColor = data.centerCircleColor;
-        this.centerCircleScale = data.centerCircleScale;
-
-        this.centerText1Color = data.centerText1Color;
-        this.centerText1FontSize = data.centerText1FontSize;
-        this.centerText1Typeface = data.centerText1Typeface;
-        this.centerText1 = data.centerText1;
-
-        this.centerText2Color = data.centerText2Color;
-        this.centerText2FontSize = data.centerText2FontSize;
-        this.centerText2Typeface = data.centerText2Typeface;
-        this.centerText2 = data.centerText2;
-        this.slicesSpacing = data.slicesSpacing;
-
-        for (SliceValue sliceValue : data.values) {
-            this.values.add(new SliceValue(sliceValue.getValue()));
+    constructor(data: PieChartData) : super(data) {
+        formatter = data.formatter
+        hasLabels = data.hasLabels
+        hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected
+        hasLabelsOutside = data.hasLabelsOutside
+        hasCenterCircle = data.hasCenterCircle
+        centerCircleColor = data.centerCircleColor
+        centerCircleScale = data.centerCircleScale
+        centerText1Color = data.centerText1Color
+        centerText1FontSize = data.centerText1FontSize
+        centerText1Typeface = data.centerText1Typeface
+        centerText1 = data.centerText1
+        centerText2Color = data.centerText2Color
+        centerText2FontSize = data.centerText2FontSize
+        centerText2Typeface = data.centerText2Typeface
+        centerText2 = data.centerText2
+        slicesSpacing = data.slicesSpacing
+        for (sliceValue in data.values) {
+            values.add(SliceValue(sliceValue.value))
         }
     }
 
-    public static PieChartData generateDummyData() {
-        final int numValues = 4;
-        PieChartData data = new PieChartData();
-        List<SliceValue> values = new ArrayList<>(numValues);
-        values.add(new SliceValue(40f));
-        values.add(new SliceValue(20f));
-        values.add(new SliceValue(30f));
-        values.add(new SliceValue(50f));
-        data.setValues(values);
-        return data;
-    }
-
-    @Override
-    public void update(float scale) {
-        for (SliceValue value : values) {
-            value.update(scale);
+    override fun update(scale: Float) {
+        for (value in values) {
+            value.update(scale)
         }
     }
 
-    @Override
-    public void finish() {
-        for (SliceValue value : values) {
-            value.finish();
+    override fun finish() {
+        for (value in values) {
+            value.finish()
         }
     }
 
     /**
      * PieChart does not support axes so method call will be ignored
      */
-    @Override
-    public void setAxisXBottom(Axis axisX) {
-        super.setAxisXBottom(null);
+    override fun setAxisXBottom(axis: Axis?) {
+        super.setAxisXBottom(null)
     }
 
     /**
      * PieChart does not support axes so method call will be ignored
      */
-    @Override
-    public void setAxisYLeft(Axis axisY) {
-        super.setAxisYLeft(null);
+    override fun setAxisYLeft(axis: Axis?) {
+        super.setAxisYLeft(null)
     }
 
-    public List<SliceValue> getValues() {
-        return values;
+    fun getValues(): List<SliceValue> {
+        return values
     }
 
-    public PieChartData setValues(List<SliceValue> values) {
+    fun setValues(values: MutableList<SliceValue>?): PieChartData {
         if (null == values) {
-            this.values = new ArrayList<>();
+            this.values = ArrayList()
         } else {
-            this.values = values;
+            this.values = values
         }
-        return this;
+        return this
     }
 
-    public boolean hasLabels() {
-        return hasLabels;
+    fun hasLabels(): Boolean {
+        return hasLabels
     }
 
-    public PieChartData setHasLabels(boolean hasLabels) {
-        this.hasLabels = hasLabels;
+    fun setHasLabels(hasLabels: Boolean): PieChartData {
+        this.hasLabels = hasLabels
         if (hasLabels) {
-            hasLabelsOnlyForSelected = false;
+            hasLabelsOnlyForSelected = false
         }
-        return this;
+        return this
     }
 
     /**
-     * @see #setHasLabelsOnlyForSelected(boolean)
+     * @see .setHasLabelsOnlyForSelected
      */
-    public boolean hasLabelsOnlyForSelected() {
-        return hasLabelsOnlyForSelected;
+    fun hasLabelsOnlyForSelected(): Boolean {
+        return hasLabelsOnlyForSelected
     }
 
     /**
      * Set true if you want to show value labels only for selected value, works best when chart has
-     * isValueSelectionEnabled set to true {@link Chart#setValueSelectionEnabled(boolean)}.
+     * isValueSelectionEnabled set to true
      */
-    public PieChartData setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
-        this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
+    fun setHasLabelsOnlyForSelected(hasLabelsOnlyForSelected: Boolean): PieChartData {
+        this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected
         if (hasLabelsOnlyForSelected) {
-            this.hasLabels = false;
+            hasLabels = false
         }
-        return this;
+        return this
     }
 
-    public boolean hasLabelsOutside() {
-        return hasLabelsOutside;
+    fun hasLabelsOutside(): Boolean {
+        return hasLabelsOutside
     }
 
     /**
-     * Set if labels should be drawn inside circle(false) or outside(true). By default false. If you set it to true you
-     * should also change chart fill ration using {@link PieChartView#setCircleFillRatio(float)}. This flag is used only
-     * if you also set hasLabels or hasLabelsOnlyForSelected flags.
+     * Set if labels should be drawn inside circle(false) or outside(true).
+     * By default false. If you set it to true you should also change chart fill ration
+     * using [lecho.lib.hellocharts.view.PieChartView.setCircleFillRatio].
+     * This flag is used only if you also set hasLabels or hasLabelsOnlyForSelected flags.
      */
-    public PieChartData setHasLabelsOutside(boolean hasLabelsOutside) {
-        this.hasLabelsOutside = hasLabelsOutside;
-        return this;
+    fun setHasLabelsOutside(hasLabelsOutside: Boolean): PieChartData {
+        this.hasLabelsOutside = hasLabelsOutside
+        return this
     }
 
-    public boolean hasCenterCircle() {
-        return hasCenterCircle;
+    fun hasCenterCircle(): Boolean {
+        return hasCenterCircle
     }
 
-    public PieChartData setHasCenterCircle(boolean hasCenterCircle) {
-        this.hasCenterCircle = hasCenterCircle;
-        return this;
+    fun setHasCenterCircle(hasCenterCircle: Boolean): PieChartData {
+        this.hasCenterCircle = hasCenterCircle
+        return this
     }
 
-    public int getCenterCircleColor() {
-        return centerCircleColor;
+    fun setCenterCircleColor(centerCircleColor: Int): PieChartData {
+        this.centerCircleColor = centerCircleColor
+        return this
     }
 
-    public PieChartData setCenterCircleColor(int centerCircleColor) {
-        this.centerCircleColor = centerCircleColor;
-        return this;
+    fun setCenterCircleScale(centerCircleScale: Float): PieChartData {
+        this.centerCircleScale = centerCircleScale
+        return this
     }
 
-    public float getCenterCircleScale() {
-        return centerCircleScale;
+    fun setCenterText1Color(centerText1Color: Int): PieChartData {
+        this.centerText1Color = centerText1Color
+        return this
     }
 
-    public PieChartData setCenterCircleScale(float centerCircleScale) {
-        this.centerCircleScale = centerCircleScale;
-        return this;
+    fun setCenterText1FontSize(centerText1FontSize: Int): PieChartData {
+        this.centerText1FontSize = centerText1FontSize
+        return this
     }
 
-    public int getCenterText1Color() {
-        return centerText1Color;
+    fun setCenterText1Typeface(text1Typeface: Typeface?): PieChartData {
+        centerText1Typeface = text1Typeface
+        return this
     }
 
-    public PieChartData setCenterText1Color(int centerText1Color) {
-        this.centerText1Color = centerText1Color;
-        return this;
-    }
-
-    public int getCenterText1FontSize() {
-        return centerText1FontSize;
-    }
-
-    public PieChartData setCenterText1FontSize(int centerText1FontSize) {
-        this.centerText1FontSize = centerText1FontSize;
-        return this;
-    }
-
-    public Typeface getCenterText1Typeface() {
-        return centerText1Typeface;
-    }
-
-    public PieChartData setCenterText1Typeface(Typeface text1Typeface) {
-        this.centerText1Typeface = text1Typeface;
-        return this;
-    }
-
-    public String getCenterText1() {
-        return centerText1;
-    }
-
-    public PieChartData setCenterText1(String centerText1) {
-        this.centerText1 = centerText1;
-        return this;
-    }
-
-    public String getCenterText2() {
-        return centerText2;
+    fun setCenterText1(centerText1: String?): PieChartData {
+        this.centerText1 = centerText1
+        return this
     }
 
     /**
      * Note that centerText2 will be drawn only if centerText1 is not empty/null.
      */
-    public PieChartData setCenterText2(String centerText2) {
-        this.centerText2 = centerText2;
-        return this;
+    fun setCenterText2(centerText2: String?): PieChartData {
+        this.centerText2 = centerText2
+        return this
     }
 
-    public int getCenterText2Color() {
-        return centerText2Color;
+    fun setCenterText2Color(centerText2Color: Int): PieChartData {
+        this.centerText2Color = centerText2Color
+        return this
     }
 
-    public PieChartData setCenterText2Color(int centerText2Color) {
-        this.centerText2Color = centerText2Color;
-        return this;
+    fun setCenterText2FontSize(centerText2FontSize: Int): PieChartData {
+        this.centerText2FontSize = centerText2FontSize
+        return this
     }
 
-    public int getCenterText2FontSize() {
-        return centerText2FontSize;
+    fun setCenterText2Typeface(text2Typeface: Typeface?): PieChartData {
+        centerText2Typeface = text2Typeface
+        return this
     }
 
-    public PieChartData setCenterText2FontSize(int centerText2FontSize) {
-        this.centerText2FontSize = centerText2FontSize;
-        return this;
+    fun setSlicesSpacing(sliceSpacing: Int): PieChartData {
+        slicesSpacing = sliceSpacing
+        return this
     }
 
-    public Typeface getCenterText2Typeface() {
-        return centerText2Typeface;
-    }
-
-    public PieChartData setCenterText2Typeface(Typeface text2Typeface) {
-        this.centerText2Typeface = text2Typeface;
-        return this;
-    }
-
-    public int getSlicesSpacing() {
-        return slicesSpacing;
-    }
-
-    public PieChartData setSlicesSpacing(int sliceSpacing) {
-        this.slicesSpacing = sliceSpacing;
-        return this;
-    }
-
-    public PieChartValueFormatter getFormatter() {
-        return formatter;
-    }
-
-    public PieChartData setFormatter(PieChartValueFormatter formatter) {
+    fun setFormatter(formatter: PieChartValueFormatter?): PieChartData {
         if (null != formatter) {
-            this.formatter = formatter;
+            this.formatter = formatter
         }
-        return this;
+        return this
+    }
+
+    companion object {
+        const val DEFAULT_CENTER_TEXT1_SIZE_SP = 42
+        const val DEFAULT_CENTER_TEXT2_SIZE_SP = 16
+        const val DEFAULT_CENTER_CIRCLE_SCALE = 0.6f
+        private const val DEFAULT_SLICE_SPACING_DP = 2
+        @JvmStatic
+        fun generateDummyData(): PieChartData {
+            val numValues = 4
+            val data = PieChartData()
+            val values: MutableList<SliceValue> = ArrayList(numValues)
+            values.add(SliceValue(40f))
+            values.add(SliceValue(20f))
+            values.add(SliceValue(30f))
+            values.add(SliceValue(50f))
+            data.setValues(values)
+            return data
+        }
     }
 }

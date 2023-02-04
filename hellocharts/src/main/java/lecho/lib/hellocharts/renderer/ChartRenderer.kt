@@ -1,64 +1,58 @@
-package lecho.lib.hellocharts.renderer;
+package lecho.lib.hellocharts.renderer
 
-import android.graphics.Canvas;
-
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.Viewport;
-
+import android.graphics.Canvas
+import lecho.lib.hellocharts.model.SelectedValue
+import lecho.lib.hellocharts.model.Viewport
 
 /**
  * Interface for all chart renderer.
  */
-public interface ChartRenderer {
-
-    void onChartSizeChanged();
-
-    void onChartDataChanged();
-
-    void onChartViewportChanged();
-
-    void resetRenderer();
+interface ChartRenderer {
+    fun onChartSizeChanged()
+    fun onChartDataChanged()
+    fun onChartViewportChanged()
+    fun resetRenderer()
 
     /**
      * Draw chart data.
      */
-    void draw(Canvas canvas);
+    fun draw(canvas: Canvas?)
 
     /**
      * Draw chart data that should not be clipped to contentRect area.
      */
-    void drawUnClipped(Canvas canvas);
+    fun drawUnClipped(canvas: Canvas?)
 
     /**
      * Checks if given pixel coordinates corresponds to any chart value. If yes return true and set selectedValue, if
      * not selectedValue should be *cleared* and method should return false.
      */
-    boolean checkTouch(float touchX, float touchY);
+    fun checkTouch(touchX: Float, touchY: Float): Boolean
 
     /**
      * Returns true if there is value selected.
      */
-    boolean isTouched();
+
+    fun isTouched(): Boolean
 
     /**
      * Clear value selection.
      */
-    void clearTouch();
+    fun clearTouch()
 
-    Viewport getMaximumViewport();
+    fun getMaximumViewport(): Viewport?
 
-    void setMaximumViewport(Viewport maxViewport);
+    fun setMaximumViewport(maxViewport: Viewport?)
 
-    Viewport getCurrentViewport();
+    fun getCurrentViewport(): Viewport?
 
-    void setCurrentViewport(Viewport viewport);
+    fun setCurrentViewport(viewport: Viewport?)
 
-    boolean isViewportCalculationEnabled();
+    fun isViewportCalculationEnabled(): Boolean
 
-    void setViewportCalculationEnabled(boolean isEnabled);
+    fun setViewportCalculationEnabled(isEnabled: Boolean)
 
-    void selectValue(SelectedValue selectedValue);
+    fun selectValue(selectedValue: SelectedValue)
 
-    SelectedValue getSelectedValue();
-
+    fun getSelectedValue(): SelectedValue
 }

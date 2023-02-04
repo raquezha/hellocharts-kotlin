@@ -1,93 +1,83 @@
-package lecho.lib.hellocharts.model;
-
-import java.util.ArrayList;
-import java.util.List;
+package lecho.lib.hellocharts.model
 
 /**
  * Data model for LineChartView.
  */
-@SuppressWarnings("unused")
-public class LineChartData extends AbstractChartData {
-    public static final float DEFAULT_BASE_VALUE = 0.0f;
+@Suppress("unused")
+class LineChartData : AbstractChartData {
+    private var lines: MutableList<Line> = ArrayList()
 
-    private List<Line> lines = new ArrayList<>();
-    private float baseValue = DEFAULT_BASE_VALUE;
+    /**
+     * @see .setBaseValue
+     */
+    var baseValue = DEFAULT_BASE_VALUE
+        private set
 
-    public LineChartData() {
-
-    }
-
-    public LineChartData(List<Line> lines) {
-        setLines(lines);
+    constructor()
+    constructor(lines: MutableList<Line>?) {
+        setLines(lines)
     }
 
     /**
      * Copy constructor to perform deep copy of chart data.
      */
-    public LineChartData(LineChartData data) {
-        super(data);
-        this.baseValue = data.baseValue;
-
-        for (Line line : data.lines) {
-            this.lines.add(new Line(line));
+    constructor(data: LineChartData) : super(data) {
+        baseValue = data.baseValue
+        for (line in data.lines) {
+            lines.add(Line(line))
         }
     }
 
-    public static LineChartData generateDummyData() {
-        final int numValues = 4;
-        LineChartData data = new LineChartData();
-        List<PointValue> values = new ArrayList<>(numValues);
-        values.add(new PointValue(0, 2));
-        values.add(new PointValue(1, 4));
-        values.add(new PointValue(2, 3));
-        values.add(new PointValue(3, 4));
-        Line line = new Line(values);
-        List<Line> lines = new ArrayList<>(1);
-        lines.add(line);
-        data.setLines(lines);
-        return data;
-    }
-
-    @Override
-    public void update(float scale) {
-        for (Line line : lines) {
-            line.update(scale);
+    override fun update(scale: Float) {
+        for (line in lines) {
+            line.update(scale)
         }
     }
 
-    @Override
-    public void finish() {
-        for (Line line : lines) {
-            line.finish();
+    override fun finish() {
+        for (line in lines) {
+            line.finish()
         }
     }
 
-    public List<Line> getLines() {
-        return lines;
+    fun getLines(): List<Line> {
+        return lines
     }
 
-    public LineChartData setLines(List<Line> lines) {
+    fun setLines(lines: MutableList<Line>?): LineChartData {
         if (null == lines) {
-            this.lines = new ArrayList<>();
+            this.lines = ArrayList()
         } else {
-            this.lines = lines;
+            this.lines = lines
         }
-        return this;
-    }
-
-    /**
-     * @see #setBaseValue(float)
-     */
-    public float getBaseValue() {
-        return baseValue;
+        return this
     }
 
     /**
      * Set value below which values will be drawn as negative, important attribute for drawing filled area charts, by
      * default 0.
      */
-    public LineChartData setBaseValue(float baseValue) {
-        this.baseValue = baseValue;
-        return this;
+    fun setBaseValue(baseValue: Float): LineChartData {
+        this.baseValue = baseValue
+        return this
+    }
+
+    companion object {
+        const val DEFAULT_BASE_VALUE = 0.0f
+        @JvmStatic
+        fun generateDummyData(): LineChartData {
+            val numValues = 4
+            val data = LineChartData()
+            val values: MutableList<PointValue> = ArrayList(numValues)
+            values.add(PointValue(0f, 2f))
+            values.add(PointValue(1f, 4f))
+            values.add(PointValue(2f, 3f))
+            values.add(PointValue(3f, 4f))
+            val line = Line(values)
+            val lines: MutableList<Line> = ArrayList(1)
+            lines.add(line)
+            data.setLines(lines)
+            return data
+        }
     }
 }

@@ -1,135 +1,111 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.model
 
-import android.graphics.Typeface;
+import android.graphics.Typeface
 
 /**
  * Base interface for all chart data models.
  */
-@SuppressWarnings("unused")
-public interface ChartData {
-
+@Suppress("unused")
+interface ChartData {
     /**
      * Updates data by scale during animation.
      *
      * @param scale value from 0 to 1.0
      */
-    void update(float scale);
+    fun update(scale: Float)
 
     /**
      * Inform data that animation finished(data should be update with scale 1.0f).
      */
-    void finish();
-
-    /**
-     * @see #setAxisXBottom(Axis)
-     */
-    Axis getAxisXBottom();
+    fun finish()
 
     /**
      * Set horizontal axis at the bottom of the chart. Pass null to remove that axis.
      *
-     * @param axisX the X axis
+     * @param axis the X axis
      */
-    void setAxisXBottom(Axis axisX);
+    fun setAxisXBottom(axis: Axis?)
 
-    /**
-     * @see #setAxisYLeft(Axis)
-     */
-    Axis getAxisYLeft();
+    fun getAxisXBottom(): Axis?
 
     /**
      * Set vertical axis on the left of the chart. Pass null to remove that axis.
      *
-     * @param axisY the Y axis
+     * @param axis the Y axis
      */
-    void setAxisYLeft(Axis axisY);
+    fun setAxisYLeft(axis: Axis?)
+    fun getAxisYLeft(): Axis?
 
-    /**
-     * @see #setAxisXTop(Axis)
-     */
-    Axis getAxisXTop();
 
     /**
      * Set horizontal axis at the top of the chart. Pass null to remove that axis.
      *
-     * @param axisX the X axis
+     * @param axis the X axis
      */
-    void setAxisXTop(Axis axisX);
+    fun setAxisXTop(axis: Axis?)
 
-    /**
-     * @see #setAxisYRight(Axis)
-     */
-    Axis getAxisYRight();
+    fun getAxisXTop(): Axis?
 
     /**
      * Set vertical axis on the right of the chart. Pass null to remove that axis.
      *
-     * @param axisY the Y Axis
+     * @param axis the Y Axis
      */
-    void setAxisYRight(Axis axisY);
+    fun setAxisYRight(axis: Axis?)
 
-    /**
-     * Returns color used to draw value label text.
-     */
-    int getValueLabelTextColor();
+    fun getAxisYRight(): Axis?
 
     /**
      * Set value label text color, by default Color.WHITE.
      */
-    void setValueLabelsTextColor(int labelsTextColor);
+    fun setValueLabelsTextColor(color: Int)
+
+    fun getValueLabelTextColor(): Int
 
     /**
      * Returns text size for value label in SP units.
      */
-    int getValueLabelTextSize();
+    fun setValueLabelTextSize(size: Int)
 
     /**
      * Set text size for value label in SP units.
      */
-    void setValueLabelTextSize(int labelsTextSize);
+    fun getValueLabelTextSize(): Int
 
     /**
      * Returns Typeface for value labels.
      *
      * @return Typeface or null if Typeface is not set.
      */
-    Typeface getValueLabelTypeface();
+    fun getValueLabelTypeface(): Typeface?
 
     /**
      * Set Typeface for all values labels.
      *
      * @param typeface params
      */
-    void setValueLabelTypeface(Typeface typeface);
-
-    /**
-     * @see #setValueLabelBackgroundEnabled(boolean)
-     */
-    boolean isValueLabelBackgroundEnabled();
+    fun setValueLabelTypeface(typeface: Typeface?)
 
     /**
      * Set whether labels should have rectangle background. Default is true.
      */
-    void setValueLabelBackgroundEnabled(boolean isValueLabelBackgroundEnabled);
+    fun setValueLabelBackgroundEnabled(isEnabled: Boolean)
 
-    /**
-     * @see #setValueLabelBackgroundAuto(boolean)
-     */
-    boolean isValueLabelBackgroundAuto();
+    fun isValueLabelBackgroundEnabled(): Boolean
+
 
     /**
      * Set false if you want to set custom color for all value labels. Default is true.
      */
-    void setValueLabelBackgroundAuto(boolean isValueLabelBackgroundAuto);
+    fun setValueLabelBackgroundAuto(isValueLabelBackgroundAuto: Boolean)
 
-    /**
-     * @see #setValueLabelBackgroundColor(int)
-     */
-    int getValueLabelBackgroundColor();
+    fun isValueLabelBackgroundAuto(): Boolean
 
     /**
      * Set value labels background. This value is used only if isValueLabelBackgroundAuto returns false. Default is
      * green.
      */
-    void setValueLabelBackgroundColor(int valueLabelBackgroundColor);
+    fun setValueLabelBackgroundColor(valueLabelBackgroundColor: Int)
+
+    fun getValueLabelBackgroundColor(): Int
 }

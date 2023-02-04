@@ -9,6 +9,10 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.NotNull;
+
 import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -169,10 +173,11 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
     }
 
     @Override
-    public void selectValue(SelectedValue selectedValue) {
+    public void selectValue(@NonNull SelectedValue selectedValue) {
         this.selectedValue.set(selectedValue);
     }
 
+    @NotNull
     @Override
     public SelectedValue getSelectedValue() {
         return selectedValue;

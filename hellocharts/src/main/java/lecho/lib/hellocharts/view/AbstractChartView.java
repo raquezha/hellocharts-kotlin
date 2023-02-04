@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 
 import lecho.lib.hellocharts.animation.ChartAnimationListener;
@@ -399,7 +398,6 @@ public abstract class AbstractChartView extends View implements Chart {
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
-    @NonNull
     @Override
     public Viewport getCurrentViewport() {
         return getChartRenderer().getCurrentViewport();

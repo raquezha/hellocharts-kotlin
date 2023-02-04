@@ -165,5 +165,4 @@ public abstract class AbstractChartData implements ChartData {
     public void setValueLabelBackgroundColor(int valueLabelBackgroundColor) {
         this.valueLabelBackgroundColor = valueLabelBackgroundColor;
     }
-
 }

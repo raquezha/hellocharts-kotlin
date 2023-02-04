@@ -3,11 +3,11 @@ package lecho.lib.hellocharts.renderer;
 import android.content.Context;
 import android.graphics.Canvas;
 
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.Chart;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.view.Chart;
 
 public class ComboChartRenderer extends AbstractChartRenderer {
 
@@ -42,9 +42,15 @@ public class ComboChartRenderer extends AbstractChartRenderer {
             for (ChartRenderer renderer : renderers) {
                 renderer.onChartViewportChanged();
                 if (rendererIndex == 0) {
-                    unionViewport.set(renderer.getMaximumViewport());
+                    Viewport maximumViewport = renderer.getMaximumViewport();
+                    if(maximumViewport != null) {
+                        unionViewport.set(maximumViewport);
+                    }
                 } else {
-                    unionViewport.union(renderer.getMaximumViewport());
+                    Viewport maximumViewport = renderer.getMaximumViewport();
+                    if(maximumViewport != null) {
+                        unionViewport.union(maximumViewport);
+                    }
                 }
                 ++rendererIndex;
             }
