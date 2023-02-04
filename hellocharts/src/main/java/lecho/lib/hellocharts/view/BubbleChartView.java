@@ -74,8 +74,8 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
         SelectedValue selectedValue = chartRenderer.getSelectedValue();
 
         if (selectedValue.isSet()) {
-            BubbleValue value = data.values.get(selectedValue.getFirstIndex());
-            onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), value);
+            BubbleValue value = data.values.get(selectedValue.firstIndex);
+            onValueTouchListener.onValueSelected(selectedValue.firstIndex, value);
         } else {
             onValueTouchListener.onValueDeselected();
         }

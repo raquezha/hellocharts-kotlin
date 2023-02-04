@@ -1,130 +1,93 @@
-package lecho.lib.hellocharts.model;
-
-import androidx.annotation.NonNull;
+package lecho.lib.hellocharts.model
 
 /**
  * Holds selected values indexes, i.e. for LineChartModel it will be firstIndex=lineIndex; secondIndex=valueIndex.
  */
-@SuppressWarnings("unused")
-public class SelectedValue {
-
+@Suppress("unused")
+class SelectedValue {
     /**
      * First index i.e for LineChart that will be line index.
      */
-    private int firstIndex;
-
+    /**
+     * First index i.e for LineChart that will be line index.
+     */
+    @JvmField
+    var firstIndex = 0
     /**
      * Second index i.e for LineChart that will be PointValue index.
      */
-    private int secondIndex;
+    /**
+     * Second index i.e for LineChart that will be PointValue index.
+     */
+    @JvmField
+    var secondIndex = 0
 
     /**
      * Used only for combo charts, in other cases should have value NONE.
      */
-    private SelectedValueType type = SelectedValueType.NONE;
+    @JvmField
+    var type: SelectedValueType? = SelectedValueType.NONE
 
-    public SelectedValue() {
-        clear();
+    constructor() {
+        clear()
     }
 
-    public SelectedValue(int firstIndex, int secondIndex, SelectedValueType type) {
-        set(firstIndex, secondIndex, type);
+    constructor(firstIndex: Int, secondIndex: Int, type: SelectedValueType?) {
+        set(firstIndex, secondIndex, type)
     }
 
-    public void set(int firstIndex, int secondIndex, SelectedValueType type) {
-        this.firstIndex = firstIndex;
-        this.secondIndex = secondIndex;
+    operator fun set(firstIndex: Int, secondIndex: Int, type: SelectedValueType?) {
+        this.firstIndex = firstIndex
+        this.secondIndex = secondIndex
         if (null != type) {
-            this.type = type;
+            this.type = type
         } else {
-            this.type = SelectedValueType.NONE;
+            this.type = SelectedValueType.NONE
         }
     }
 
-    public void set(SelectedValue selectedValue) {
-        this.firstIndex = selectedValue.firstIndex;
-        this.secondIndex = selectedValue.secondIndex;
-        this.type = selectedValue.type;
+    fun set(selectedValue: SelectedValue) {
+        firstIndex = selectedValue.firstIndex
+        secondIndex = selectedValue.secondIndex
+        type = selectedValue.type
     }
 
-    public void clear() {
-        set(Integer.MIN_VALUE, Integer.MIN_VALUE, SelectedValueType.NONE);
+    fun clear() {
+        set(Int.MIN_VALUE, Int.MIN_VALUE, SelectedValueType.NONE)
     }
 
-    /**
-     * Return true if selected value have meaningful value.
-     */
-    public boolean isSet() {
-        return firstIndex >= 0 && secondIndex >= 0;
+    val isSet: Boolean
+        /**
+         * Return true if selected value have meaningful value.
+         */
+        get() = firstIndex >= 0 && secondIndex >= 0
+
+    override fun hashCode(): Int {
+        val prime = 31
+        var result = 1
+        result = prime * result + firstIndex
+        result = prime * result + secondIndex
+        result = prime * result + if (type == null) 0 else type.hashCode()
+        return result
     }
 
-    /**
-     * First index i.e for LineChart that will be line index.
-     */
-    public int getFirstIndex() {
-        return firstIndex;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null) return false
+        if (javaClass != other.javaClass) return false
+        val otherObject = other as SelectedValue
+        if (firstIndex != otherObject.firstIndex) return false
+        return if (secondIndex != otherObject.secondIndex) false else type == otherObject.type
     }
 
-    public void setFirstIndex(int firstIndex) {
-        this.firstIndex = firstIndex;
-    }
-
-    /**
-     * Second index i.e for LineChart that will be PointValue index.
-     */
-    public int getSecondIndex() {
-        return secondIndex;
-    }
-
-    public void setSecondIndex(int secondIndex) {
-        this.secondIndex = secondIndex;
-    }
-
-    public SelectedValueType getType() {
-        return type;
-    }
-
-    public void setType(SelectedValueType type) {
-        this.type = type;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + firstIndex;
-        result = prime * result + secondIndex;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        SelectedValue other = (SelectedValue) obj;
-        if (firstIndex != other.firstIndex)
-            return false;
-        if (secondIndex != other.secondIndex)
-            return false;
-        return type == other.type;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return "SelectedValue [firstIndex=" + firstIndex + ", secondIndex=" + secondIndex + ", type=" + type + "]";
+    override fun toString(): String {
+        return "SelectedValue [firstIndex=$firstIndex, secondIndex=$secondIndex, type=$type]"
     }
 
     /**
      * Used in combo chart to determine if selected value is used for line or column selection.
      */
-    public enum SelectedValueType {
+    enum class SelectedValueType {
         NONE, LINE, COLUMN
     }
-
 }

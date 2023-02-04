@@ -71,9 +71,9 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
         if (selectedValue.isSet()) {
 
-            PointValue point = data.getLines().get(selectedValue.getFirstIndex()).getValues()
-                    .get(selectedValue.getSecondIndex());
-            onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
+            PointValue point = data.getLines().get(selectedValue.firstIndex).getValues()
+                    .get(selectedValue.secondIndex);
+            onValueTouchListener.onValueSelected(selectedValue.firstIndex, selectedValue.secondIndex, point);
         } else {
             onValueTouchListener.onValueDeselected();
         }

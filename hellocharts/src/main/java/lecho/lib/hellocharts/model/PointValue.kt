@@ -1,125 +1,104 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.model
 
-import androidx.annotation.NonNull;
-
-import java.util.Arrays;
-
-import lecho.lib.hellocharts.view.Chart;
+import java.util.Arrays
 
 /**
  * Single point coordinates, used for LineChartData.
  */
-public class PointValue {
+class PointValue {
+    var x = 0f
+        private set
+    var y = 0f
+        private set
+    private var originX = 0f
+    private var originY = 0f
+    private var diffX = 0f
+    private var diffY = 0f
 
-    private float x;
-    private float y;
-    private float originX;
-    private float originY;
-    private float diffX;
-    private float diffY;
-    private char[] label;
+    @get:Deprecated("")
+    var labelAsChars: CharArray? = null
 
-    public PointValue() {
-        set(0, 0);
+    constructor() {
+        set(0f, 0f)
     }
 
-    public PointValue(float x, float y) {
-        set(x, y);
+    constructor(x: Float, y: Float) {
+        set(x, y)
     }
 
-    public PointValue(PointValue pointValue) {
-        set(pointValue.x, pointValue.y);
-        this.label = pointValue.label;
+    constructor(pointValue: PointValue) {
+        set(pointValue.x, pointValue.y)
+        labelAsChars = pointValue.labelAsChars
     }
 
-    public void update(float scale) {
-        x = originX + diffX * scale;
-        y = originY + diffY * scale;
+    fun update(scale: Float) {
+        x = originX + diffX * scale
+        y = originY + diffY * scale
     }
 
-    public void finish() {
-        set(originX + diffX, originY + diffY);
+    fun finish() {
+        set(originX + diffX, originY + diffY)
     }
 
-    public PointValue set(float x, float y) {
-        this.x = x;
-        this.y = y;
-        this.originX = x;
-        this.originY = y;
-        this.diffX = 0;
-        this.diffY = 0;
-        return this;
+    operator fun set(x: Float, y: Float): PointValue {
+        this.x = x
+        this.y = y
+        originX = x
+        originY = y
+        diffX = 0f
+        diffY = 0f
+        return this
     }
 
     /**
-     * Set target values that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
+     * Set target value that should be reached when data animation
+     * finish then call [lecho.lib.hellocharts.view.Chart.startDataAnimation]
      */
-    public PointValue setTarget(float targetX, float targetY) {
-        set(x, y);
-        this.diffX = targetX - originX;
-        this.diffY = targetY - originY;
-        return this;
+    fun setTarget(targetX: Float, targetY: Float): PointValue {
+        set(x, y)
+        diffX = targetX - originX
+        diffY = targetY - originY
+        return this
     }
 
-    public float getX() {
-        return this.x;
+    fun setLabel(label: String): PointValue {
+        labelAsChars = label.toCharArray()
+        return this
     }
 
-    public float getY() {
-        return this.y;
+    @Deprecated("")
+    fun setLabel(label: CharArray?): PointValue {
+        labelAsChars = label
+        return this
     }
 
-    @Deprecated
-    public char[] getLabel() {
-        return label;
+    override fun toString(): String {
+        return "PointValue [x=$x, y=$y]"
     }
 
-    public PointValue setLabel(String label) {
-        this.label = label.toCharArray();
-        return this;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as PointValue
+        if (that.diffX.compareTo(diffX) != 0) return false
+        if (that.diffY.compareTo(diffY) != 0) return false
+        if (that.originX.compareTo(originX) != 0) return false
+        if (that.originY.compareTo(originY) != 0) return false
+        if (that.x.compareTo(x) != 0) return false
+        return if (that.y.compareTo(y) != 0) false else Arrays.equals(
+            labelAsChars,
+            that.labelAsChars
+        )
     }
 
-    public char[] getLabelAsChars() {
-        return label;
-    }
-
-    @Deprecated
-    public PointValue setLabel(char[] label) {
-        this.label = label;
-        return this;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return "PointValue [x=" + x + ", y=" + y + "]";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PointValue that = (PointValue) o;
-
-        if (Float.compare(that.diffX, diffX) != 0) return false;
-        if (Float.compare(that.diffY, diffY) != 0) return false;
-        if (Float.compare(that.originX, originX) != 0) return false;
-        if (Float.compare(that.originY, originY) != 0) return false;
-        if (Float.compare(that.x, x) != 0) return false;
-        if (Float.compare(that.y, y) != 0) return false;
-        return Arrays.equals(label, that.label);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (x != 0.0f ? Float.floatToIntBits(x) : 0);
-        result = 31 * result + (y != 0.0f ? Float.floatToIntBits(y) : 0);
-        result = 31 * result + (originX != 0.0f ? Float.floatToIntBits(originX) : 0);
-        result = 31 * result + (originY != 0.0f ? Float.floatToIntBits(originY) : 0);
-        result = 31 * result + (diffX != 0.0f ? Float.floatToIntBits(diffX) : 0);
-        result = 31 * result + (diffY != 0.0f ? Float.floatToIntBits(diffY) : 0);
-        result = 31 * result + (label != null ? Arrays.hashCode(label) : 0);
-        return result;
+    override fun hashCode(): Int {
+        var result = if (x != 0.0f) java.lang.Float.floatToIntBits(x) else 0
+        result = 31 * result + if (y != 0.0f) java.lang.Float.floatToIntBits(y) else 0
+        result = 31 * result + if (originX != 0.0f) java.lang.Float.floatToIntBits(originX) else 0
+        result = 31 * result + if (originY != 0.0f) java.lang.Float.floatToIntBits(originY) else 0
+        result = 31 * result + if (diffX != 0.0f) java.lang.Float.floatToIntBits(diffX) else 0
+        result = 31 * result + if (diffY != 0.0f) java.lang.Float.floatToIntBits(diffY) else 0
+        result = 31 * result + if (labelAsChars != null) Arrays.hashCode(labelAsChars) else 0
+        return result
     }
 }

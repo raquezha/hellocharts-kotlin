@@ -79,8 +79,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
         SelectedValue selectedValue = chartRenderer.getSelectedValue();
 
         if (selectedValue.isSet()) {
-            SliceValue sliceValue = data.getValues().get(selectedValue.getFirstIndex());
-            onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), sliceValue);
+            SliceValue sliceValue = data.getValues().get(selectedValue.firstIndex);
+            onValueTouchListener.onValueSelected(selectedValue.firstIndex, sliceValue);
         } else {
             onValueTouchListener.onValueDeselected();
         }

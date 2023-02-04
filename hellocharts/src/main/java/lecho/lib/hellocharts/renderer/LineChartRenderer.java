@@ -361,7 +361,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
     private void prepareLinePaint(final Line line) {
         linePaint.setStrokeWidth(ChartUtils.dp2px(density, line.getStrokeWidth()));
         linePaint.setColor(line.getColor());
-        linePaint.setPathEffect(line.getPathEffect());
+        linePaint.setPathEffect(line.pathEffect);
         linePaint.setShader(null);
     }
 
@@ -413,14 +413,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
     }
 
     private void highlightPoints(Canvas canvas) {
-        int lineIndex = selectedValue.getFirstIndex();
+        int lineIndex = selectedValue.firstIndex;
         Line line = dataProvider.getLineChartData().getLines().get(lineIndex);
         drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
     }
 
     private void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
                                 int valueIndex) {
-        if (selectedValue.getFirstIndex() == lineIndex && selectedValue.getSecondIndex() == valueIndex) {
+        if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
             int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
             pointPaint.setColor(line.getDarkenColor());
             drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchToleranceMargin);

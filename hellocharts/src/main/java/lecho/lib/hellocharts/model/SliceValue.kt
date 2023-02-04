@@ -1,140 +1,129 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.model
 
-import androidx.annotation.NonNull;
-
-import java.util.Arrays;
-
-import lecho.lib.hellocharts.util.ChartUtils;
-import lecho.lib.hellocharts.view.Chart;
+import lecho.lib.hellocharts.util.ChartUtils
+import lecho.lib.hellocharts.util.ChartUtils.darkenColor
+import java.util.Arrays
 
 /**
  * Model representing single slice on PieChart.
  */
-@SuppressWarnings("unused")
-public class SliceValue {
-    private static final int DEFAULT_SLICE_SPACING_DP = 2;
-
+@Suppress("unused")
+class SliceValue {
     /**
      * Current value of this slice.
      */
-    private float value;
+    var value = 0f
+        private set
+
     /**
      * Origin value of this slice, used during value animation.
      */
-    private float originValue;
+    private var originValue = 0f
+
     /**
      * Difference between originValue and targetValue.
      */
-    private float diff;
+    private var diff = 0f
+
     /**
      * Color of this slice.
      */
-    private int color = ChartUtils.DEFAULT_COLOR;
+    var color = ChartUtils.DEFAULT_COLOR
+        private set
+
     /**
      * Darken color used to draw label background and give touch feedback.
      */
-    private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
+    var darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR
+        private set
+
     /**
      * Custom label for this slice, if not set number formatting will be used.
      */
-    private char[] label;
 
-    public SliceValue() {
-        setValue(0);
+    var labelAsChars: CharArray? = null
+
+    constructor() {
+        setValue(0f)
     }
 
-    public SliceValue(float value) {
-        setValue(value);
+    constructor(value: Float) {
+        setValue(value)
     }
 
-    public SliceValue(float value, int color) {
-        setValue(value);
-        setColor(color);
+    constructor(value: Float, color: Int) {
+        setValue(value)
+        setColor(color)
     }
 
-    public void update(float scale) {
-        value = originValue + diff * scale;
+    fun update(scale: Float) {
+        value = originValue + diff * scale
     }
 
-    public void finish() {
-        setValue(originValue + diff);
+    fun finish() {
+        setValue(originValue + diff)
     }
 
-    public float getValue() {
-        return value;
-    }
-
-    public SliceValue setValue(float value) {
-        this.value = value;
-        this.originValue = value;
-        this.diff = 0;
-        return this;
+    fun setValue(value: Float): SliceValue {
+        this.value = value
+        originValue = value
+        diff = 0f
+        return this
     }
 
     /**
-     * Set target value that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
+     * Set target value that should be reached when data animation
+     * finish then call [lecho.lib.hellocharts.view.Chart.startDataAnimation]
      *
      * @param target the floating target
-     * @return [SliceTarget]
+     * @return [SliceValue]
      */
-    public SliceValue setTarget(float target) {
-        setValue(value);
-        this.diff = target - originValue;
-        return this;
+    fun setTarget(target: Float): SliceValue {
+        setValue(value)
+        diff = target - originValue
+        return this
     }
 
-    public int getColor() {
-        return color;
+    fun setColor(color: Int): SliceValue {
+        this.color = color
+        darkenColor = darkenColor(color)
+        return this
     }
 
-    public SliceValue setColor(int color) {
-        this.color = color;
-        this.darkenColor = ChartUtils.darkenColor(color);
-        return this;
+    fun setLabel(label: String): SliceValue {
+        labelAsChars = label.toCharArray()
+        return this
     }
 
-    public int getDarkenColor() {
-        return darkenColor;
+    override fun toString(): String {
+        return "SliceValue [value=$value]"
     }
 
-    public SliceValue setLabel(String label) {
-        this.label = label.toCharArray();
-        return this;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as SliceValue
+        if (color != that.color) return false
+        if (darkenColor != that.darkenColor) return false
+        if (that.diff.compareTo(diff) != 0) return false
+        if (that.originValue.compareTo(originValue) != 0) return false
+        return if (that.value.compareTo(value) != 0) false else Arrays.equals(
+            labelAsChars, that.labelAsChars
+        )
     }
 
-    public char[] getLabelAsChars() {
-        return label;
+    override fun hashCode(): Int {
+        var result = if (value != 0.0f) java.lang.Float.floatToIntBits(value) else 0
+        result =
+            31 * result + if (originValue != 0.0f) java.lang.Float.floatToIntBits(originValue) else 0
+        result = 31 * result + if (diff != 0.0f) java.lang.Float.floatToIntBits(diff) else 0
+        result = 31 * result + color
+        result = 31 * result + darkenColor
+        result = 31 * result + if (labelAsChars != null) Arrays.hashCode(labelAsChars) else 0
+        return result
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "SliceValue [value=" + value + "]";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SliceValue that = (SliceValue) o;
-
-        if (color != that.color) return false;
-        if (darkenColor != that.darkenColor) return false;
-        if (Float.compare(that.diff, diff) != 0) return false;
-        if (Float.compare(that.originValue, originValue) != 0) return false;
-        if (Float.compare(that.value, value) != 0) return false;
-        return Arrays.equals(label, that.label);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (value != 0.0f ? Float.floatToIntBits(value) : 0);
-        result = 31 * result + (originValue != 0.0f ? Float.floatToIntBits(originValue) : 0);
-        result = 31 * result + (diff != 0.0f ? Float.floatToIntBits(diff) : 0);
-        result = 31 * result + color;
-        result = 31 * result + darkenColor;
-        result = 31 * result + (label != null ? Arrays.hashCode(label) : 0);
-        return result;
+    companion object {
+        private const val DEFAULT_SLICE_SPACING_DP = 2
     }
 }

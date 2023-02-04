@@ -245,7 +245,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
         int sliceIndex = 0;
         for (SliceValue sliceValue : data.getValues()) {
             final float angle = Math.abs(sliceValue.getValue()) * sliceScale;
-            if (isTouched() && selectedValue.getFirstIndex() == sliceIndex) {
+            if (isTouched() && selectedValue.firstIndex == sliceIndex) {
                 drawSlice(canvas, sliceValue, lastAngle, angle, MODE_HIGHLIGHT);
             } else {
                 drawSlice(canvas, sliceValue, lastAngle, angle, MODE_DRAW);
@@ -296,7 +296,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
             if (isTouched()) {
                 if (hasLabels) {
                     drawLabel(canvas, sliceValue, lastAngle, angle);
-                } else if (hasLabelsOnlyForSelected && selectedValue.getFirstIndex() == sliceIndex) {
+                } else if (hasLabelsOnlyForSelected && selectedValue.firstIndex == sliceIndex) {
                     drawLabel(canvas, sliceValue, lastAngle, angle);
                 }
             } else {

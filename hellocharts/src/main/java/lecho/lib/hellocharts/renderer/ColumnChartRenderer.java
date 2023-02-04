@@ -184,8 +184,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
     private void highlightColumnsForSubcolumns(Canvas canvas) {
         final ColumnChartData data = dataProvider.getColumnChartData();
         final float columnWidth = calculateColumnWidth();
-        Column column = data.getColumns().get(selectedValue.getFirstIndex());
-        processColumnForSubcolumns(canvas, column, columnWidth, selectedValue.getFirstIndex(), MODE_HIGHLIGHT, data.isRoundedCorner());
+        Column column = data.getColumns().get(selectedValue.firstIndex);
+        processColumnForSubcolumns(canvas, column, columnWidth, selectedValue.firstIndex, MODE_HIGHLIGHT, data.isRoundedCorner());
     }
 
     private void checkTouchForSubcolumns(float touchX, float touchY) {
@@ -260,8 +260,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         final ColumnChartData data = dataProvider.getColumnChartData();
         final float columnWidth = calculateColumnWidth();
         // Columns are indexes from 0 to n, column index is also column X value
-        Column column = data.getColumns().get(selectedValue.getFirstIndex());
-        processColumnForStacked(canvas, column, columnWidth, selectedValue.getFirstIndex(), MODE_HIGHLIGHT, data.isRoundedCorner());
+        Column column = data.getColumns().get(selectedValue.firstIndex);
+        processColumnForStacked(canvas, column, columnWidth, selectedValue.firstIndex, MODE_HIGHLIGHT, data.isRoundedCorner());
     }
 
     private void checkTouchForStacked(float touchX, float touchY) {
@@ -342,7 +342,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
             int valueIndex,
             boolean isStacked,
             boolean isRoundedCorners) {
-        if (selectedValue.getSecondIndex() == valueIndex) {
+        if (selectedValue.secondIndex == valueIndex) {
             columnPaint.setColor(columnValue.getDarkenColor());
             if(isRoundedCorners) {
                 canvas.drawRoundRect(drawRect.left - touchAdditionalWidth, drawRect.top, drawRect.right + touchAdditionalWidth,
