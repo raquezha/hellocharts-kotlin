@@ -1,34 +1,44 @@
-package lecho.lib.hellocharts.renderer;
+package lecho.lib.hellocharts.renderer
 
-import android.content.Context;
+import android.content.Context
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider
+import lecho.lib.hellocharts.provider.LineChartDataProvider
+import lecho.lib.hellocharts.view.Chart
 
-import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
-import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.view.Chart;
+class ComboLineColumnChartRenderer(
+    context: Context?, chart: Chart?, columnChartRenderer: ColumnChartRenderer?,
+    lineChartRenderer: LineChartRenderer?
+) : ComboChartRenderer(context, chart) {
+    constructor(
+        context: Context?, chart: Chart?, columnChartDataProvider: ColumnChartDataProvider?,
+        lineChartDataProvider: LineChartDataProvider?
+    ) : this(
+        context, chart, ColumnChartRenderer(context, chart, columnChartDataProvider),
+        LineChartRenderer(context, chart, lineChartDataProvider)
+    )
 
-public class ComboLineColumnChartRenderer extends ComboChartRenderer {
+    constructor(
+        context: Context?, chart: Chart?, columnChartRenderer: ColumnChartRenderer?,
+        lineChartDataProvider: LineChartDataProvider?
+    ) : this(
+        context,
+        chart,
+        columnChartRenderer,
+        LineChartRenderer(context, chart, lineChartDataProvider)
+    )
 
-    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider columnChartDataProvider,
-                                        LineChartDataProvider lineChartDataProvider) {
-        this(context, chart, new ColumnChartRenderer(context, chart, columnChartDataProvider),
-                new LineChartRenderer(context, chart, lineChartDataProvider));
-    }
+    constructor(
+        context: Context?, chart: Chart?, columnChartDataProvider: ColumnChartDataProvider?,
+        lineChartRenderer: LineChartRenderer?
+    ) : this(
+        context,
+        chart,
+        ColumnChartRenderer(context, chart, columnChartDataProvider),
+        lineChartRenderer
+    )
 
-    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartRenderer columnChartRenderer,
-                                        LineChartDataProvider lineChartDataProvider) {
-        this(context, chart, columnChartRenderer, new LineChartRenderer(context, chart, lineChartDataProvider));
-    }
-
-    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider columnChartDataProvider,
-                                        LineChartRenderer lineChartRenderer) {
-        this(context, chart, new ColumnChartRenderer(context, chart, columnChartDataProvider), lineChartRenderer);
-    }
-
-    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartRenderer columnChartRenderer,
-                                        LineChartRenderer lineChartRenderer) {
-        super(context, chart);
-
-        renderers.add(columnChartRenderer);
-        renderers.add(lineChartRenderer);
+    init {
+        renderers.add(columnChartRenderer)
+        renderers.add(lineChartRenderer)
     }
 }

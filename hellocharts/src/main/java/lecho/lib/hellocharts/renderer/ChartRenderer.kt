@@ -8,9 +8,13 @@ import lecho.lib.hellocharts.model.Viewport
  * Interface for all chart renderer.
  */
 interface ChartRenderer {
+
     fun onChartSizeChanged()
+
     fun onChartDataChanged()
+
     fun onChartViewportChanged()
+
     fun resetRenderer()
 
     /**
