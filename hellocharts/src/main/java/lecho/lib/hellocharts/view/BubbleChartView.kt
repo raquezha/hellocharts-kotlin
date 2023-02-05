@@ -1,96 +1,77 @@
-package lecho.lib.hellocharts.view;
+package lecho.lib.hellocharts.view
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-
-import org.jetbrains.annotations.NotNull;
-
-import lecho.lib.hellocharts.BuildConfig;
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.listener.BubbleChartOnValueSelectListener;
-import lecho.lib.hellocharts.listener.DummyBubbleChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.BubbleChartData;
-import lecho.lib.hellocharts.model.BubbleValue;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
-import lecho.lib.hellocharts.renderer.AxesRenderer;
-import lecho.lib.hellocharts.renderer.BubbleChartRenderer;
+import android.content.Context
+import android.util.AttributeSet
+import android.util.Log
+import androidx.core.view.ViewCompat
+import lecho.lib.hellocharts.BuildConfig
+import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.gesture.ChartTouchHandler
+import lecho.lib.hellocharts.listener.BubbleChartOnValueSelectListener
+import lecho.lib.hellocharts.listener.DummyBubbleChartOnValueSelectListener
+import lecho.lib.hellocharts.model.BubbleChartData
+import lecho.lib.hellocharts.model.BubbleChartData.Companion.generateDummyData
+import lecho.lib.hellocharts.model.ChartData
+import lecho.lib.hellocharts.provider.BubbleChartDataProvider
+import lecho.lib.hellocharts.renderer.AxesRenderer
+import lecho.lib.hellocharts.renderer.BubbleChartRenderer
 
 /**
  * BubbleChart, supports circle bubbles and square bubbles.
  *
  * @author lecho
  */
-@SuppressWarnings("unused")
-public class BubbleChartView extends AbstractChartView implements BubbleChartDataProvider {
-    private static final String TAG = "BubbleChartView";
-    protected BubbleChartData data;
-    protected BubbleChartOnValueSelectListener onValueTouchListener = new DummyBubbleChartOnValueSelectListener();
+@Suppress("unused")
+class BubbleChartView @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : AbstractChartView(context, attrs, defStyle), BubbleChartDataProvider {
 
-    protected BubbleChartRenderer bubbleChartRenderer;
+    @JvmField
+    var data: BubbleChartData? = null
 
-    public BubbleChartView(Context context) {
-        this(context, null, 0);
-    }
+    @JvmField
+    var onValueTouchListener:BubbleChartOnValueSelectListener? = DummyBubbleChartOnValueSelectListener()
 
-    public BubbleChartView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
+    @JvmField
+    var bubbleChartRenderer: BubbleChartRenderer
 
-    public BubbleChartView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        bubbleChartRenderer = new BubbleChartRenderer(context, this, this);
-        setChartRenderer(bubbleChartRenderer);
-        setBubbleChartData(BubbleChartData.generateDummyData());
-    }
-
-    @NonNull
-    @Override
-    public BubbleChartData getBubbleChartData() {
-        return data;
-    }
-
-    @Override
-    public void setBubbleChartData(@NonNull BubbleChartData data) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Setting data for BubbleChartView");
+    override var bubbleChartData: BubbleChartData
+        get() = data!!
+        set(data) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Setting data for BubbleChartView")
+            }
+            this.data = data
+            super.onChartDataChange()
         }
-        this.data = data;
-        super.onChartDataChange();
+
+
+    init {
+        bubbleChartRenderer = BubbleChartRenderer(context, this, this)
+        setChartRenderer(bubbleChartRenderer)
+        bubbleChartData = generateDummyData()
     }
 
-    @NonNull
-    @Override
-    public ChartData getChartData() {
-        return data;
+
+    override fun getChartData(): ChartData {
+        return data!!
     }
 
-    @Override
-    public void callTouchListener() {
-        SelectedValue selectedValue = chartRenderer.getSelectedValue();
-
-        if (selectedValue.isSet()) {
-            BubbleValue value = data.values.get(selectedValue.firstIndex);
-            onValueTouchListener.onValueSelected(selectedValue.firstIndex, value);
+    override fun callTouchListener() {
+        val selectedValue = chartRenderer.getSelectedValue()
+        if (selectedValue.isSet) {
+            val value = data!!.values[selectedValue.firstIndex]
+            onValueTouchListener?.onValueSelected(selectedValue.firstIndex, value)
         } else {
-            onValueTouchListener.onValueDeselected();
+            onValueTouchListener?.onValueDeselected()
         }
     }
 
-    public BubbleChartOnValueSelectListener getOnValueTouchListener() {
-        return onValueTouchListener;
-    }
-
-    public void setOnValueTouchListener(BubbleChartOnValueSelectListener touchListener) {
+    fun setOnValueTouchListener(touchListener: BubbleChartOnValueSelectListener?) {
         if (null != touchListener) {
-            this.onValueTouchListener = touchListener;
+            onValueTouchListener = touchListener
         }
     }
 
@@ -98,40 +79,38 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
      * Removes empty spaces, top-bottom for portrait orientation and left-right for landscape. This method has to be
      * called after view View#onSizeChanged() method is called and chart data is set. This method may be inaccurate.
      *
-     * @see BubbleChartRenderer#removeMargins()
+     * @see BubbleChartRenderer.removeMargins
      */
-    public void removeMargins() {
-        bubbleChartRenderer.removeMargins();
-        ViewCompat.postInvalidateOnAnimation(this);
+    fun removeMargins() {
+        bubbleChartRenderer.removeMargins()
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public void setChartData(@Nullable ChartData chartData) {
-        this.chartData = chartData;
+    override fun setChartData(chartData: ChartData) {
+        this.chartData = chartData
     }
 
-    @Override
-    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
-        this.axesRenderer = axesRenderer;
+    override fun setTouchHandler(touchHandler: ChartTouchHandler) {
+        this.touchHandler = touchHandler
     }
 
-    @Override
-    public void setChartComputator(@Nullable ChartComputator chartComputator) {
-        this.chartComputator = chartComputator;
+    override fun getInteractive(): Boolean {
+        return isInteractive
     }
 
-    @Override
-    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
-        this.touchHandler = touchHandler;
+    override fun setAxesRenderer(axesRenderer: AxesRenderer) {
+        this.axesRenderer = axesRenderer
     }
 
-    @Override
-    public boolean getInteractive() {
-        return isInteractive;
+    override fun setChartComputator(chartComputator: ChartComputator) {
+        this.chartComputator = chartComputator
     }
 
-    @Override
-    public void setContainerScrollEnabled(boolean isEnabled) {
-        this.isContainerScrollEnabled = isEnabled;
+    override fun setContainerScrollEnabled(isEnabled: Boolean) {
+        isContainerScrollEnabled = isEnabled
+    }
+
+    companion object {
+        private const val TAG = "BubbleChartView"
     }
 }

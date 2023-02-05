@@ -110,10 +110,10 @@ class AxesRenderer(context: Context, private val chart: Chart) {
     }
 
     private fun onChartDataOrSizeChanged() {
-        initAxis(chart.getChartData()!!.getAxisXTop(), TOP)
-        initAxis(chart.getChartData()!!.getAxisXBottom(), BOTTOM)
-        initAxis(chart.getChartData()!!.getAxisYLeft(), LEFT)
-        initAxis(chart.getChartData()!!.getAxisYRight(), RIGHT)
+        initAxis(chart.getChartData().getAxisXTop(), TOP)
+        initAxis(chart.getChartData().getAxisXBottom(), BOTTOM)
+        initAxis(chart.getChartData().getAxisYLeft(), LEFT)
+        initAxis(chart.getChartData().getAxisYRight(), RIGHT)
     }
 
     fun resetRenderer() {
@@ -338,22 +338,22 @@ class AxesRenderer(context: Context, private val chart: Chart) {
      * @param canvas canvas
      */
     fun drawInBackground(canvas: Canvas) {
-        var axis = chart.getChartData()!!.getAxisYLeft()
+        var axis = chart.getChartData().getAxisYLeft()
         if (null != axis) {
             prepareAxisToDraw(axis, LEFT)
             drawAxisLines(canvas, axis, LEFT)
         }
-        axis = chart.getChartData()!!.getAxisYRight()
+        axis = chart.getChartData().getAxisYRight()
         if (null != axis) {
             prepareAxisToDraw(axis, RIGHT)
             drawAxisLines(canvas, axis, RIGHT)
         }
-        axis = chart.getChartData()!!.getAxisXBottom()
+        axis = chart.getChartData().getAxisXBottom()
         if (null != axis) {
             prepareAxisToDraw(axis, BOTTOM)
             drawAxisLines(canvas, axis, BOTTOM)
         }
-        axis = chart.getChartData()!!.getAxisXTop()
+        axis = chart.getChartData().getAxisXTop()
         if (null != axis) {
             prepareAxisToDraw(axis, TOP)
             drawAxisLines(canvas, axis, TOP)
@@ -374,19 +374,19 @@ class AxesRenderer(context: Context, private val chart: Chart) {
      * @param canvas canvas
      */
     fun drawInForeground(canvas: Canvas) {
-        var axis = chart.getChartData()!!.getAxisYLeft()
+        var axis = chart.getChartData().getAxisYLeft()
         if (null != axis) {
             drawAxisLabelsAndName(canvas, axis, LEFT)
         }
-        axis = chart.getChartData()!!.getAxisYRight()
+        axis = chart.getChartData().getAxisYRight()
         if (null != axis) {
             drawAxisLabelsAndName(canvas, axis, RIGHT)
         }
-        axis = chart.getChartData()!!.getAxisXBottom()
+        axis = chart.getChartData().getAxisXBottom()
         if (null != axis) {
             drawAxisLabelsAndName(canvas, axis, BOTTOM)
         }
-        axis = chart.getChartData()!!.getAxisXTop()
+        axis = chart.getChartData().getAxisXTop()
         if (null != axis) {
             drawAxisLabelsAndName(canvas, axis, TOP)
         }
