@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
@@ -61,6 +63,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
     }
 
+    @NonNull
     @Override
     public ColumnChartData getChartData() {
         return data;
@@ -104,10 +107,9 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
         this.chartComputator = chartComputator;
     }
 
-    @Nullable
     @Override
-    public ChartTouchHandler setTouchHandler() {
-        return this.touchHandler;
+    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
+        this.touchHandler = touchHandler;
     }
 
     @Override

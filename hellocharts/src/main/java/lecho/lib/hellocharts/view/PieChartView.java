@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
+import org.jetbrains.annotations.NotNull;
+
 import lecho.lib.hellocharts.animation.PieChartRotationAnimator;
 import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV14;
 import lecho.lib.hellocharts.computator.ChartComputator;
@@ -69,6 +71,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
         super.onChartDataChange();
     }
 
+    @NonNull
     @Override
     public ChartData getChartData() {
         return data;
@@ -108,8 +111,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
      * method after size of PieChartView is calculated. In most cases it will probably be easier to use
      * {@link #setCircleFillRatio(float)} to change chart area or just use view padding.
      */
-    public void setCircleOval(RectF orginCircleOval) {
-        pieChartRenderer.setCircleOval(orginCircleOval);
+    public void setCircleOval(RectF originCircleOval) {
+        pieChartRenderer.setCircleOval(originCircleOval);
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
@@ -196,10 +199,9 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
         this.chartComputator = chartComputator;
     }
 
-    @Nullable
     @Override
-    public ChartTouchHandler setTouchHandler() {
-        return touchHandler;
+    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
+        this.touchHandler = touchHandler;
     }
 
     @Override

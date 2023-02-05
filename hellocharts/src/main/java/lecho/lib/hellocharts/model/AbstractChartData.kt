@@ -9,23 +9,39 @@ import lecho.lib.hellocharts.util.ChartUtils.darkenColor
  * Base class for most chart data models.
  */
 abstract class AbstractChartData : ChartData {
+
+    @JvmField
     protected var axisXBottom: Axis? = null
+
+    @JvmField
     protected var axisYLeft: Axis? = null
+
+    @JvmField
     protected var axisXTop: Axis? = null
+
+    @JvmField
     protected var axisYRight: Axis? = null
+
+    @JvmField
     protected var valueLabelTextColor = Color.WHITE
+
+    @JvmField
     protected var valueLabelTextSize = DEFAULT_TEXT_SIZE_SP
+
+    @JvmField
     protected var valueLabelTypeface: Typeface? = null
 
     /**
      * If true each value label will have background rectangle
      */
+    @JvmField
     protected var isValueLabelBackgroundEnabled = true
 
     /**
      * If true and [.isValueLabelBackgroundEnabled] is true each label will have background rectangle and that
      * rectangle will be filled with color specified for given value.
      */
+    @JvmField
     protected var isValueLabelBackgroundAuto = true
 
     /**
@@ -33,6 +49,7 @@ abstract class AbstractChartData : ChartData {
      * will have background rectangle and that rectangle will be filled with this color. Helpful if you want all labels
      * to have the same background color.
      */
+    @JvmField
     protected var valueLabelBackgroundColor = darkenColor(ChartUtils.DEFAULT_DARKEN_COLOR)
 
     constructor()

@@ -59,7 +59,7 @@ class GoodBadChartActivity : HelloChartsActivity() {
             // method.
             var line: Line
 
-            var values: MutableList<PointValue?>
+            var values: MutableList<PointValue>
             val lines: MutableList<Line> = ArrayList()
 
             // First good triangle

@@ -33,6 +33,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
  * @author Leszek Wach
  */
 public abstract class AbstractChartView extends View implements Chart {
+
     protected ChartComputator chartComputator;
     protected AxesRenderer axesRenderer;
     protected ChartTouchHandler touchHandler;
@@ -98,14 +99,14 @@ public abstract class AbstractChartView extends View implements Chart {
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
 
-        if (isInteractive) {
+        if (isInteractive()) {
 
             boolean needInvalidate;
 
-            if (isContainerScrollEnabled) {
-                needInvalidate = touchHandler.handleTouchEvent(event, getParent(), containerScrollType);
+            if (isContainerScrollEnabled()) {
+                needInvalidate = getTouchHandler().handleTouchEvent(event, getParent(), containerScrollType);
             } else {
-                needInvalidate = touchHandler.handleTouchEvent(event);
+                needInvalidate = getTouchHandler().handleTouchEvent(event);
             }
 
             if (needInvalidate) {
@@ -146,15 +147,15 @@ public abstract class AbstractChartView extends View implements Chart {
 
     @Override
     public void animationDataUpdate(float scale) {
-        chartData.update(scale);
-        chartRenderer.onChartViewportChanged();
+        getChartData().update(scale);
+        getChartRenderer().onChartViewportChanged();
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
     @Override
     public void animationDataFinished() {
-        chartData.finish();
-        chartRenderer.onChartViewportChanged();
+        getChartData().finish();
+        getChartRenderer().onChartViewportChanged();
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
@@ -173,18 +174,20 @@ public abstract class AbstractChartView extends View implements Chart {
         chartComputator.setViewPortChangeListener(viewportChangeListener);
     }
 
+    @NonNull
     @Override
     public ChartRenderer getChartRenderer() {
         return chartRenderer;
     }
 
     @Override
-    public void setChartRenderer(ChartRenderer renderer) {
+    public void setChartRenderer(@NonNull ChartRenderer renderer) {
         chartRenderer = renderer;
         resetRendererAndTouchHandler();
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
+    @NonNull
     @Override
     public AxesRenderer getAxesRenderer() {
         return axesRenderer;
@@ -196,6 +199,7 @@ public abstract class AbstractChartView extends View implements Chart {
         return chartComputator;
     }
 
+    @NonNull
     @Override
     public ChartTouchHandler getTouchHandler() {
         return touchHandler;
@@ -387,7 +391,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
     @Override
     public void setCurrentViewportWithAnimation(Viewport targetViewport) {
-        if (null != targetViewport) {
+        if (null != targetViewport && getCurrentViewport() != null) {
             viewportAnimator.cancelAnimation();
             viewportAnimator.startAnimation(getCurrentViewport(), targetViewport);
         }
@@ -396,7 +400,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
     @Override
     public void setCurrentViewportWithAnimation(Viewport targetViewport, long duration) {
-        if (null != targetViewport) {
+        if (null != targetViewport && getCurrentViewport() != null) {
             viewportAnimator.cancelAnimation();
             viewportAnimator.startAnimation(getCurrentViewport(), targetViewport, duration);
         }
@@ -500,9 +504,15 @@ public abstract class AbstractChartView extends View implements Chart {
         final Viewport currentViewport = getCurrentViewport();
         final Viewport maximumViewport = getMaximumViewport();
         if (direction < 0) {
-            return currentViewport.left > maximumViewport.left;
+            if (currentViewport != null && maximumViewport != null) {
+                 return currentViewport.left > maximumViewport.left;
+            } else {
+                return false;
+            }
+        } else if (currentViewport != null && maximumViewport != null) {
+                return currentViewport.right < maximumViewport.right;
         } else {
-            return currentViewport.right < maximumViewport.right;
+            return false;
         }
     }
 }

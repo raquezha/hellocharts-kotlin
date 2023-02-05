@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
+import org.jetbrains.annotations.NotNull;
+
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
@@ -64,6 +66,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
         super.onChartDataChange();
     }
 
+    @NonNull
     @Override
     public ChartData getChartData() {
         return data;
@@ -117,10 +120,9 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
         this.chartComputator = chartComputator;
     }
 
-    @Nullable
     @Override
-    public ChartTouchHandler setTouchHandler() {
-        return touchHandler;
+    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
+        this.touchHandler = touchHandler;
     }
 
     @Override

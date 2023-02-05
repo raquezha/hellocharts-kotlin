@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.listener.ComboLineColumnChartOnValueSelectListener;
@@ -66,6 +68,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
         super.onChartDataChange();
     }
 
+    @NonNull
     @Override
     public ChartData getChartData() {
         return data;
@@ -134,10 +137,9 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
         this.chartComputator = chartComputator;
     }
 
-    @Nullable
     @Override
-    public ChartTouchHandler setTouchHandler() {
-        return touchHandler;
+    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
+        this.touchHandler = touchHandler;
     }
 
     @Override

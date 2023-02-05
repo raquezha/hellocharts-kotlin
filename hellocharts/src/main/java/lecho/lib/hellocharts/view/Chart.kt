@@ -24,25 +24,25 @@ interface Chart {
      * Returns generic chart data. For specific class call get*ChartData method from data provider
      * implementation.
      */
-    fun getChartData(): ChartData?
+    fun getChartData(): ChartData
 
-    fun setChartData(chartData: ChartData?)
+    fun setChartData(chartData: ChartData)
 
-    fun getChartRenderer(): ChartRenderer?
+    fun getChartRenderer(): ChartRenderer
 
-    fun setChartRenderer(chartRenderer: ChartRenderer?)
+    fun setChartRenderer(chartRenderer: ChartRenderer)
 
-    fun getAxesRenderer(): AxesRenderer?
+    fun getAxesRenderer(): AxesRenderer
 
-    fun setAxesRenderer(axesRenderer: AxesRenderer?)
+    fun setAxesRenderer(axesRenderer: AxesRenderer)
 
     fun setChartComputator(chartComputator: ChartComputator)
 
     fun getChartComputator(): ChartComputator
 
-    fun getTouchHandler(): ChartTouchHandler?
+    fun getTouchHandler(): ChartTouchHandler
 
-    fun setTouchHandler(): ChartTouchHandler?
+    fun setTouchHandler(touchHandler: ChartTouchHandler)
 
     /**
      * Updates chart data with given scale. Called during chart data animation update.

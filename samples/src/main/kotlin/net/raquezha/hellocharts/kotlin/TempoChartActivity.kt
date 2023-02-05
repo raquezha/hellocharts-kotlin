@@ -55,7 +55,7 @@ class TempoChartActivity : HelloChartsActivity() {
             val sub = minHeight * scale / 2
             val numValues = 52
             var line: Line
-            var values: MutableList<PointValue?>
+            var values: MutableList<PointValue>
             val lines: MutableList<Line> = ArrayList()
 
             // Height line, add it as first line to be drawn in the background.

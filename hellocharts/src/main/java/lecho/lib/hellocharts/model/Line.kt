@@ -11,36 +11,51 @@ import lecho.lib.hellocharts.util.ChartUtils.darkenColor
  */
 @Suppress("unused")
 class Line {
+
+    @JvmField
     var color = ChartUtils.DEFAULT_COLOR
 
-    private var pointColor = UNINITIALIZED
+    @JvmField
+    var pointColor = UNINITIALIZED
 
+    @JvmField
     var darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR
 
 
     /**
      * Transparency of area when line is filled. *
      */
+    @JvmField
     var areaTransparency = DEFAULT_AREA_TRANSPARENCY
 
+    @JvmField
     var strokeWidth = DEFAULT_LINE_STROKE_WIDTH_DP
 
+    @JvmField
     var pointRadius = DEFAULT_POINT_RADIUS_DP
 
+    @JvmField
     var gradientToTransparent = false
 
+    @JvmField
     var hasPoints = true
 
+    @JvmField
     var hasLines = true
 
+    @JvmField
     var hasLabels = false
 
+    @JvmField
     var hasLabelsOnlyForSelected = false
 
+    @JvmField
     var isCubic = false
 
+    @JvmField
     var isSquare = false
 
+    @JvmField
     var isFilled = false
 
     var shape = ValueShape.CIRCLE
@@ -52,9 +67,11 @@ class Line {
     @JvmField
     var pathEffect: PathEffect? = null
 
+    @JvmField
     var formatter: LineChartValueFormatter = SimpleLineChartValueFormatter()
 
-    private var values: MutableList<PointValue> = ArrayList()
+    @JvmField
+    var values: MutableList<PointValue> = ArrayList()
 
     constructor()
 

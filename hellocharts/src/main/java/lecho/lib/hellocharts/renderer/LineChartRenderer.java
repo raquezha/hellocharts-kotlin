@@ -114,9 +114,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
         for (Line line : data.getLines()) {
             if (line.hasLines()) {
-                if (line.isCubic()) {
+                if (line.isCubic) {
                     drawSmoothPath(drawCanvas, line);
-                } else if (line.isSquare()) {
+                } else if (line.isSquare) {
                     drawSquarePath(drawCanvas, line);
                 } else {
                     drawPath(drawCanvas, line);
@@ -156,7 +156,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         int lineIndex = 0;
         for (Line line : data.getLines()) {
             if (checkIfShouldDrawPoints(line)) {
-                int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
+                int pointRadius = ChartUtils.dp2px(density, line.pointRadius);
                 int valueIndex = 0;
                 for (PointValue pointValue : line.getValues()) {
                     final float rawValueX = computator.computeRawX(pointValue.getX());
@@ -201,7 +201,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         final LineChartData data = dataProvider.getLineChartData();
         for (Line line : data.getLines()) {
             if (checkIfShouldDrawPoints(line)) {
-                int margin = line.getPointRadius() + DEFAULT_TOUCH_TOLERANCE_MARGIN_DP;
+                int margin = line.pointRadius + DEFAULT_TOUCH_TOLERANCE_MARGIN_DP;
                 if (margin > contentAreaMargin) {
                     contentAreaMargin = margin;
                 }
@@ -234,7 +234,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
         canvas.drawPath(path, linePaint);
 
-        if (line.isFilled()) {
+        if (line.isFilled) {
             drawArea(canvas, line);
         }
 
@@ -266,7 +266,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
         canvas.drawPath(path, linePaint);
 
-        if (line.isFilled()) {
+        if (line.isFilled) {
             drawArea(canvas, line);
         }
 
@@ -352,15 +352,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
 
         canvas.drawPath(path, linePaint);
-        if (line.isFilled()) {
+        if (line.isFilled) {
             drawArea(canvas, line);
         }
         path.reset();
     }
 
     private void prepareLinePaint(final Line line) {
-        linePaint.setStrokeWidth(ChartUtils.dp2px(density, line.getStrokeWidth()));
-        linePaint.setColor(line.getColor());
+        linePaint.setStrokeWidth(ChartUtils.dp2px(density, line.strokeWidth));
+        linePaint.setColor(line.color);
         linePaint.setPathEffect(line.pathEffect);
         linePaint.setShader(null);
     }
@@ -372,7 +372,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         pointPaint.setColor(line.getPointColor());
         int valueIndex = 0;
         for (PointValue pointValue : line.getValues()) {
-            int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
+            int pointRadius = ChartUtils.dp2px(density, line.pointRadius)   ;
             final float rawX = computator.computeRawX(pointValue.getX());
             final float rawY = computator.computeRawY(pointValue.getY());
             if (computator.isWithinContentRect(rawX, rawY, checkPrecision)) {
@@ -418,11 +418,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
         drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
     }
 
-    private void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
-                                int valueIndex) {
+    private void highlightPoint(
+            Canvas canvas,
+            Line line,
+            PointValue pointValue,
+            float rawX,
+            float rawY,
+            int lineIndex,
+            int valueIndex) {
         if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
-            int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
-            pointPaint.setColor(line.getDarkenColor());
+            int pointRadius = ChartUtils.dp2px(density, line.pointRadius);
+            pointPaint.setColor(line.darkenColor);
             drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchToleranceMargin);
             if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {
                 drawLabel(canvas, line, pointValue, rawX, rawY, pointRadius + labelOffset);
@@ -432,7 +438,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
         final Rect contentRect = computator.getContentRectMinusAllMargins();
-        final int numChars = line.getFormatter().formatChartValue(labelBuffer, pointValue);
+        final int numChars = line.formatter.formatChartValue(labelBuffer, pointValue);
         if (numChars == 0) {
             // No need to draw empty label
             return;
@@ -472,8 +478,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
 
         labelBackgroundRect.set(left, top, right, bottom);
-        drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars,
-                line.getDarkenColor());
+        drawLabelTextAndBackground(
+                canvas,
+                labelBuffer,
+                labelBuffer.length - numChars,
+                numChars,
+                line.darkenColor
+        );
     }
 
     private void drawArea(Canvas canvas, Line line) {
@@ -496,11 +507,18 @@ public class LineChartRenderer extends AbstractChartRenderer {
         path.close();
 
         linePaint.setStyle(Paint.Style.FILL);
-        linePaint.setAlpha(line.getAreaTransparency());
-        linePaint.setShader(line.getGradientToTransparent() ?
-                new LinearGradient(0, 0, 0, canvas.getHeight(), line.getColor(),
-                        line.getColor() & 0x00ffffff, Shader.TileMode.MIRROR) :
-                null);
+        linePaint.setAlpha(line.areaTransparency);
+        linePaint.setShader(line.gradientToTransparent ?
+                new LinearGradient(
+                        0,
+                        0,
+                        0,
+                        canvas.getHeight(),
+                        line.color,
+                        line.color & 0x00ffffff,
+                        Shader.TileMode.MIRROR
+                ) : null
+        );
         canvas.drawPath(path, linePaint);
         linePaint.setStyle(Paint.Style.STROKE);
     }
