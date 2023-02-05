@@ -27,7 +27,6 @@ open class ColumnChartView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : AbstractChartView(context, attrs, defStyle), ColumnChartDataProvider {
 
-
     @JvmField
     var data: ColumnChartData? = null
 
@@ -55,16 +54,18 @@ open class ColumnChartView @JvmOverloads constructor(
     }
 
     override fun callTouchListener() {
-        val selectedValue = chartRenderer.getSelectedValue()
-        if (selectedValue.isSet) {
-            val value = data!!.columns[selectedValue.firstIndex].values[selectedValue.secondIndex]
-            onValueTouchListener.onValueSelected(
-                selectedValue.firstIndex,
-                selectedValue.secondIndex,
-                value
-            )
-        } else {
-            onValueTouchListener.onValueDeselected()
+        chartRenderer?.getSelectedValue()?.let { selectedValue ->
+            if (selectedValue.isSet) {
+                val value =
+                    data!!.columns[selectedValue.firstIndex].values[selectedValue.secondIndex]
+                onValueTouchListener.onValueSelected(
+                    selectedValue.firstIndex,
+                    selectedValue.secondIndex,
+                    value
+                )
+            } else {
+                onValueTouchListener.onValueDeselected()
+            }
         }
     }
 

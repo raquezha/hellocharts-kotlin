@@ -1,491 +1,421 @@
-package lecho.lib.hellocharts.view;
+package lecho.lib.hellocharts.view
 
-import android.content.Context;
-import android.graphics.Canvas;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-
-import lecho.lib.hellocharts.animation.ChartAnimationListener;
-import lecho.lib.hellocharts.animation.ChartDataAnimator;
-import lecho.lib.hellocharts.animation.ChartDataAnimatorV14;
-import lecho.lib.hellocharts.animation.ChartViewportAnimator;
-import lecho.lib.hellocharts.animation.ChartViewportAnimatorV14;
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.gesture.ContainerScrollType;
-import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.listener.ViewportChangeListener;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.renderer.AxesRenderer;
-import lecho.lib.hellocharts.renderer.ChartRenderer;
-import lecho.lib.hellocharts.util.ChartUtils;
+import android.content.Context
+import android.graphics.Canvas
+import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.View
+import androidx.core.view.ViewCompat
+import lecho.lib.hellocharts.animation.ChartAnimationListener
+import lecho.lib.hellocharts.animation.ChartDataAnimator
+import lecho.lib.hellocharts.animation.ChartDataAnimatorV14
+import lecho.lib.hellocharts.animation.ChartViewportAnimator
+import lecho.lib.hellocharts.animation.ChartViewportAnimatorV14
+import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.gesture.ChartTouchHandler
+import lecho.lib.hellocharts.gesture.ContainerScrollType
+import lecho.lib.hellocharts.gesture.ZoomType
+import lecho.lib.hellocharts.listener.ViewportChangeListener
+import lecho.lib.hellocharts.model.ChartData
+import lecho.lib.hellocharts.model.SelectedValue
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.renderer.AxesRenderer
+import lecho.lib.hellocharts.renderer.ChartRenderer
+import lecho.lib.hellocharts.util.ChartUtils
 
 /**
  * Abstract class for charts views.
  *
  * @author Leszek Wach
  */
-public abstract class AbstractChartView extends View implements Chart {
+abstract class AbstractChartView @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr), Chart {
 
-    protected ChartComputator chartComputator;
-    protected AxesRenderer axesRenderer;
-    protected ChartTouchHandler touchHandler;
-    protected ChartRenderer chartRenderer;
-    protected ChartData chartData;
-    protected ChartDataAnimator dataAnimator;
-    protected ChartViewportAnimator viewportAnimator;
-    protected boolean isInteractive = true;
-    protected boolean isContainerScrollEnabled = false;
-    protected ContainerScrollType containerScrollType;
+    @JvmField
+    var chartComputator: ChartComputator = ChartComputator()
 
-    public AbstractChartView(Context context) {
-        this(context, null, 0);
+    @JvmField
+    var axesRenderer: AxesRenderer
+
+    @JvmField
+    var touchHandler: ChartTouchHandler
+
+    @JvmField
+    var chartRenderer: ChartRenderer? = null
+
+    @JvmField
+    var chartData: ChartData? = null
+
+    @JvmField
+    var dataAnimator: ChartDataAnimator
+
+    @JvmField
+    var viewportAnimator: ChartViewportAnimator
+
+    @JvmField
+    var isInteractive = true
+
+    @JvmField
+    var isContainerScrollEnabled = false
+
+    @JvmField
+    var containerScrollType: ContainerScrollType? = null
+
+    init {
+        touchHandler = ChartTouchHandler(context, this)
+        axesRenderer = AxesRenderer(context!!, this)
+        viewportAnimator = ChartViewportAnimatorV14(this)
+        dataAnimator = ChartDataAnimatorV14(this)
     }
 
-    public AbstractChartView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight)
+        chartComputator.setContentRect(
+            getWidth(), getHeight(), paddingLeft, paddingTop, paddingRight,
+            paddingBottom
+        )
+        chartRenderer?.onChartSizeChanged()
+        axesRenderer.onChartSizeChanged()
     }
 
-    public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        chartComputator = new ChartComputator();
-        touchHandler = new ChartTouchHandler(context, this);
-        axesRenderer = new AxesRenderer(context, this);
-
-        this.viewportAnimator = new ChartViewportAnimatorV14(this);
-        this.dataAnimator = new ChartDataAnimatorV14(this);
-
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    @Override
-    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
-        super.onSizeChanged(width, height, oldWidth, oldHeight);
-        chartComputator.setContentRect(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
-                getPaddingBottom());
-        chartRenderer.onChartSizeChanged();
-        axesRenderer.onChartSizeChanged();
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        if (isEnabled()) {
-            axesRenderer.drawInBackground(canvas);
-            int clipRestoreCount = canvas.save();
-            canvas.clipRect(chartComputator.getContentRectMinusAllMargins());
-            chartRenderer.draw(canvas);
-            canvas.restoreToCount(clipRestoreCount);
-            chartRenderer.drawUnClipped(canvas);
-            axesRenderer.drawInForeground(canvas);
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        if (isEnabled) {
+            axesRenderer.drawInBackground(canvas)
+            val clipRestoreCount = canvas.save()
+            canvas.clipRect(chartComputator.contentRectMinusAllMargins)
+            chartRenderer?.draw(canvas)
+            canvas.restoreToCount(clipRestoreCount)
+            chartRenderer?.drawUnClipped(canvas)
+            axesRenderer.drawInForeground(canvas)
         } else {
-            canvas.drawColor(ChartUtils.DEFAULT_COLOR);
+            canvas.drawColor(ChartUtils.DEFAULT_COLOR)
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-
-        if (isInteractive()) {
-
-            boolean needInvalidate;
-
-            if (isContainerScrollEnabled()) {
-                needInvalidate = getTouchHandler().handleTouchEvent(event, getParent(), containerScrollType);
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        super.onTouchEvent(event)
+        return if (isInteractive()) {
+            val needInvalidate: Boolean = if (isContainerScrollEnabled()) {
+                getTouchHandler().handleTouchEvent(event, parent, containerScrollType)
             } else {
-                needInvalidate = getTouchHandler().handleTouchEvent(event);
+                getTouchHandler().handleTouchEvent(event)
             }
-
             if (needInvalidate) {
-                ViewCompat.postInvalidateOnAnimation(this);
+                ViewCompat.postInvalidateOnAnimation(this)
             }
-
-            return true;
+            true
         } else {
-
-            return false;
+            false
         }
     }
 
-    @Override
-    public void computeScroll() {
-        super.computeScroll();
+    override fun computeScroll() {
+        super.computeScroll()
         if (isInteractive) {
             if (touchHandler.computeScroll()) {
-                ViewCompat.postInvalidateOnAnimation(this);
+                ViewCompat.postInvalidateOnAnimation(this)
             }
         }
     }
 
-    @Override
-    public void startDataAnimation() {
-        dataAnimator.startAnimation(Long.MIN_VALUE);
+    override fun startDataAnimation() {
+        dataAnimator.startAnimation(Long.MIN_VALUE)
     }
 
-    @Override
-    public void startDataAnimation(long duration) {
-        dataAnimator.startAnimation(duration);
+    override fun startDataAnimation(duration: Long) {
+        dataAnimator.startAnimation(duration)
     }
 
-    @Override
-    public void cancelDataAnimation() {
-        dataAnimator.cancelAnimation();
+    override fun cancelDataAnimation() {
+        dataAnimator.cancelAnimation()
     }
 
-    @Override
-    public void animationDataUpdate(float scale) {
-        getChartData().update(scale);
-        getChartRenderer().onChartViewportChanged();
-        ViewCompat.postInvalidateOnAnimation(this);
+    override fun animationDataUpdate(scale: Float) {
+        getChartData().update(scale)
+        getChartRenderer()?.onChartViewportChanged()
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public void animationDataFinished() {
-        getChartData().finish();
-        getChartRenderer().onChartViewportChanged();
-        ViewCompat.postInvalidateOnAnimation(this);
+    override fun animationDataFinished() {
+        getChartData().finish()
+        getChartRenderer()?.onChartViewportChanged()
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public void setDataAnimationListener(ChartAnimationListener animationListener) {
-        dataAnimator.setChartAnimationListener(animationListener);
+    override fun setDataAnimationListener(animationListener: ChartAnimationListener?) {
+        dataAnimator.setChartAnimationListener(animationListener)
     }
 
-    @Override
-    public void setViewportAnimationListener(ChartAnimationListener animationListener) {
-        viewportAnimator.setChartAnimationListener(animationListener);
+    override fun setViewportAnimationListener(animationListener: ChartAnimationListener?) {
+        viewportAnimator.setChartAnimationListener(animationListener)
     }
 
-    @Override
-    public void setViewportChangeListener(ViewportChangeListener viewportChangeListener) {
-        chartComputator.setViewPortChangeListener(viewportChangeListener);
+    override fun setViewportChangeListener(viewportChangeListener: ViewportChangeListener?) {
+        chartComputator.setViewPortChangeListener(viewportChangeListener)
     }
 
-    @NonNull
-    @Override
-    public ChartRenderer getChartRenderer() {
-        return chartRenderer;
+    override fun getChartRenderer(): ChartRenderer? {
+        return chartRenderer
     }
 
-    @Override
-    public void setChartRenderer(@NonNull ChartRenderer renderer) {
-        chartRenderer = renderer;
-        resetRendererAndTouchHandler();
-        ViewCompat.postInvalidateOnAnimation(this);
+    final override fun setChartRenderer(chartRenderer: ChartRenderer) {
+        this.chartRenderer = chartRenderer
+        resetRendererAndTouchHandler()
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @NonNull
-    @Override
-    public AxesRenderer getAxesRenderer() {
-        return axesRenderer;
+    override fun getAxesRenderer(): AxesRenderer {
+        return axesRenderer
     }
 
-    @NonNull
-    @Override
-    public ChartComputator getChartComputator() {
-        return chartComputator;
+    override fun getChartComputator(): ChartComputator {
+        return chartComputator
     }
 
-    @NonNull
-    @Override
-    public ChartTouchHandler getTouchHandler() {
-        return touchHandler;
+    override fun getTouchHandler(): ChartTouchHandler {
+        return touchHandler
     }
 
-    @Override
-    public boolean isInteractive() {
-        return isInteractive;
+    override fun isInteractive(): Boolean {
+        return isInteractive
     }
 
-    @Override
-    public void setInteractive(boolean isInteractive) {
-        this.isInteractive = isInteractive;
+    override fun setInteractive(isInteractive: Boolean) {
+        this.isInteractive = isInteractive
     }
 
-    @Override
-    public boolean isZoomEnabled() {
-        return touchHandler.isZoomEnabled;
+    override fun isZoomEnabled(): Boolean {
+        return touchHandler.isZoomEnabled
     }
 
-    @Override
-    public void setZoomEnabled(boolean isZoomEnabled) {
-        touchHandler.isZoomEnabled = isZoomEnabled;
+    override fun setZoomEnabled(isEnabled: Boolean) {
+        touchHandler.isZoomEnabled = isEnabled
     }
 
-    @Override
-    public boolean isScrollEnabled() {
-        return touchHandler.isScrollEnabled;
+    override fun isScrollEnabled(): Boolean {
+        return touchHandler.isScrollEnabled
     }
 
-    @Override
-    public void setScrollEnabled(boolean isScrollEnabled) {
-        touchHandler.isScrollEnabled = isScrollEnabled;
+    override fun setScrollEnabled(isEnabled: Boolean) {
+        touchHandler.isScrollEnabled = isEnabled
     }
 
-    @Override
-    public void moveTo(float x, float y) {
-        Viewport scrollViewport = computeScrollViewport(x, y);
-        setCurrentViewport(scrollViewport);
+    override fun moveTo(x: Float, y: Float) {
+        val scrollViewport = computeScrollViewport(x, y)
+        setCurrentViewport(scrollViewport)
     }
 
-    @Override
-    public void moveToWithAnimation(float x, float y) {
-        Viewport scrollViewport = computeScrollViewport(x, y);
-        setCurrentViewportWithAnimation(scrollViewport);
+    override fun moveToWithAnimation(x: Float, y: Float) {
+        val scrollViewport = computeScrollViewport(x, y)
+        setCurrentViewportWithAnimation(scrollViewport)
     }
 
-    private Viewport computeScrollViewport(float x, float y) {
-        Viewport maxViewport = getMaximumViewport();
-        Viewport currentViewport = getCurrentViewport();
-        Viewport scrollViewport = new Viewport(currentViewport);
-
+    private fun computeScrollViewport(x: Float, y: Float): Viewport {
+        val maxViewport = getMaximumViewport()
+        val currentViewport = getCurrentViewport()
+        val scrollViewport = Viewport(currentViewport)
         if (maxViewport != null && maxViewport.contains(x, y)) {
-            final float width = currentViewport != null ? currentViewport.width() : 0;
-            final float height = currentViewport != null ? currentViewport.height() : 0;
-
-            final float halfWidth = width / 2;
-            final float halfHeight = height / 2;
-
-            float left = x - halfWidth;
-            float top = y + halfHeight;
-
-            left = Math.max(maxViewport.left, Math.min(left, maxViewport.right - width));
-            top = Math.max(maxViewport.bottom + height, Math.min(top, maxViewport.top));
-
-            scrollViewport.set(left, top, left + width, top - height);
+            val width: Float = currentViewport?.width() ?: 0f
+            val height: Float = currentViewport?.height() ?: 0f
+            val halfWidth = width / 2
+            val halfHeight = height / 2
+            var left = x - halfWidth
+            var top = y + halfHeight
+            left = maxViewport.left.coerceAtLeast(left.coerceAtMost(maxViewport.right - width))
+            top = (maxViewport.bottom + height).coerceAtLeast(top.coerceAtMost(maxViewport.top))
+            scrollViewport[left, top, left + width] = top - height
         }
-
-        return scrollViewport;
+        return scrollViewport
     }
 
-    @Override
-    public boolean isValueTouchEnabled() {
-        return touchHandler.isValueTouchEnabled;
+    override fun isValueTouchEnabled(): Boolean {
+        return touchHandler.isValueTouchEnabled
     }
 
-    @Override
-    public void setValueTouchEnabled(boolean isValueTouchEnabled) {
-        touchHandler.isValueTouchEnabled = isValueTouchEnabled;
-
+    override fun setValueTouchEnabled(isEnabled: Boolean) {
+        touchHandler.isValueTouchEnabled = isEnabled
     }
 
-    @Override
-    public ZoomType getZoomType() {
-        return touchHandler.getZoomType();
+    override fun getZoomType(): ZoomType? {
+        return touchHandler.zoomType
     }
 
-    @Override
-    public void setZoomType(ZoomType zoomType) {
-        touchHandler.setZoomType(zoomType);
+    override fun setZoomType(zoomType: ZoomType?) {
+        touchHandler.zoomType = zoomType!!
     }
 
-    @Override
-    public float getMaxZoom() {
-        return chartComputator.getMaximumZoom();
+    override fun getMaxZoom(): Float {
+        return chartComputator.getMaximumZoom()
     }
 
-    @Override
-    public void setMaxZoom(float maxZoom) {
-        chartComputator.setMaximumZoom(maxZoom);
-        ViewCompat.postInvalidateOnAnimation(this);
+    override fun setMaxZoom(zoomLevel: Float) {
+        chartComputator.setMaximumZoom(zoomLevel)
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public float getZoomLevel() {
-        Viewport maxViewport = getMaximumViewport();
-        Viewport currentViewport = getCurrentViewport();
-
-        return Math.max((maxViewport != null ? maxViewport.width() : 0) / (currentViewport != null ? currentViewport.width() : 0), (maxViewport != null ? maxViewport.height() : 0) / (currentViewport != null ? currentViewport.height() : 0));
+    override fun getZoomLevel(): Float {
+        val maxViewport = getMaximumViewport()
+        val currentViewport = getCurrentViewport()
+        return ((maxViewport?.width() ?: 0f) / (currentViewport?.width() ?: 0f)).coerceAtLeast(
+            ((maxViewport?.height() ?: 0f)) / ((currentViewport?.height() ?: 0f))
+        )
     }
 
-    @Override
-    public void setZoomLevel(float x, float y, float zoomLevel) {
-        Viewport zoomViewport = computeZoomViewport(x, y, zoomLevel);
-        setCurrentViewport(zoomViewport);
+    override fun setZoomLevel(x: Float, y: Float, zoomLevel: Float) {
+        val zoomViewport = computeZoomViewport(x, y, zoomLevel)
+        setCurrentViewport(zoomViewport)
     }
 
-    @Override
-    public void setZoomLevelWithAnimation(float x, float y, float zoomLevel) {
-        Viewport zoomViewport = computeZoomViewport(x, y, zoomLevel);
-        setCurrentViewportWithAnimation(zoomViewport);
+    override fun setZoomLevelWithAnimation(x: Float, y: Float, zoomLevel: Float) {
+        val zoomViewport = computeZoomViewport(x, y, zoomLevel)
+        setCurrentViewportWithAnimation(zoomViewport)
     }
 
-    private Viewport computeZoomViewport(float x, float y, float zoomLevel) {
-        final Viewport maxViewport = getMaximumViewport();
-        Viewport zoomViewport = new Viewport(getMaximumViewport());
-
+    private fun computeZoomViewport(x: Float, y: Float, zoomLevel: Float): Viewport {
+        var level = zoomLevel
+        val maxViewport = getMaximumViewport()
+        val zoomViewport = Viewport(getMaximumViewport())
         if (maxViewport != null && maxViewport.contains(x, y)) {
-
-            if (zoomLevel < 1) {
-                zoomLevel = 1;
-            } else if (zoomLevel > getMaxZoom()) {
-                zoomLevel = getMaxZoom();
+            if (level < 1) {
+                level = 1f
+            } else if (level > getMaxZoom()) {
+                level = getMaxZoom()
             }
-
-            final float newWidth = zoomViewport.width() / zoomLevel;
-            final float newHeight = zoomViewport.height() / zoomLevel;
-
-            final float halfWidth = newWidth / 2;
-            final float halfHeight = newHeight / 2;
-
-            float left = x - halfWidth;
-            float right = x + halfWidth;
-            float top = y + halfHeight;
-            float bottom = y - halfHeight;
-
+            val newWidth = zoomViewport.width() / level
+            val newHeight = zoomViewport.height() / level
+            val halfWidth = newWidth / 2
+            val halfHeight = newHeight / 2
+            var left = x - halfWidth
+            var right = x + halfWidth
+            var top = y + halfHeight
+            var bottom = y - halfHeight
             if (left < maxViewport.left) {
-                left = maxViewport.left;
-                right = left + newWidth;
+                left = maxViewport.left
+                right = left + newWidth
             } else if (right > maxViewport.right) {
-                right = maxViewport.right;
-                left = right - newWidth;
+                right = maxViewport.right
+                left = right - newWidth
             }
-
             if (top > maxViewport.top) {
-                top = maxViewport.top;
-                bottom = top - newHeight;
+                top = maxViewport.top
+                bottom = top - newHeight
             } else if (bottom < maxViewport.bottom) {
-                bottom = maxViewport.bottom;
-                top = bottom + newHeight;
+                bottom = maxViewport.bottom
+                top = bottom + newHeight
             }
-
-            ZoomType zoomType = getZoomType();
-            if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
-                zoomViewport.set(left, top, right, bottom);
-            } else if (ZoomType.HORIZONTAL == zoomType) {
-                zoomViewport.left = left;
-                zoomViewport.right = right;
-            } else if (ZoomType.VERTICAL == zoomType) {
-                zoomViewport.top = top;
-                zoomViewport.bottom = bottom;
+            val zoomType = getZoomType()
+            if (ZoomType.HORIZONTAL_AND_VERTICAL === zoomType) {
+                zoomViewport[left, top, right] = bottom
+            } else if (ZoomType.HORIZONTAL === zoomType) {
+                zoomViewport.left = left
+                zoomViewport.right = right
+            } else if (ZoomType.VERTICAL === zoomType) {
+                zoomViewport.top = top
+                zoomViewport.bottom = bottom
             }
-
         }
-        return zoomViewport;
+        return zoomViewport
     }
 
-    @Nullable
-    @Override
-    public Viewport getMaximumViewport() {
-        return chartRenderer.getMaximumViewport();
+    override fun getMaximumViewport(): Viewport? {
+        return chartRenderer?.getMaximumViewport()
     }
 
-    @Override
-    public void setMaximumViewport(Viewport maxViewport) {
-        chartRenderer.setMaximumViewport(maxViewport);
-        ViewCompat.postInvalidateOnAnimation(this);
+    override fun setMaximumViewport(maxViewport: Viewport?) {
+        chartRenderer?.setMaximumViewport(maxViewport)
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public void setCurrentViewportWithAnimation(Viewport targetViewport) {
+    override fun setCurrentViewportWithAnimation(targetViewport: Viewport?) {
         if (null != targetViewport && getCurrentViewport() != null) {
-            viewportAnimator.cancelAnimation();
-            viewportAnimator.startAnimation(getCurrentViewport(), targetViewport);
+            viewportAnimator.cancelAnimation()
+            viewportAnimator.startAnimation(getCurrentViewport()!!, targetViewport)
         }
-        ViewCompat.postInvalidateOnAnimation(this);
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public void setCurrentViewportWithAnimation(Viewport targetViewport, long duration) {
+    override fun setCurrentViewportWithAnimation(targetViewport: Viewport?, duration: Long) {
         if (null != targetViewport && getCurrentViewport() != null) {
-            viewportAnimator.cancelAnimation();
-            viewportAnimator.startAnimation(getCurrentViewport(), targetViewport, duration);
+            viewportAnimator.cancelAnimation()
+            viewportAnimator.startAnimation(getCurrentViewport()!!, targetViewport, duration)
         }
-        ViewCompat.postInvalidateOnAnimation(this);
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-
-    @Override
-    @Nullable
-    public Viewport getCurrentViewport() {
-        return getChartRenderer().getCurrentViewport();
+    override fun getCurrentViewport(): Viewport? {
+        return getChartRenderer()?.getCurrentViewport()
     }
 
-    @Override
-    public void setCurrentViewport(Viewport targetViewport) {
-        if (null != targetViewport) {
-            chartRenderer.setCurrentViewport(targetViewport);
+    override fun setCurrentViewport(viewport: Viewport?) {
+        if (null != viewport) {
+            chartRenderer?.setCurrentViewport(viewport)
         }
-        ViewCompat.postInvalidateOnAnimation(this);
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public void resetViewports() {
-        chartRenderer.setMaximumViewport(null);
-        chartRenderer.setCurrentViewport(null);
+    override fun resetViewports() {
+        chartRenderer?.setMaximumViewport(null)
+        chartRenderer?.setCurrentViewport(null)
     }
 
-    @Override
-    public boolean isViewportCalculationEnabled() {
-        return chartRenderer.isViewportCalculationEnabled();
+    override fun isViewportCalculationEnabled(): Boolean {
+        return chartRenderer?.isViewportCalculationEnabled() ?: false
     }
 
-    @Override
-    public void setViewportCalculationEnabled(boolean isEnabled) {
-        chartRenderer.setViewportCalculationEnabled(isEnabled);
+    override fun setViewportCalculationEnabled(isEnabled: Boolean) {
+        chartRenderer?.setViewportCalculationEnabled(isEnabled)
     }
 
-    @Override
-    public boolean isValueSelectionEnabled() {
-        return touchHandler.isValueSelectionEnabled;
+    override fun isValueSelectionEnabled(): Boolean {
+        return touchHandler.isValueSelectionEnabled
     }
 
-    @Override
-    public void setValueSelectionEnabled(boolean isValueSelectionEnabled) {
-        touchHandler.isValueSelectionEnabled = isValueSelectionEnabled;
+    override fun setValueSelectionEnabled(isEnabled: Boolean) {
+        touchHandler.isValueSelectionEnabled = isEnabled
     }
 
-    @Override
-    public void setSelectedValue(SelectedValue selectedValue) {
-        chartRenderer.selectValue(selectedValue);
-        callTouchListener();
-        ViewCompat.postInvalidateOnAnimation(this);
+    override fun setSelectedValue(selectedValue: SelectedValue?) {
+        chartRenderer?.selectValue(selectedValue!!)
+        callTouchListener()
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    @Override
-    public SelectedValue getSelectedValue() {
-        return chartRenderer.getSelectedValue();
+    override fun getSelectedValue(): SelectedValue? {
+        return chartRenderer?.getSelectedValue()
     }
 
-    @Override
-    public boolean isContainerScrollEnabled() {
-        return isContainerScrollEnabled;
+    override fun isContainerScrollEnabled(): Boolean {
+        return isContainerScrollEnabled
     }
 
-    @Override
-    public void setContainerScrollEnabled(boolean isContainerScrollEnabled, ContainerScrollType containerScrollType) {
-        this.isContainerScrollEnabled = isContainerScrollEnabled;
-        this.containerScrollType = containerScrollType;
+    override fun setContainerScrollEnabled(
+        isContainerScrollEnabled: Boolean,
+        containerScrollType: ContainerScrollType?
+    ) {
+        this.isContainerScrollEnabled = isContainerScrollEnabled
+        this.containerScrollType = containerScrollType
     }
 
-    protected void onChartDataChange() {
-        chartComputator.resetContentRect();
-        chartRenderer.onChartDataChanged();
-        axesRenderer.onChartDataChanged();
-        ViewCompat.postInvalidateOnAnimation(this);
+    protected fun onChartDataChange() {
+        chartComputator.resetContentRect()
+        chartRenderer?.onChartDataChanged()
+        axesRenderer.onChartDataChanged()
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
     /**
      * You should call this method in derived classes, most likely from constructor if you changed chart/axis renderer,
      * touch handler or chart computator
      */
-    protected void resetRendererAndTouchHandler() {
-        this.chartRenderer.resetRenderer();
-        this.axesRenderer.resetRenderer();
-        this.touchHandler.resetTouchHandler();
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun resetRendererAndTouchHandler() {
+        chartRenderer?.resetRenderer()
+        axesRenderer.resetRenderer()
+        touchHandler.resetTouchHandler()
     }
 
     /**
@@ -496,23 +426,22 @@ public abstract class AbstractChartView extends View implements Chart {
      * @param direction Amount of pixels being scrolled (x axis)
      * @return true if the chart can be scrolled (ie. zoomed and not against the edge of the chart)
      */
-    @Override
-    public boolean canScrollHorizontally(int direction) {
+    override fun canScrollHorizontally(direction: Int): Boolean {
         if (getZoomLevel() <= 1.0) {
-            return false;
+            return false
         }
-        final Viewport currentViewport = getCurrentViewport();
-        final Viewport maximumViewport = getMaximumViewport();
-        if (direction < 0) {
+        val currentViewport = getCurrentViewport()
+        val maximumViewport = getMaximumViewport()
+        return if (direction < 0) {
             if (currentViewport != null && maximumViewport != null) {
-                 return currentViewport.left > maximumViewport.left;
+                currentViewport.left > maximumViewport.left
             } else {
-                return false;
+                false
             }
         } else if (currentViewport != null && maximumViewport != null) {
-                return currentViewport.right < maximumViewport.right;
+            currentViewport.right < maximumViewport.right
         } else {
-            return false;
+            false
         }
     }
 }

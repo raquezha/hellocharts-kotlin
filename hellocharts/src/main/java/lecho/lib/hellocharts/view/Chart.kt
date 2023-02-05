@@ -28,7 +28,7 @@ interface Chart {
 
     fun setChartData(chartData: ChartData)
 
-    fun getChartRenderer(): ChartRenderer
+    fun getChartRenderer(): ChartRenderer?
 
     fun setChartRenderer(chartRenderer: ChartRenderer)
 
@@ -191,25 +191,25 @@ interface Chart {
      * Set true if you want allow user to click value on chart, set false to disable that option.
      * By default true.
      */
-    fun isValueTouchEnabled(): Boolean
-
     fun setValueTouchEnabled(isEnabled: Boolean)
+
+    fun isValueTouchEnabled(): Boolean
 
     /**
      * Set maximum viewport. If you set bigger maximum viewport data will be more concentrate and
      * there will be more empty spaces on sides. Note. MaxViewport have to be set after chartData
      * has been set.
      */
-    fun getMaximumViewport(): Viewport?
-
     fun setMaximumViewport(maxViewport: Viewport?)
+
+    fun getMaximumViewport(): Viewport?
 
     /**
      * Sets current viewport. Note. viewport have to be set after chartData has been set.
      */
-    fun getCurrentViewport(): Viewport?
-
     fun setCurrentViewport(viewport: Viewport?)
+
+    fun getCurrentViewport(): Viewport?
 
     /**
      * Sets current viewport with animation. Note. viewport have to be set after chartData has been set.

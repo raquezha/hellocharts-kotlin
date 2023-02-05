@@ -37,19 +37,26 @@ open class ChartTouchHandler(context: Context?, protected var chart: Chart) {
      * Used only for selection mode to avoid calling listener multiple times for the same selection. Small thing but it
      * is more intuitive this way.
      */
-    protected var selectionModeOldValue = SelectedValue()
-    protected var selectedValue = SelectedValue()
-    protected var oldSelectedValue = SelectedValue()
+    @JvmField
+    var selectionModeOldValue = SelectedValue()
+
+    @JvmField
+    var selectedValue = SelectedValue()
+
+    @JvmField
+    var oldSelectedValue = SelectedValue()
 
     /**
      * ViewParent to disallow touch events interception if chart is within scroll container.
      */
-    protected var viewParent: ViewParent? = null
+    @JvmField
+    var viewParent: ViewParent? = null
 
     /**
      * Type of scroll of container, horizontal or vertical.
      */
-    protected var containerScrollType: ContainerScrollType? = null
+    @JvmField
+    var containerScrollType: ContainerScrollType? = null
 
     init {
         computator = chart.getChartComputator()

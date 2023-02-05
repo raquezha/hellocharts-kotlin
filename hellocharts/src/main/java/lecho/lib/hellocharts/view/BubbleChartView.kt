@@ -60,12 +60,14 @@ class BubbleChartView @JvmOverloads constructor(
     }
 
     override fun callTouchListener() {
-        val selectedValue = chartRenderer.getSelectedValue()
-        if (selectedValue.isSet) {
-            val value = data!!.values[selectedValue.firstIndex]
-            onValueTouchListener?.onValueSelected(selectedValue.firstIndex, value)
-        } else {
-            onValueTouchListener?.onValueDeselected()
+        val selectedValue = chartRenderer?.getSelectedValue()
+        selectedValue?.let {
+            if (it.isSet) {
+                val value = data!!.values[selectedValue.firstIndex]
+                onValueTouchListener?.onValueSelected(selectedValue.firstIndex, value)
+            } else {
+                onValueTouchListener?.onValueDeselected()
+            }
         }
     }
 

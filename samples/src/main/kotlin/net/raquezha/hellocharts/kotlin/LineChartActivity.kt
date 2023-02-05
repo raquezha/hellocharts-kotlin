@@ -236,7 +236,7 @@ class LineChartActivity : HelloChartsActivity() {
                 data!!.setAxisYLeft(null)
             }
             data!!.baseValue = Float.NEGATIVE_INFINITY
-            binding.chart.lineChartData = data
+            binding.chart.lineChartData = data!!
         }
 
         /**

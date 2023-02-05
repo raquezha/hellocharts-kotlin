@@ -121,7 +121,7 @@ class SpeedChartActivity : HelloChartsActivity() {
             )
 
             // Set data
-            binding.chart.lineChartData = data
+            binding.chart.lineChartData = data!!
 
             // Important: adjust viewport, you could skip this step but in this case it will looks better with custom
             // viewport. Set

@@ -1,67 +1,55 @@
-package lecho.lib.hellocharts.view;
+package lecho.lib.hellocharts.view
 
-import android.content.Context;
-import android.util.AttributeSet;
-
-import androidx.core.view.ViewCompat;
-
-import lecho.lib.hellocharts.computator.PreviewChartComputator;
-import lecho.lib.hellocharts.listener.ViewportChangeListener;
-import lecho.lib.hellocharts.gesture.PreviewChartTouchHandler;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.renderer.PreviewLineChartRenderer;
-
+import android.content.Context
+import android.util.AttributeSet
+import androidx.core.view.ViewCompat
+import lecho.lib.hellocharts.computator.PreviewChartComputator
+import lecho.lib.hellocharts.gesture.PreviewChartTouchHandler
+import lecho.lib.hellocharts.model.LineChartData.Companion.generateDummyData
+import lecho.lib.hellocharts.renderer.PreviewLineChartRenderer
 
 /**
  * Preview chart that can be used as overview for other LineChart. When you change Viewport of this chart, visible area
  * of other chart will change. For that you need also to use
- * {@link Chart#setViewportChangeListener(ViewportChangeListener)}
+ * [Chart.setViewportChangeListener]
  *
  * @author Leszek Wach
  */
-public class PreviewLineChartView extends LineChartView {
+class PreviewLineChartView @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : LineChartView(context, attrs, defStyle) {
 
-    protected PreviewLineChartRenderer previewChartRenderer;
+    @JvmField
+    var previewChartRenderer: PreviewLineChartRenderer
 
-    public PreviewLineChartView(Context context) {
-        this(context, null, 0);
+    init {
+        chartComputator = PreviewChartComputator()
+        previewChartRenderer = PreviewLineChartRenderer(context, this, this)
+        touchHandler = PreviewChartTouchHandler(context!!, this)
+        setChartRenderer(previewChartRenderer)
+        lineChartData = generateDummyData()
     }
 
-    public PreviewLineChartView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public PreviewLineChartView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        chartComputator = new PreviewChartComputator();
-        previewChartRenderer = new PreviewLineChartRenderer(context, this, this);
-        touchHandler = new PreviewChartTouchHandler(context, this);
-        setChartRenderer(previewChartRenderer);
-        setLineChartData(LineChartData.generateDummyData());
-    }
-
-    public int getPreviewColor() {
-        return previewChartRenderer.getPreviewColor();
-    }
-
-    public void setPreviewColor(int color) {
+    var previewColor: Int
+        get() = previewChartRenderer.previewColor
+        set(color) {
 //        if (BuildConfig.DEBUG) {
 //            Log.d(TAG, "Changing preview area color");
 //        }
+            previewChartRenderer.previewColor = color
+            ViewCompat.postInvalidateOnAnimation(this)
+        }
 
-        previewChartRenderer.setPreviewColor(color);
-        ViewCompat.postInvalidateOnAnimation(this);
-    }
-
-    @Override
-    public boolean canScrollHorizontally(int direction) {
-        final int offset = computeHorizontalScrollOffset();
-        final int range = computeHorizontalScrollRange() - computeHorizontalScrollExtent();
-        if (range == 0) return false;
-        if (direction < 0) {
-            return offset > 0;
+    override fun canScrollHorizontally(direction: Int): Boolean {
+        val offset = computeHorizontalScrollOffset()
+        val range = computeHorizontalScrollRange() - computeHorizontalScrollExtent()
+        if (range == 0) return false
+        return if (direction < 0) {
+            offset > 0
         } else {
-            return offset < range - 1;
+            offset < range - 1
         }
     }
 }

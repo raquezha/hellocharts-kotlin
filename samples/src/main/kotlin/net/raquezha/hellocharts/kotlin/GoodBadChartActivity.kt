@@ -27,7 +27,9 @@ class GoodBadChartActivity : HelloChartsActivity() {
      * A placeholder fragment containing a simple view.
      */
     class PlaceholderFragment : Fragment() {
+
         private var data: LineChartData? = null
+
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -35,7 +37,7 @@ class GoodBadChartActivity : HelloChartsActivity() {
         ): View {
             val binding = FragmentGoodBadBinding.inflate(layoutInflater)
             generateDefaultData()
-            binding.chart.lineChartData = data
+            binding.chart.lineChartData = data!!
 
             // Increase viewport height for better look
             binding.chart.getMaximumViewport().let {
