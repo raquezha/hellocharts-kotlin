@@ -1,30 +1,24 @@
-package lecho.lib.hellocharts.view;
+package lecho.lib.hellocharts.view
 
-import android.content.Context;
-import android.graphics.RectF;
-import android.util.AttributeSet;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-
-import org.jetbrains.annotations.NotNull;
-
-import lecho.lib.hellocharts.animation.PieChartRotationAnimator;
-import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV14;
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.gesture.PieChartTouchHandler;
-import lecho.lib.hellocharts.listener.DummyPieChartOnValueSelectListener;
-import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.SliceValue;
-import lecho.lib.hellocharts.provider.PieChartDataProvider;
-import lecho.lib.hellocharts.renderer.AxesRenderer;
-import lecho.lib.hellocharts.renderer.PieChartRenderer;
+import android.content.Context
+import android.graphics.RectF
+import android.util.AttributeSet
+import androidx.core.view.ViewCompat
+import lecho.lib.hellocharts.animation.PieChartRotationAnimator
+import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV14
+import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.gesture.ChartTouchHandler
+import lecho.lib.hellocharts.gesture.PieChartTouchHandler
+import lecho.lib.hellocharts.listener.DummyPieChartOnValueSelectListener
+import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener
+import lecho.lib.hellocharts.model.ChartData
+import lecho.lib.hellocharts.model.PieChartData
+import lecho.lib.hellocharts.model.PieChartData.Companion.generateDummyData
+import lecho.lib.hellocharts.model.SelectedValue
+import lecho.lib.hellocharts.model.SliceValue
+import lecho.lib.hellocharts.provider.PieChartDataProvider
+import lecho.lib.hellocharts.renderer.AxesRenderer
+import lecho.lib.hellocharts.renderer.PieChartRenderer
 
 /**
  * PieChart is a little different than others charts. It doesn't have axes.
@@ -35,182 +29,166 @@ import lecho.lib.hellocharts.renderer.PieChartRenderer;
  *
  * @author Leszek Wach
  */
-@SuppressWarnings("unused")
-public class PieChartView extends AbstractChartView implements PieChartDataProvider {
-    protected PieChartData data;
-    protected PieChartOnValueSelectListener onValueTouchListener = new DummyPieChartOnValueSelectListener();
-    protected PieChartRenderer pieChartRenderer;
-    protected PieChartRotationAnimator rotationAnimator;
+@Suppress("unused")
+open class PieChartView @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : AbstractChartView(context, attrs, defStyle), PieChartDataProvider {
 
-    public PieChartView(Context context) {
-        this(context, null, 0);
+    @JvmField
+    var data: PieChartData? = null
+
+    @JvmField
+    var onValueTouchListener: PieChartOnValueSelectListener =
+        DummyPieChartOnValueSelectListener()
+
+    @JvmField
+    var pieChartRenderer: PieChartRenderer
+
+    @JvmField
+    var rotationAnimator: PieChartRotationAnimator
+
+    final override var pieChartData: PieChartData
+        get() = data!!
+        set(data) {
+            this.data = data
+            super.onChartDataChange()
+        }
+
+    init {
+        pieChartRenderer = PieChartRenderer(context, this, this)
+        touchHandler = PieChartTouchHandler(context, this)
+        setChartRenderer(pieChartRenderer)
+        rotationAnimator = PieChartRotationAnimatorV14(this)
+        pieChartData = generateDummyData()
     }
 
-    public PieChartView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+
+    override fun getChartData(): ChartData {
+        return data!!
     }
 
-    public PieChartView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        pieChartRenderer = new PieChartRenderer(context, this, this);
-        touchHandler = new PieChartTouchHandler(context, this);
-        setChartRenderer(pieChartRenderer);
-        this.rotationAnimator = new PieChartRotationAnimatorV14(this);
-        setPieChartData(PieChartData.generateDummyData());
-    }
-
-    @NonNull
-    @Override
-    public PieChartData getPieChartData() {
-        return data;
-    }
-
-    @Override
-    public void setPieChartData(@NonNull PieChartData data) {
-        this.data = data;
-        super.onChartDataChange();
-    }
-
-    @NonNull
-    @Override
-    public ChartData getChartData() {
-        return data;
-    }
-
-    @Override
-    public void callTouchListener() {
-        SelectedValue selectedValue = chartRenderer.getSelectedValue();
-
-        if (selectedValue.isSet()) {
-            SliceValue sliceValue = data.getValues().get(selectedValue.firstIndex);
-            onValueTouchListener.onValueSelected(selectedValue.firstIndex, sliceValue);
+    override fun callTouchListener() {
+        val selectedValue = chartRenderer!!.getSelectedValue()
+        if (selectedValue.isSet) {
+            val sliceValue = data!!.getValues()[selectedValue.firstIndex]
+            onValueTouchListener.onValueSelected(selectedValue.firstIndex, sliceValue)
         } else {
-            onValueTouchListener.onValueDeselected();
+            onValueTouchListener.onValueDeselected()
         }
     }
 
-    public PieChartOnValueSelectListener getOnValueTouchListener() {
-        return onValueTouchListener;
+    fun getOnValueTouchListener(): PieChartOnValueSelectListener {
+        return onValueTouchListener
     }
 
-    public void setOnValueTouchListener(PieChartOnValueSelectListener touchListener) {
+    fun setOnValueTouchListener(touchListener: PieChartOnValueSelectListener?) {
         if (null != touchListener) {
-            this.onValueTouchListener = touchListener;
+            onValueTouchListener = touchListener
         }
     }
 
-    /**
-     * Returns rectangle that will constraint pie chart area.
-     */
-    public RectF getCircleOval() {
-        return pieChartRenderer.getCircleOval();
-    }
+    var circleOval: RectF?
+        /**
+         * Returns rectangle that will constraint pie chart area.
+         */
+        get() = pieChartRenderer.circleOval
+        /**
+         * Use this to change pie chart area. Because by default CircleOval is calculated onSizeChanged() you must call this
+         * method after size of PieChartView is calculated. In most cases it will probably be easier to use
+         * [.setCircleFillRatio] to change chart area or just use view padding.
+         */
+        set(originCircleOval) {
+            pieChartRenderer.circleOval = originCircleOval!!
+            ViewCompat.postInvalidateOnAnimation(this)
+        }
+    val chartRotation: Int
+        /**
+         * Returns pie chart rotation, 0 rotation means that 0 degrees is at 3 o'clock.
+         * Don't confuse with View.getRotation
+         *
+         * @return rotation
+         */
+        get() = pieChartRenderer.chartRotation
 
     /**
-     * Use this to change pie chart area. Because by default CircleOval is calculated onSizeChanged() you must call this
-     * method after size of PieChartView is calculated. In most cases it will probably be easier to use
-     * {@link #setCircleFillRatio(float)} to change chart area or just use view padding.
-     */
-    public void setCircleOval(RectF originCircleOval) {
-        pieChartRenderer.setCircleOval(originCircleOval);
-        ViewCompat.postInvalidateOnAnimation(this);
-    }
-
-    /**
-     * Returns pie chart rotation, 0 rotation means that 0 degrees is at 3 o'clock. Don't confuse with
-     * {@link View#getRotation()}.
-     *
-     * @return rotation
-     */
-    public int getChartRotation() {
-        return pieChartRenderer.getChartRotation();
-    }
-
-    /**
-     * Set pie chart rotation. Don't confuse with {@link View#getRotation()}.
+     * Set pie chart rotation. Don't confuse with View.getRotation
      *
      * @param rotation rotation
-     * @see #getChartRotation()
      */
-    public void setChartRotation(int rotation, boolean isAnimated) {
+    fun setChartRotation(rotation: Int, isAnimated: Boolean) {
         if (isAnimated) {
-            rotationAnimator.cancelAnimation();
-            rotationAnimator.startAnimation(pieChartRenderer.getChartRotation(), rotation);
+            rotationAnimator.cancelAnimation()
+            rotationAnimator.startAnimation(
+                pieChartRenderer.chartRotation.toFloat(),
+                rotation.toFloat()
+            )
         } else {
-            pieChartRenderer.setChartRotation(rotation);
+            pieChartRenderer.chartRotation = rotation
         }
-        ViewCompat.postInvalidateOnAnimation(this);
+        ViewCompat.postInvalidateOnAnimation(this)
     }
 
-    public boolean isChartRotationEnabled() {
-        if (touchHandler instanceof PieChartTouchHandler) {
-            return ((PieChartTouchHandler) touchHandler).isRotationEnabled();
+    var isChartRotationEnabled: Boolean
+        get() = if (touchHandler is PieChartTouchHandler) {
+            (touchHandler as PieChartTouchHandler).isRotationEnabled
         } else {
-            return false;
+            false
         }
-    }
-
-    /**
-     * Set false if you don't wont the chart to be rotated by touch gesture. Rotating programmatically will still work.
-     *
-     * @param isRotationEnabled isRotationEnabled
-     */
-    public void setChartRotationEnabled(boolean isRotationEnabled) {
-        if (touchHandler instanceof PieChartTouchHandler) {
-            ((PieChartTouchHandler) touchHandler).setRotationEnabled(isRotationEnabled);
+        /**
+         * Set false if you don't wont the chart to be rotated by touch gesture. Rotating programmatically will still work.
+         *
+         * @param isRotationEnabled isRotationEnabled
+         */
+        set(isRotationEnabled) {
+            if (touchHandler is PieChartTouchHandler) {
+                (touchHandler as PieChartTouchHandler).isRotationEnabled = isRotationEnabled
+            }
         }
-    }
 
     /**
      * Returns SliceValue that is under given angle, selectedValue (if not null) will be hold slice index.
      */
-    public SliceValue getValueForAngle(int angle, SelectedValue selectedValue) {
-        return pieChartRenderer.getValueForAngle(angle, selectedValue);
+    fun getValueForAngle(angle: Int, selectedValue: SelectedValue?): SliceValue? {
+        return pieChartRenderer.getValueForAngle(angle, selectedValue)
     }
 
-    /**
-     * @see #setCircleFillRatio(float)
-     */
-    public float getCircleFillRatio() {
-        return pieChartRenderer.getCircleFillRatio();
+    var circleFillRatio: Float
+        /**
+         * @see .setCircleFillRatio
+         */
+        get() = pieChartRenderer.getCircleFillRatio()
+        /**
+         * Set how much of view area should be taken by chart circle. Value should be between 0 and 1. Default is 1 so
+         * circle will have radius equals min(View.width, View.height).
+         */
+        set(fillRatio) {
+            pieChartRenderer.setCircleFillRatio(fillRatio)
+            ViewCompat.postInvalidateOnAnimation(this)
+        }
+
+    override fun setChartData(chartData: ChartData) {
+        this.chartData = chartData
     }
 
-    /**
-     * Set how much of view area should be taken by chart circle. Value should be between 0 and 1. Default is 1 so
-     * circle will have radius equals min(View.width, View.height).
-     */
-    public void setCircleFillRatio(float fillRatio) {
-        pieChartRenderer.setCircleFillRatio(fillRatio);
-        ViewCompat.postInvalidateOnAnimation(this);
+    override fun setAxesRenderer(axesRenderer: AxesRenderer) {
+        this.axesRenderer = axesRenderer
     }
 
-    @Override
-    public void setChartData(@Nullable ChartData chartData) {
-        this.chartData = chartData;
+    override fun setChartComputator(chartComputator: ChartComputator) {
+        this.chartComputator = chartComputator
     }
 
-    @Override
-    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
-        this.axesRenderer = axesRenderer;
+    override fun setTouchHandler(touchHandler: ChartTouchHandler) {
+        this.touchHandler = touchHandler
     }
 
-    @Override
-    public void setChartComputator(@Nullable ChartComputator chartComputator) {
-        this.chartComputator = chartComputator;
+    override fun getInteractive(): Boolean {
+        return isInteractive
     }
 
-    @Override
-    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
-        this.touchHandler = touchHandler;
-    }
-
-    @Override
-    public boolean getInteractive() {
-        return isInteractive;
-    }
-
-    @Override
-    public void setContainerScrollEnabled(boolean isEnabled) {
-        this.isContainerScrollEnabled = isEnabled;
+    override fun setContainerScrollEnabled(isEnabled: Boolean) {
+        isContainerScrollEnabled = isEnabled
     }
 }

@@ -24,53 +24,61 @@ abstract class AbstractChartRenderer(
 ) : ChartRenderer {
 
     @JvmField
-    protected var computator: ChartComputator
+    var computator: ChartComputator
 
     /**
      * Paint for value labels.
      */
     @JvmField
-    protected var labelPaint = Paint()
+    var labelPaint = Paint()
 
     /**
      * Paint for labels background.
      */
     @JvmField
-    protected var labelBackgroundPaint = Paint()
+    var labelBackgroundPaint = Paint()
 
     /**
      * Holds coordinates for label background rect.
      */
     @JvmField
-    protected var labelBackgroundRect = RectF()
+    var labelBackgroundRect = RectF()
 
     /**
      * Font metrics for label paint, used to determine text height.
      */
     @JvmField
-    protected var fontMetrics = FontMetricsInt()
+    var fontMetrics = FontMetricsInt()
 
     /**
      * If true maximum and current viewport will be calculated when chart data change or during data animations.
      */
     @JvmField
-    protected var isViewportCalculationEnabled = true
+    var isViewportCalculationEnabled = true
+
     @JvmField
-    protected var density: Float
+    var density: Float
+
     @JvmField
-    protected var scaledDensity: Float
+    var scaledDensity: Float
+
     @JvmField
-    protected var selectedValue = SelectedValue()
+    var selectedValue = SelectedValue()
+
     @JvmField
-    protected var labelBuffer = CharArray(64)
+    var labelBuffer = CharArray(64)
+
     @JvmField
-    protected var labelOffset: Int
+    var labelOffset: Int
+
     @JvmField
-    protected var labelMargin: Int
+    var labelMargin: Int
+
     @JvmField
-    protected var isValueLabelBackgroundEnabled = false
+    var isValueLabelBackgroundEnabled = false
+
     @JvmField
-    protected var isValueLabelBackgroundAuto = false
+    var isValueLabelBackgroundAuto = false
 
     init {
         density = context.resources.displayMetrics.density
@@ -93,11 +101,11 @@ abstract class AbstractChartRenderer(
 
     override fun onChartDataChanged() {
         val data = chart.getChartData()
-        val typeface = chart.getChartData()!!.getValueLabelTypeface()
+        val typeface = chart.getChartData().getValueLabelTypeface()
         if (null != typeface) {
             labelPaint.typeface = typeface
         }
-        labelPaint.color = data!!.getValueLabelTextColor()
+        labelPaint.color = data.getValueLabelTextColor()
         labelPaint.textSize = sp2px(scaledDensity, data.getValueLabelTextSize()).toFloat()
         labelPaint.getFontMetricsInt(fontMetrics)
         isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled()

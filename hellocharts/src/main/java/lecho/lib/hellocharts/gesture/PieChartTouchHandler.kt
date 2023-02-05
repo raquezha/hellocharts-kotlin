@@ -85,8 +85,8 @@ open class PieChartTouchHandler(
             if (isRotationEnabled) {
                 // Set the pie rotation directly.
                 val circleOval = pieChart.circleOval
-                val centerX = circleOval.centerX()
-                val centerY = circleOval.centerY()
+                val centerX = circleOval?.centerX() ?: 0f
+                val centerY = circleOval?.centerY() ?: 0f
                 val scrollTheta = vectorToScalarScroll(
                     distanceX, distanceY, e2.x - centerX, e2.y -
                         centerY
@@ -110,8 +110,8 @@ open class PieChartTouchHandler(
             if (isRotationEnabled) {
                 // Set up the Scroller for a fling
                 val circleOval = pieChart.circleOval
-                val centerX = circleOval.centerX()
-                val centerY = circleOval.centerY()
+                val centerX = circleOval?.centerX() ?: 0f
+                val centerY = circleOval?.centerY() ?: 0f
                 val scrollTheta = vectorToScalarScroll(
                     velocityX, velocityY, e2.x - centerX, e2.y -
                         centerY
