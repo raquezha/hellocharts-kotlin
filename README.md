@@ -1,3 +1,4 @@
+[![](https://jitpack.io/v/raquezha/hellocharts-kotlin.svg)](https://jitpack.io/#raquezha/hellocharts-kotlin)
 # HelloCharts for Android
 
 Forked version of lecho's unmantained hellocharts-android libary.
