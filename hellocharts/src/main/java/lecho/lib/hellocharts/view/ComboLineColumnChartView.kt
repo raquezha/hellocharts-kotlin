@@ -1,187 +1,169 @@
-package lecho.lib.hellocharts.view;
+package lecho.lib.hellocharts.view
 
-import android.content.Context;
-import android.util.AttributeSet;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.jetbrains.annotations.NotNull;
-
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.listener.ComboLineColumnChartOnValueSelectListener;
-import lecho.lib.hellocharts.listener.DummyCompoLineColumnChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ComboLineColumnChartData;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
-import lecho.lib.hellocharts.provider.ComboLineColumnChartDataProvider;
-import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.renderer.AxesRenderer;
-import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
-import lecho.lib.hellocharts.renderer.ComboLineColumnChartRenderer;
-import lecho.lib.hellocharts.renderer.LineChartRenderer;
+import android.content.Context
+import android.util.AttributeSet
+import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.gesture.ChartTouchHandler
+import lecho.lib.hellocharts.listener.ComboLineColumnChartOnValueSelectListener
+import lecho.lib.hellocharts.listener.DummyCompoLineColumnChartOnValueSelectListener
+import lecho.lib.hellocharts.model.ChartData
+import lecho.lib.hellocharts.model.ColumnChartData
+import lecho.lib.hellocharts.model.ComboLineColumnChartData
+import lecho.lib.hellocharts.model.ComboLineColumnChartData.Companion.generateDummyData
+import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider
+import lecho.lib.hellocharts.provider.ComboLineColumnChartDataProvider
+import lecho.lib.hellocharts.provider.LineChartDataProvider
+import lecho.lib.hellocharts.renderer.AxesRenderer
+import lecho.lib.hellocharts.renderer.ColumnChartRenderer
+import lecho.lib.hellocharts.renderer.ComboLineColumnChartRenderer
+import lecho.lib.hellocharts.renderer.LineChartRenderer
 
 /**
  * ComboChart, supports ColumnChart combined with LineChart. Lines are always drawn on top.
  *
  * @author Leszek Wach
  */
-@SuppressWarnings("unused")
-public class ComboLineColumnChartView extends AbstractChartView implements ComboLineColumnChartDataProvider {
-    protected ComboLineColumnChartData data;
-    protected ColumnChartDataProvider columnChartDataProvider = new ComboColumnChartDataProvider();
-    protected LineChartDataProvider lineChartDataProvider = new ComboLineChartDataProvider();
-    protected ComboLineColumnChartOnValueSelectListener onValueTouchListener = new
-            DummyCompoLineColumnChartOnValueSelectListener();
+@Suppress("unused")
+class ComboLineColumnChartView @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : AbstractChartView(context, attrs, defStyle), ComboLineColumnChartDataProvider {
 
-    public ComboLineColumnChartView(Context context) {
-        this(context, null, 0);
+    @JvmField
+    var data: ComboLineColumnChartData? = null
+
+    @JvmField
+    var columnChartDataProvider: ColumnChartDataProvider = ComboColumnChartDataProvider()
+
+    @JvmField
+    var lineChartDataProvider: LineChartDataProvider = ComboLineChartDataProvider()
+
+    @JvmField
+    var onValueTouchListener: ComboLineColumnChartOnValueSelectListener =
+        DummyCompoLineColumnChartOnValueSelectListener()
+
+    override var comboLineColumnChartData: ComboLineColumnChartData
+        get() = data!!
+        set(data) {
+            this.data = data // generateDummyData();
+            super.onChartDataChange()
+        }
+
+    init {
+        setChartRenderer(
+            ComboLineColumnChartRenderer(
+                context!!, this, columnChartDataProvider,
+                lineChartDataProvider
+            )
+        )
+        comboLineColumnChartData = generateDummyData()
     }
 
-    public ComboLineColumnChartView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+
+    override fun getChartData(): ChartData {
+        return data!!
     }
 
-    public ComboLineColumnChartView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        setChartRenderer(new ComboLineColumnChartRenderer(context, this, columnChartDataProvider,
-                lineChartDataProvider));
-        setComboLineColumnChartData(ComboLineColumnChartData.generateDummyData());
-    }
-
-    @NonNull
-    @Override
-    public ComboLineColumnChartData getComboLineColumnChartData() {
-        return data;
-    }
-
-    @Override
-    public void setComboLineColumnChartData(@NonNull ComboLineColumnChartData data) {
-        this.data = data;// generateDummyData();
-        super.onChartDataChange();
-    }
-
-    @NonNull
-    @Override
-    public ChartData getChartData() {
-        return data;
-    }
-
-    @Override
-    public void callTouchListener() {
-        SelectedValue selectedValue = chartRenderer.getSelectedValue();
-
-        if (selectedValue.isSet()) {
-
-            if (SelectedValueType.COLUMN.equals(selectedValue.type)) {
-
-                SubcolumnValue value = data.getColumnChartData().getColumns().get(selectedValue.firstIndex)
-                        .values.get(selectedValue.secondIndex);
-                onValueTouchListener.onColumnValueSelected(selectedValue.firstIndex,
-                        selectedValue.secondIndex, value);
-
-            } else if (SelectedValueType.LINE.equals(selectedValue.type)) {
-
-                PointValue value = data.getLineChartData().getLines().get(selectedValue.firstIndex).getValues()
-                        .get(selectedValue.secondIndex);
-                onValueTouchListener.onPointValueSelected(selectedValue.firstIndex, selectedValue.secondIndex,
-                        value);
-
+    override fun callTouchListener() {
+        val selectedValue = chartRenderer!!.getSelectedValue()
+        if (selectedValue.isSet) {
+            if (SelectedValueType.COLUMN == selectedValue.type) {
+                val value =
+                    data!!.columnChartData.columns[selectedValue.firstIndex].values[selectedValue.secondIndex]
+                onValueTouchListener.onColumnValueSelected(
+                    selectedValue.firstIndex,
+                    selectedValue.secondIndex, value
+                )
+            } else if (SelectedValueType.LINE == selectedValue.type) {
+                val value =
+                    data!!.lineChartData.getLines()[selectedValue.firstIndex].getValues()[selectedValue.secondIndex]
+                onValueTouchListener.onPointValueSelected(
+                    selectedValue.firstIndex, selectedValue.secondIndex,
+                    value
+                )
             } else {
-                throw new IllegalArgumentException(
-                        "Invalid selected value type " + (selectedValue.type != null ? selectedValue.type.name() : null)
-                );
+                throw IllegalArgumentException(
+                    "Invalid selected value type " + if (selectedValue.type != null) selectedValue.type!!.name else null
+                )
             }
         } else {
-            onValueTouchListener.onValueDeselected();
+            onValueTouchListener.onValueDeselected()
         }
     }
 
-    public ComboLineColumnChartOnValueSelectListener getOnValueTouchListener() {
-        return onValueTouchListener;
+    fun getOnValueTouchListener(): ComboLineColumnChartOnValueSelectListener {
+        return onValueTouchListener
     }
 
-    public void setOnValueTouchListener(ComboLineColumnChartOnValueSelectListener touchListener) {
+    fun setOnValueTouchListener(touchListener: ComboLineColumnChartOnValueSelectListener?) {
         if (null != touchListener) {
-            this.onValueTouchListener = touchListener;
+            onValueTouchListener = touchListener
         }
     }
 
-    public void setColumnChartRenderer(Context context, ColumnChartRenderer columnChartRenderer){
-        setChartRenderer(new ComboLineColumnChartRenderer(context, this , columnChartRenderer, lineChartDataProvider));
+    fun setColumnChartRenderer(context: Context?, columnChartRenderer: ColumnChartRenderer?) {
+        setChartRenderer(
+            ComboLineColumnChartRenderer(
+                context!!,
+                this,
+                columnChartRenderer!!,
+                lineChartDataProvider
+            )
+        )
     }
 
-    public void setLineChartRenderer(Context context, LineChartRenderer lineChartRenderer){
-        setChartRenderer(new ComboLineColumnChartRenderer(context, this, columnChartDataProvider, lineChartRenderer));
+    fun setLineChartRenderer(context: Context?, lineChartRenderer: LineChartRenderer?) {
+        setChartRenderer(
+            ComboLineColumnChartRenderer(
+                context!!,
+                this,
+                columnChartDataProvider,
+                lineChartRenderer!!
+            )
+        )
     }
 
-    @Override
-    public void setChartData(@Nullable ChartData chartData) {
-        this.chartData = chartData;
+    override fun setChartData(chartData: ChartData) {
+        this.chartData = chartData
     }
 
-    @Override
-    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
-        this.axesRenderer = axesRenderer;
+    override fun setAxesRenderer(axesRenderer: AxesRenderer) {
+        this.axesRenderer = axesRenderer
     }
 
-    @Override
-    public void setChartComputator(@Nullable ChartComputator chartComputator) {
-        this.chartComputator = chartComputator;
+    override fun setChartComputator(chartComputator: ChartComputator) {
+        this.chartComputator = chartComputator
     }
 
-    @Override
-    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
-        this.touchHandler = touchHandler;
+
+    override fun setTouchHandler(touchHandler: ChartTouchHandler) {
+        this.touchHandler = touchHandler
     }
 
-    @Override
-    public boolean getInteractive() {
-        return this.isInteractive;
+    override fun getInteractive(): Boolean {
+        return isInteractive
     }
 
-    @Override
-    public void setContainerScrollEnabled(boolean isEnabled) {
-        this.isContainerScrollEnabled = isEnabled;
+    override fun setContainerScrollEnabled(isEnabled: Boolean) {
+        isContainerScrollEnabled = isEnabled
     }
 
-    private class ComboLineChartDataProvider implements LineChartDataProvider {
-
-        @NonNull
-        @Override
-        public LineChartData getLineChartData() {
-            return ComboLineColumnChartView.this.data.getLineChartData();
-        }
-
-        @Override
-        public void setLineChartData(@NonNull LineChartData data) {
-            ComboLineColumnChartView.this.data.setLineChartData(data);
-
-        }
-
+    private inner class ComboLineChartDataProvider : LineChartDataProvider {
+        override var lineChartData: LineChartData
+            get() = data!!.lineChartData
+            set(data) {
+                this@ComboLineColumnChartView.data!!.lineChartData = data
+            }
     }
 
-    private class ComboColumnChartDataProvider implements ColumnChartDataProvider {
-
-        @NonNull
-        @Override
-        public ColumnChartData getColumnChartData() {
-            return ComboLineColumnChartView.this.data.getColumnChartData();
-        }
-
-        @Override
-        public void setColumnChartData(@NonNull ColumnChartData data) {
-            ComboLineColumnChartView.this.data.setColumnChartData(data);
-
-        }
-
+    private inner class ComboColumnChartDataProvider : ColumnChartDataProvider {
+        override var columnChartData: ColumnChartData
+            get() = data!!.columnChartData
+            set(data) {
+                this@ComboLineColumnChartView.data!!.columnChartData = data
+            }
     }
-
 }

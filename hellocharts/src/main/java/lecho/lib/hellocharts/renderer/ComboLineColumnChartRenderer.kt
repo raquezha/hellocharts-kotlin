@@ -6,17 +6,17 @@ import lecho.lib.hellocharts.provider.LineChartDataProvider
 import lecho.lib.hellocharts.view.Chart
 
 class ComboLineColumnChartRenderer(
-    context: Context?,
-    chart: Chart?,
-    columnChartRenderer: ColumnChartRenderer?,
-    lineChartRenderer: LineChartRenderer?
+    context: Context,
+    chart: Chart,
+    columnChartRenderer: ColumnChartRenderer,
+    lineChartRenderer: LineChartRenderer
 ) : ComboChartRenderer(context, chart) {
 
     constructor(
-        context: Context?,
-        chart: Chart?,
+        context: Context,
+        chart: Chart,
         columnChartDataProvider: ColumnChartDataProvider,
-        lineChartDataProvider: LineChartDataProvider?
+        lineChartDataProvider: LineChartDataProvider
     ) : this(
         context,
         chart,
@@ -29,8 +29,10 @@ class ComboLineColumnChartRenderer(
     )
 
     constructor(
-        context: Context?, chart: Chart?, columnChartRenderer: ColumnChartRenderer?,
-        lineChartDataProvider: LineChartDataProvider?
+        context: Context,
+        chart: Chart,
+        columnChartRenderer: ColumnChartRenderer,
+        lineChartDataProvider: LineChartDataProvider
     ) : this(
         context,
         chart,
@@ -39,10 +41,10 @@ class ComboLineColumnChartRenderer(
     )
 
     constructor(
-        context: Context?,
-        chart: Chart?,
+        context: Context,
+        chart: Chart,
         columnChartDataProvider: ColumnChartDataProvider,
-        lineChartRenderer: LineChartRenderer?
+        lineChartRenderer: LineChartRenderer
     ) : this(
         context,
         chart,

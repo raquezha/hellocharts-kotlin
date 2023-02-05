@@ -1,105 +1,93 @@
-package lecho.lib.hellocharts.renderer;
+package lecho.lib.hellocharts.renderer
 
-import android.content.Context;
-import android.graphics.Canvas;
+import android.content.Context
+import android.graphics.Canvas
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.view.Chart
 
-import java.util.ArrayList;
-import java.util.List;
+open class ComboChartRenderer(context: Context?, chart: Chart?) : AbstractChartRenderer(
+    context!!, chart!!
+) {
+    @JvmField
+    var renderers: MutableList<ChartRenderer> = ArrayList()
 
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.Chart;
+    @JvmField
+    var unionViewport = Viewport()
 
-public class ComboChartRenderer extends AbstractChartRenderer {
-
-    protected List<ChartRenderer> renderers;
-    protected Viewport unionViewport = new Viewport();
-
-    public ComboChartRenderer(Context context, Chart chart) {
-        super(context, chart);
-        this.renderers = new ArrayList<>();
-    }
-
-    @Override
-    public void onChartSizeChanged() {
-        for (ChartRenderer renderer : renderers) {
-            renderer.onChartSizeChanged();
+    override fun onChartSizeChanged() {
+        for (renderer in renderers) {
+            renderer.onChartSizeChanged()
         }
     }
 
-    @Override
-    public void onChartDataChanged() {
-        super.onChartDataChanged();
-        for (ChartRenderer renderer : renderers) {
-            renderer.onChartDataChanged();
+    override fun onChartDataChanged() {
+        super.onChartDataChanged()
+        for (renderer in renderers) {
+            renderer.onChartDataChanged()
         }
-        onChartViewportChanged();
+        onChartViewportChanged()
     }
 
-    @Override
-    public void onChartViewportChanged() {
+    override fun onChartViewportChanged() {
         if (isViewportCalculationEnabled) {
-            int rendererIndex = 0;
-            for (ChartRenderer renderer : renderers) {
-                renderer.onChartViewportChanged();
+            for ((rendererIndex, renderer) in renderers.withIndex()) {
+                renderer.onChartViewportChanged()
                 if (rendererIndex == 0) {
-                    Viewport maximumViewport = renderer.getMaximumViewport();
-                    if(maximumViewport != null) {
-                        unionViewport.set(maximumViewport);
+                    val maximumViewport = renderer.getMaximumViewport()
+                    if (maximumViewport != null) {
+                        unionViewport.set(maximumViewport)
                     }
                 } else {
-                    Viewport maximumViewport = renderer.getMaximumViewport();
-                    if(maximumViewport != null) {
-                        unionViewport.union(maximumViewport);
+                    val maximumViewport = renderer.getMaximumViewport()
+                    if (maximumViewport != null) {
+                        unionViewport.union(maximumViewport)
                     }
                 }
-                ++rendererIndex;
             }
-            computator.setMaximumViewport(unionViewport);
-            computator.setCurrentViewport(unionViewport);
-        }
-
-
-    }
-
-    public void draw(Canvas canvas) {
-        for (ChartRenderer renderer : renderers) {
-            renderer.draw(canvas);
+            computator.setMaximumViewport(unionViewport)
+            computator.setCurrentViewport(unionViewport)
         }
     }
 
-    @Override
-    public void drawUnClipped(Canvas canvas) {
-        for (ChartRenderer renderer : renderers) {
-            renderer.drawUnClipped(canvas);
+    override fun draw(canvas: Canvas?) {
+        for (renderer in renderers) {
+            renderer.draw(canvas)
         }
     }
 
-    public boolean checkTouch(float touchX, float touchY) {
-        selectedValue.clear();
-        int rendererIndex = renderers.size() - 1;
-        for (; rendererIndex >= 0; rendererIndex--) {
-            ChartRenderer renderer = renderers.get(rendererIndex);
+    override fun drawUnClipped(canvas: Canvas?) {
+        for (renderer in renderers) {
+            renderer.drawUnClipped(canvas)
+        }
+    }
+
+    override fun checkTouch(touchX: Float, touchY: Float): Boolean {
+        selectedValue.clear()
+        var rendererIndex = renderers.size - 1
+        while (rendererIndex >= 0) {
+            val renderer = renderers[rendererIndex]
             if (renderer.checkTouch(touchX, touchY)) {
-                selectedValue.set(renderer.getSelectedValue());
-                break;
+                selectedValue.set(renderer.getSelectedValue())
+                break
             }
+            rendererIndex--
         }
 
         //clear the rest of renderers if value was selected, if value was not selected this loop
         // will not be executed.
-        for (rendererIndex--; rendererIndex >= 0; rendererIndex--) {
-            ChartRenderer renderer = renderers.get(rendererIndex);
-            renderer.clearTouch();
+        rendererIndex--
+        while (rendererIndex >= 0) {
+            val renderer = renderers[rendererIndex]
+            renderer.clearTouch()
+            rendererIndex--
         }
-
-        return isTouched();
+        return isTouched()
     }
 
-    @Override
-    public void clearTouch() {
-        for (ChartRenderer renderer : renderers) {
-            renderer.clearTouch();
+    override fun clearTouch() {
+        for (renderer in renderers) {
+            renderer.clearTouch()
         }
-        selectedValue.clear();
+        selectedValue.clear()
     }
 }
