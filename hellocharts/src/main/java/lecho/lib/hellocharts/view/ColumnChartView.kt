@@ -1,124 +1,106 @@
-package lecho.lib.hellocharts.view;
+package lecho.lib.hellocharts.view
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.jetbrains.annotations.NotNull;
-
-import lecho.lib.hellocharts.BuildConfig;
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
-import lecho.lib.hellocharts.listener.DummyColumnChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
-import lecho.lib.hellocharts.renderer.AxesRenderer;
-import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
+import android.content.Context
+import android.util.AttributeSet
+import android.util.Log
+import lecho.lib.hellocharts.BuildConfig
+import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.gesture.ChartTouchHandler
+import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener
+import lecho.lib.hellocharts.listener.DummyColumnChartOnValueSelectListener
+import lecho.lib.hellocharts.model.ChartData
+import lecho.lib.hellocharts.model.ColumnChartData
+import lecho.lib.hellocharts.model.ColumnChartData.Companion.generateDummyData
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider
+import lecho.lib.hellocharts.renderer.AxesRenderer
+import lecho.lib.hellocharts.renderer.ColumnChartRenderer
 
 /**
  * ColumnChart/BarChart, supports subColumns, stacked columns and negative values.
  *
  * @author Leszek Wach
  */
-@SuppressWarnings("unused")
-public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
-    private static final String TAG = "ColumnChartView";
-    private ColumnChartData data;
-    private ColumnChartOnValueSelectListener onValueTouchListener = new DummyColumnChartOnValueSelectListener();
+@Suppress("unused")
+open class ColumnChartView @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : AbstractChartView(context, attrs, defStyle), ColumnChartDataProvider {
 
-    public ColumnChartView(Context context) {
-        this(context, null, 0);
+
+    @JvmField
+    var data: ColumnChartData? = null
+
+    @JvmField
+    var onValueTouchListener: ColumnChartOnValueSelectListener =
+        DummyColumnChartOnValueSelectListener()
+
+    final override var columnChartData: ColumnChartData
+        get() = data!!
+        set(data) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Setting data for ColumnChartView")
+            }
+            this.data = data
+            super.onChartDataChange()
+        }
+
+    init {
+        setChartRenderer(ColumnChartRenderer(context, this, this))
+        columnChartData = generateDummyData()
     }
 
-    public ColumnChartView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    override fun getChartData(): ColumnChartData {
+        return data!!
     }
 
-    public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        setChartRenderer(new ColumnChartRenderer(context, this, this));
-        setColumnChartData(ColumnChartData.generateDummyData());
-    }
-
-    @NonNull
-    @Override
-    public ColumnChartData getColumnChartData() {
-        return data;
-    }
-
-    @Override
-    public void setColumnChartData(@NonNull ColumnChartData data) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Setting data for ColumnChartView");
-       }
-        this.data = data;
-        super.onChartDataChange();
-
-    }
-
-    @NonNull
-    @Override
-    public ColumnChartData getChartData() {
-        return data;
-    }
-
-    @Override
-    public void callTouchListener() {
-        SelectedValue selectedValue = chartRenderer.getSelectedValue();
-
-        if (selectedValue.isSet()) {
-            SubcolumnValue value = data.getColumns().get(selectedValue.firstIndex).values
-                    .get(selectedValue.secondIndex);
-            onValueTouchListener.onValueSelected(selectedValue.firstIndex, selectedValue.secondIndex, value);
+    override fun callTouchListener() {
+        val selectedValue = chartRenderer.getSelectedValue()
+        if (selectedValue.isSet) {
+            val value = data!!.columns[selectedValue.firstIndex].values[selectedValue.secondIndex]
+            onValueTouchListener.onValueSelected(
+                selectedValue.firstIndex,
+                selectedValue.secondIndex,
+                value
+            )
         } else {
-            onValueTouchListener.onValueDeselected();
+            onValueTouchListener.onValueDeselected()
         }
     }
 
-    public ColumnChartOnValueSelectListener getOnValueTouchListener() {
-        return onValueTouchListener;
+    fun getOnValueTouchListener(): ColumnChartOnValueSelectListener {
+        return onValueTouchListener
     }
 
-    public void setOnValueTouchListener(ColumnChartOnValueSelectListener touchListener) {
+    fun setOnValueTouchListener(touchListener: ColumnChartOnValueSelectListener?) {
         if (null != touchListener) {
-            this.onValueTouchListener = touchListener;
+            onValueTouchListener = touchListener
         }
     }
 
-    @Override
-    public void setChartData(@Nullable ChartData chartData) {
-        this.chartData = chartData;
+    override fun setChartData(chartData: ChartData) {
+        this.chartData = chartData
     }
 
-    @Override
-    public void setAxesRenderer(@Nullable AxesRenderer axesRenderer) {
-        this.axesRenderer = axesRenderer;
+    override fun setTouchHandler(touchHandler: ChartTouchHandler) {
+        this.touchHandler = touchHandler
     }
 
-    @Override
-    public void setChartComputator(@Nullable ChartComputator chartComputator) {
-        this.chartComputator = chartComputator;
+    override fun getInteractive(): Boolean {
+        return isInteractive()
     }
 
-    @Override
-    public void setTouchHandler(@NotNull ChartTouchHandler touchHandler) {
-        this.touchHandler = touchHandler;
+    override fun setAxesRenderer(axesRenderer: AxesRenderer) {
+        this.axesRenderer = axesRenderer
     }
 
-    @Override
-    public boolean getInteractive() {
-        return isInteractive();
+    override fun setChartComputator(chartComputator: ChartComputator) {
+        this.chartComputator = chartComputator
     }
 
-    @Override
-    public void setContainerScrollEnabled(boolean isEnabled) {
+    override fun setContainerScrollEnabled(isEnabled: Boolean) {}
 
+    companion object {
+        private const val TAG = "ColumnChartView"
     }
 }
