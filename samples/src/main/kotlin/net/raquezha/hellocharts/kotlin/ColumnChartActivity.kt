@@ -164,6 +164,7 @@ class ColumnChartActivity : HelloChartsActivity() {
             }
             data = ColumnChartData(columns)
             data.isRoundedCorner = isRoundedCorner
+            data.enableTouchAdditionalWidth = false
             if (hasAxis) {
                 val axisX = Axis()
                 val axisY = Axis().setHasLines(true)

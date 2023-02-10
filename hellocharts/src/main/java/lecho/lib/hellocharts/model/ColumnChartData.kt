@@ -25,6 +25,8 @@ class ColumnChartData : AbstractChartData {
 
     var isRoundedCorner: Boolean = false
 
+    var enableTouchAdditionalWidth: Boolean = true
+
     constructor(columns: MutableList<Column>? = null) {
         setColumns(columns)
     }
@@ -36,6 +38,7 @@ class ColumnChartData : AbstractChartData {
         isStacked = data.isStacked
         fillRatio = data.fillRatio
         isRoundedCorner = data.isRoundedCorner
+        enableTouchAdditionalWidth = data.enableTouchAdditionalWidth
         for (column in data.columns) {
             columns.add(Column(column))
         }

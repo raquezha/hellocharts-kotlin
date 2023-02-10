@@ -2,7 +2,9 @@ package lecho.lib.hellocharts.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import androidx.core.view.ViewCompat
+import lecho.lib.hellocharts.BuildConfig
 import lecho.lib.hellocharts.computator.PreviewChartComputator
 import lecho.lib.hellocharts.gesture.PreviewChartTouchHandler
 import lecho.lib.hellocharts.model.LineChartData.Companion.generateDummyData
@@ -35,9 +37,9 @@ class PreviewLineChartView @JvmOverloads constructor(
     var previewColor: Int
         get() = previewChartRenderer.previewColor
         set(color) {
-//        if (BuildConfig.DEBUG) {
-//            Log.d(TAG, "Changing preview area color");
-//        }
+        if (BuildConfig.DEBUG) {
+            Log.d("PreviewLineChartView", "Changing preview area color")
+        }
             previewChartRenderer.previewColor = color
             ViewCompat.postInvalidateOnAnimation(this)
         }

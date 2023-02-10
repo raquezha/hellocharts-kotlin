@@ -189,7 +189,8 @@ open class ColumnChartRenderer(
             columnWidth,
             selectedValue.firstIndex,
             MODE_HIGHLIGHT,
-            data.isRoundedCorner
+            data.isRoundedCorner,
+            data.enableTouchAdditionalWidth
         )
     }
 
@@ -207,7 +208,8 @@ open class ColumnChartRenderer(
                 columnWidth,
                 columnIndex,
                 MODE_CHECK_TOUCH,
-                data.isRoundedCorner
+                data.isRoundedCorner,
+                data.enableTouchAdditionalWidth
             )
         }
     }
@@ -218,7 +220,8 @@ open class ColumnChartRenderer(
         columnWidth: Float,
         columnIndex: Int,
         mode: Int,
-        isRoundedCorners: Boolean
+        isRoundedCorners: Boolean,
+        enableTouchAdditionalWidth: Boolean = true
     ) {
         // For n subColumns there will be n-1 spacing and there will be one
         // subColumn for every columnValue
@@ -256,7 +259,8 @@ open class ColumnChartRenderer(
                     columnValue,
                     valueIndex,
                     false,
-                    isRoundedCorners
+                    isRoundedCorners,
+                    enableTouchAdditionalWidth
                 )
 
                 MODE_CHECK_TOUCH -> checkRectToDraw(columnIndex, valueIndex)
@@ -278,7 +282,8 @@ open class ColumnChartRenderer(
                 columnWidth,
                 columnIndex,
                 MODE_DRAW,
-                data.isRoundedCorner
+                data.isRoundedCorner,
+                data.enableTouchAdditionalWidth
             )
         }
     }
@@ -294,7 +299,8 @@ open class ColumnChartRenderer(
             columnWidth,
             selectedValue.firstIndex,
             MODE_HIGHLIGHT,
-            data.isRoundedCorner
+            data.isRoundedCorner,
+            data.enableTouchAdditionalWidth
         )
     }
 
@@ -311,7 +317,8 @@ open class ColumnChartRenderer(
                 columnWidth,
                 columnIndex,
                 MODE_CHECK_TOUCH,
-                data.isRoundedCorner
+                data.isRoundedCorner,
+                data.enableTouchAdditionalWidth
             )
         }
     }
@@ -322,7 +329,8 @@ open class ColumnChartRenderer(
         columnWidth: Float,
         columnIndex: Int,
         mode: Int,
-        isRoundedCorners: Boolean
+        isRoundedCorners: Boolean,
+        enableTouchAdditionalWidth: Boolean = true
     ) {
         val rawX = computator.computeRawX(columnIndex.toFloat())
         val halfColumnWidth = columnWidth / 2
@@ -357,7 +365,8 @@ open class ColumnChartRenderer(
                     columnValue,
                     valueIndex,
                     true,
-                    isRoundedCorners
+                    isRoundedCorners,
+                    enableTouchAdditionalWidth
                 )
 
                 MODE_CHECK_TOUCH -> checkRectToDraw(columnIndex, valueIndex)
@@ -389,27 +398,35 @@ open class ColumnChartRenderer(
         columnValue: SubcolumnValue,
         valueIndex: Int,
         isStacked: Boolean,
-        isRoundedCorners: Boolean
+        isRoundedCorners: Boolean,
+        enableTouchAdditionalWidth: Boolean = true
     ) {
         if (selectedValue.secondIndex == valueIndex) {
             columnPaint.color = columnValue.darkenColor
+            val left = drawRect.left.takeIf {
+                !enableTouchAdditionalWidth
+            } ?: (drawRect.left - touchAdditionalWidth)
+
+            val right = drawRect.right.takeIf {
+                !enableTouchAdditionalWidth
+            } ?: (drawRect.right + touchAdditionalWidth)
             if (isRoundedCorners) {
                 canvas!!.drawRoundRect(
-                    drawRect.left - touchAdditionalWidth,
-                    drawRect.top,
-                    drawRect.right + touchAdditionalWidth,
-                    drawRect.bottom,
-                    100f,
-                    100f,
-                    columnPaint
+                    /* left = */ left,
+                    /* top = */ drawRect.top,
+                    /* right = */ right,
+                    /* bottom = */ drawRect.bottom,
+                    /* rx = */ 100f,
+                    /* ry = */ 100f,
+                    /* paint = */ columnPaint
                 )
             } else {
                 canvas!!.drawRect(
-                    drawRect.left - touchAdditionalWidth,
-                    drawRect.top,
-                    drawRect.right + touchAdditionalWidth,
-                    drawRect.bottom,
-                    columnPaint
+                    /* left = */ left,
+                    /* top = */ drawRect.top,
+                    /* right = */ right,
+                    /* bottom = */ drawRect.bottom,
+                    /* paint = */ columnPaint
                 )
             }
             if (column.hasLabels() || column.hasLabelsOnlyForSelected()) {
