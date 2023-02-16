@@ -7,13 +7,6 @@ android {
     namespace 'lecho.lib.hellocharts'
     compileSdk 33
 
-    defaultConfig {
-        minSdk 21
-        targetSdk 33
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
     buildTypes {
         release {
             minifyEnabled false
