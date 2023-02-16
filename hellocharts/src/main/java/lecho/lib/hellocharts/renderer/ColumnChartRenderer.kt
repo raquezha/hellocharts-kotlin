@@ -8,6 +8,7 @@ import android.graphics.PointF
 import android.graphics.RectF
 import lecho.lib.hellocharts.model.Column
 import lecho.lib.hellocharts.model.ColumnChartData
+import lecho.lib.hellocharts.model.RoundedCorner
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType
 import lecho.lib.hellocharts.model.SubcolumnValue
 import lecho.lib.hellocharts.model.Viewport
@@ -174,7 +175,7 @@ open class ColumnChartRenderer(
                 columnWidth,
                 columnIndex,
                 MODE_DRAW,
-                data.isRoundedCorner
+                data.roundedCorner
             )
         }
     }
@@ -189,7 +190,7 @@ open class ColumnChartRenderer(
             columnWidth,
             selectedValue.firstIndex,
             MODE_HIGHLIGHT,
-            data.isRoundedCorner,
+            data.roundedCorner,
             data.enableTouchAdditionalWidth
         )
     }
@@ -208,7 +209,7 @@ open class ColumnChartRenderer(
                 columnWidth,
                 columnIndex,
                 MODE_CHECK_TOUCH,
-                data.isRoundedCorner,
+                data.roundedCorner,
                 data.enableTouchAdditionalWidth
             )
         }
@@ -220,7 +221,7 @@ open class ColumnChartRenderer(
         columnWidth: Float,
         columnIndex: Int,
         mode: Int,
-        isRoundedCorners: Boolean,
+        roundedCorner: RoundedCorner?,
         enableTouchAdditionalWidth: Boolean = true
     ) {
         // For n subColumns there will be n-1 spacing and there will be one
@@ -252,14 +253,14 @@ open class ColumnChartRenderer(
                 rawY
             )
             when (mode) {
-                MODE_DRAW -> drawSubcolumn(canvas, column, columnValue, false, isRoundedCorners)
+                MODE_DRAW -> drawSubcolumn(canvas, column, columnValue, false, roundedCorner)
                 MODE_HIGHLIGHT -> highlightSubcolumn(
                     canvas,
                     column,
                     columnValue,
                     valueIndex,
                     false,
-                    isRoundedCorners,
+                    roundedCorner,
                     enableTouchAdditionalWidth
                 )
 
@@ -282,7 +283,7 @@ open class ColumnChartRenderer(
                 columnWidth,
                 columnIndex,
                 MODE_DRAW,
-                data.isRoundedCorner,
+                data.roundedCorner,
                 data.enableTouchAdditionalWidth
             )
         }
@@ -299,7 +300,7 @@ open class ColumnChartRenderer(
             columnWidth,
             selectedValue.firstIndex,
             MODE_HIGHLIGHT,
-            data.isRoundedCorner,
+            data.roundedCorner,
             data.enableTouchAdditionalWidth
         )
     }
@@ -317,7 +318,7 @@ open class ColumnChartRenderer(
                 columnWidth,
                 columnIndex,
                 MODE_CHECK_TOUCH,
-                data.isRoundedCorner,
+                data.roundedCorner,
                 data.enableTouchAdditionalWidth
             )
         }
@@ -329,7 +330,7 @@ open class ColumnChartRenderer(
         columnWidth: Float,
         columnIndex: Int,
         mode: Int,
-        isRoundedCorners: Boolean,
+        roundedCorner: RoundedCorner?,
         enableTouchAdditionalWidth: Boolean = true
     ) {
         val rawX = computator.computeRawX(columnIndex.toFloat())
@@ -358,14 +359,14 @@ open class ColumnChartRenderer(
                 rawY
             )
             when (mode) {
-                MODE_DRAW -> drawSubcolumn(canvas, column, columnValue, true, isRoundedCorners)
+                MODE_DRAW -> drawSubcolumn(canvas, column, columnValue, true, roundedCorner)
                 MODE_HIGHLIGHT -> highlightSubcolumn(
                     canvas,
                     column,
                     columnValue,
                     valueIndex,
                     true,
-                    isRoundedCorners,
+                    roundedCorner,
                     enableTouchAdditionalWidth
                 )
 
@@ -380,15 +381,26 @@ open class ColumnChartRenderer(
         column: Column,
         columnValue: SubcolumnValue,
         isStacked: Boolean,
-        isRoundedCorners: Boolean
+        roundedCorner: RoundedCorner?
     ) {
-        if (isRoundedCorners) {
-            canvas!!.drawRoundRect(drawRect, 100f, 100f, columnPaint)
+        if (roundedCorner != null) {
+            canvas!!.drawRoundRect(
+                /* rect = */ drawRect,
+                /* rx = */ roundedCorner.cornerRadius,
+                /* ry = */ roundedCorner.cornerRadius,
+                /* paint = */ columnPaint)
         } else {
             canvas!!.drawRect(drawRect, columnPaint)
         }
         if (column.hasLabels()) {
-            drawLabel(canvas, column, columnValue, isStacked, labelOffset.toFloat())
+            drawLabel(
+                canvas = canvas,
+                column = column,
+                columnValue = columnValue,
+                isStacked = isStacked,
+                offset = labelOffset.toFloat(),
+                roundedCorner = roundedCorner
+            )
         }
     }
 
@@ -398,7 +410,7 @@ open class ColumnChartRenderer(
         columnValue: SubcolumnValue,
         valueIndex: Int,
         isStacked: Boolean,
-        isRoundedCorners: Boolean,
+        roundedCorner: RoundedCorner?,
         enableTouchAdditionalWidth: Boolean = true
     ) {
         if (selectedValue.secondIndex == valueIndex) {
@@ -410,14 +422,14 @@ open class ColumnChartRenderer(
             val right = drawRect.right.takeIf {
                 !enableTouchAdditionalWidth
             } ?: (drawRect.right + touchAdditionalWidth)
-            if (isRoundedCorners) {
+            if (roundedCorner != null) {
                 canvas!!.drawRoundRect(
                     /* left = */ left,
                     /* top = */ drawRect.top,
                     /* right = */ right,
                     /* bottom = */ drawRect.bottom,
-                    /* rx = */ 100f,
-                    /* ry = */ 100f,
+                    /* rx = */ roundedCorner.cornerRadius,
+                    /* ry = */ roundedCorner.cornerRadius,
                     /* paint = */ columnPaint
                 )
             } else {
@@ -430,7 +442,14 @@ open class ColumnChartRenderer(
                 )
             }
             if (column.hasLabels() || column.hasLabelsOnlyForSelected()) {
-                drawLabel(canvas, column, columnValue, isStacked, labelOffset.toFloat())
+                drawLabel(
+                    canvas = canvas,
+                    column = column,
+                    columnValue = columnValue,
+                    isStacked = isStacked,
+                    offset = labelOffset.toFloat(),
+                    roundedCorner = roundedCorner
+                )
             }
         }
     }
@@ -475,7 +494,8 @@ open class ColumnChartRenderer(
         column: Column,
         columnValue: SubcolumnValue,
         isStacked: Boolean,
-        offset: Float
+        offset: Float,
+        roundedCorner: RoundedCorner?
     ) {
         val numChars = column.formatter.formatChartValue(labelBuffer, columnValue)
         if (numChars == 0) {
@@ -522,8 +542,12 @@ open class ColumnChartRenderer(
         }
         labelBackgroundRect[left, top, right] = bottom
         drawLabelTextAndBackground(
-            canvas!!, labelBuffer, labelBuffer.size - numChars, numChars,
-            columnValue.darkenColor
+            canvas = canvas!!,
+            labelBuffer = labelBuffer,
+            startIndex = labelBuffer.size - numChars,
+            numChars = numChars,
+            autoBackgroundColor = columnValue.darkenColor,
+            roundedCorner = roundedCorner
         )
     }
 

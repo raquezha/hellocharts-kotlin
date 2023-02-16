@@ -8,6 +8,7 @@ import android.graphics.RectF
 import lecho.lib.hellocharts.computator.ChartComputator
 import lecho.lib.hellocharts.formatter.BubbleChartValueFormatter
 import lecho.lib.hellocharts.model.BubbleValue
+import lecho.lib.hellocharts.model.RoundedCorner
 import lecho.lib.hellocharts.model.SelectedValue
 import lecho.lib.hellocharts.model.ValueShape
 import lecho.lib.hellocharts.model.Viewport
@@ -191,11 +192,13 @@ class BubbleChartRenderer(
         drawBubbleShapeAndLabel(canvas, bubbleValue, rawRadius, MODE_DRAW)
     }
 
+    // TODO: support rounder corner
     private fun drawBubbleShapeAndLabel(
         canvas: Canvas?,
         bubbleValue: BubbleValue,
         rawRadius: Float,
-        mode: Int
+        mode: Int,
+        roundedCorner: RoundedCorner? = null
     ) {
         if (ValueShape.SQUARE == bubbleValue.shape) {
             canvas!!.drawRect(bubbleRect, bubblePaint)
@@ -206,11 +209,23 @@ class BubbleChartRenderer(
         }
         if (MODE_HIGHLIGHT == mode) {
             if (hasLabels || hasLabelsOnlyForSelected) {
-                drawLabel(canvas, bubbleValue, bubbleCenter.x, bubbleCenter.y)
+                drawLabel(
+                    canvas = canvas,
+                    bubbleValue = bubbleValue,
+                    rawX = bubbleCenter.x,
+                    rawY = bubbleCenter.y,
+                    roundedCorner = roundedCorner
+                )
             }
         } else if (MODE_DRAW == mode) {
             if (hasLabels) {
-                drawLabel(canvas, bubbleValue, bubbleCenter.x, bubbleCenter.y)
+                drawLabel(
+                    canvas = canvas,
+                    bubbleValue = bubbleValue,
+                    rawX = bubbleCenter.x,
+                    rawY = bubbleCenter.y,
+                    roundedCorner = roundedCorner
+                )
             }
         } else {
             throw IllegalStateException("Cannot process bubble in mode: $mode")
@@ -255,7 +270,13 @@ class BubbleChartRenderer(
         return rawRadius
     }
 
-    private fun drawLabel(canvas: Canvas?, bubbleValue: BubbleValue, rawX: Float, rawY: Float) {
+    private fun drawLabel(
+        canvas: Canvas?,
+        bubbleValue: BubbleValue,
+        rawX: Float,
+        rawY: Float,
+        roundedCorner: RoundedCorner?
+    ) {
         val contentRect = computator.contentRectMinusAllMargins
         val numChars = valueFormatter!!.formatChartValue(labelBuffer, bubbleValue)
         if (numChars == 0) {
@@ -286,8 +307,10 @@ class BubbleChartRenderer(
         }
         labelBackgroundRect[left, top, right] = bottom
         drawLabelTextAndBackground(
-            canvas!!, labelBuffer, labelBuffer.size - numChars, numChars,
-            bubbleValue.darkenColor
+            canvas = canvas!!, labelBuffer = labelBuffer,
+            startIndex = labelBuffer.size - numChars, numChars = numChars,
+            autoBackgroundColor = bubbleValue.darkenColor,
+            roundedCorner = roundedCorner
         )
     }
 

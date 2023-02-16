@@ -13,6 +13,7 @@ import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener
 import lecho.lib.hellocharts.model.Axis
 import lecho.lib.hellocharts.model.Column
 import lecho.lib.hellocharts.model.ColumnChartData
+import lecho.lib.hellocharts.model.RoundedCorner
 import lecho.lib.hellocharts.model.SubcolumnValue
 import lecho.lib.hellocharts.util.ChartUtils
 import net.raquezha.hellocharts.kotlin.databinding.FragmentColumnChartBinding
@@ -39,7 +40,10 @@ class ColumnChartActivity : HelloChartsActivity() {
         private var hasLabels = false
         private var hasLabelForSelected = false
         private var dataType = DEFAULT_DATA
-        private var isRoundedCorner = true
+        private var roundedCorner: RoundedCorner? = RoundedCorner(
+            cornerRadius = 80f,
+            tooltipCornerRadius = 80f
+        )
 
         private val binding: FragmentColumnChartBinding by lazy {
             FragmentColumnChartBinding.inflate(layoutInflater)
@@ -163,7 +167,7 @@ class ColumnChartActivity : HelloChartsActivity() {
                 columns.add(column)
             }
             data = ColumnChartData(columns)
-            data.isRoundedCorner = isRoundedCorner
+            data.roundedCorner = roundedCorner
             data.enableTouchAdditionalWidth = false
             if (hasAxis) {
                 val axisX = Axis()
@@ -206,7 +210,7 @@ class ColumnChartActivity : HelloChartsActivity() {
                 columns.add(column)
             }
             data = ColumnChartData(columns)
-            data.isRoundedCorner = isRoundedCorner
+            data.roundedCorner = roundedCorner
             if (hasAxis) {
                 val axisX = Axis()
                 val axisY = Axis().setHasLines(true)
@@ -248,7 +252,7 @@ class ColumnChartActivity : HelloChartsActivity() {
                 columns.add(column)
             }
             data = ColumnChartData(columns)
-            data.isRoundedCorner = isRoundedCorner
+            data.roundedCorner = roundedCorner
 
             // Set stacked flag.
             data.isStacked = true
@@ -290,7 +294,7 @@ class ColumnChartActivity : HelloChartsActivity() {
                 columns.add(column)
             }
             data = ColumnChartData(columns)
-            data.isRoundedCorner = isRoundedCorner
+            data.roundedCorner = roundedCorner
             if (hasAxis) {
                 val axisX = Axis()
                 val axisY = Axis().setHasLines(true)
@@ -331,7 +335,7 @@ class ColumnChartActivity : HelloChartsActivity() {
                 columns.add(column)
             }
             data = ColumnChartData(columns)
-            data.isRoundedCorner = isRoundedCorner
+            data.roundedCorner = roundedCorner
 
             // Set stacked flag.
             data.isStacked = true

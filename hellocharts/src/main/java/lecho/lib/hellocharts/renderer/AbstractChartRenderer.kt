@@ -9,6 +9,7 @@ import android.graphics.Paint.FontMetricsInt
 import android.graphics.RectF
 import android.graphics.Typeface
 import lecho.lib.hellocharts.computator.ChartComputator
+import lecho.lib.hellocharts.model.RoundedCorner
 import lecho.lib.hellocharts.model.SelectedValue
 import lecho.lib.hellocharts.model.Viewport
 import lecho.lib.hellocharts.util.ChartUtils.dp2px
@@ -120,8 +121,12 @@ abstract class AbstractChartRenderer(
      * Draws label text and label background if isValueLabelBackgroundEnabled is true.
      */
     protected fun drawLabelTextAndBackground(
-        canvas: Canvas, labelBuffer: CharArray?, startIndex: Int, numChars: Int,
-        autoBackgroundColor: Int
+        canvas: Canvas,
+        labelBuffer: CharArray?,
+        startIndex: Int,
+        numChars: Int,
+        autoBackgroundColor: Int,
+        roundedCorner: RoundedCorner? = null
     ) {
         val textX: Float
         val textY: Float
@@ -129,13 +134,24 @@ abstract class AbstractChartRenderer(
             if (isValueLabelBackgroundAuto) {
                 labelBackgroundPaint.color = autoBackgroundColor
             }
-            canvas.drawRect(labelBackgroundRect, labelBackgroundPaint)
+            if(roundedCorner?.tooltipCornerRadius != null) {
+                canvas.drawRoundRect(
+                    /* rect = */ labelBackgroundRect,
+                    /* rx = */ roundedCorner.tooltipCornerRadius,
+                    /* ry = */ roundedCorner.tooltipCornerRadius,
+                    /* paint = */ labelBackgroundPaint
+                )
+            } else {
+                canvas.drawRect(labelBackgroundRect, labelBackgroundPaint)
+            }
+
             textX = labelBackgroundRect.left + labelMargin
             textY = labelBackgroundRect.bottom - labelMargin
         } else {
             textX = labelBackgroundRect.left
             textY = labelBackgroundRect.bottom
         }
+
         canvas.drawText(labelBuffer!!, startIndex, numChars, textX, textY, labelPaint)
     }
 

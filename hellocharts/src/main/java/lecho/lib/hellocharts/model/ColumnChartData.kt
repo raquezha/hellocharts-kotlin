@@ -23,7 +23,7 @@ class ColumnChartData : AbstractChartData {
 
     var isStacked = false
 
-    var isRoundedCorner: Boolean = false
+    var roundedCorner: RoundedCorner? = null
 
     var enableTouchAdditionalWidth: Boolean = true
 
@@ -37,7 +37,7 @@ class ColumnChartData : AbstractChartData {
     constructor(data: ColumnChartData) : super(data) {
         isStacked = data.isStacked
         fillRatio = data.fillRatio
-        isRoundedCorner = data.isRoundedCorner
+        roundedCorner = data.roundedCorner
         enableTouchAdditionalWidth = data.enableTouchAdditionalWidth
         for (column in data.columns) {
             columns.add(Column(column))

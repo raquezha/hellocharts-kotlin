@@ -472,11 +472,12 @@ open class LineChartRenderer(
         }
         labelBackgroundRect[left, top, right] = bottom
         drawLabelTextAndBackground(
-            canvas!!,
-            labelBuffer,
-            labelBuffer.size - numChars,
-            numChars,
-            line.darkenColor
+            canvas = canvas!!,
+            labelBuffer = labelBuffer,
+            startIndex = labelBuffer.size - numChars,
+            numChars = numChars,
+            autoBackgroundColor = line.darkenColor,
+            roundedCorner = null
         )
     }
 
