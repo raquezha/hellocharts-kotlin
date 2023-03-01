@@ -14,6 +14,7 @@ import lecho.lib.hellocharts.model.Axis
 import lecho.lib.hellocharts.model.Line
 import lecho.lib.hellocharts.model.LineChartData
 import lecho.lib.hellocharts.model.PointValue
+import lecho.lib.hellocharts.model.TouchCoordinates
 import lecho.lib.hellocharts.model.ValueShape
 import lecho.lib.hellocharts.model.Viewport
 import lecho.lib.hellocharts.util.ChartUtils
@@ -382,7 +383,12 @@ class LineChartActivity : HelloChartsActivity() {
         }
 
         private inner class ValueTouchListener : LineChartOnValueSelectListener {
-            override fun onValueSelected(lineIndex: Int, pointIndex: Int, value: PointValue) {
+            override fun onValueSelected(
+                lineIndex: Int,
+                pointIndex: Int,
+                value: PointValue,
+                touchCoordinates: TouchCoordinates?
+            ) {
                 showToast("Selected: $value")
             }
 

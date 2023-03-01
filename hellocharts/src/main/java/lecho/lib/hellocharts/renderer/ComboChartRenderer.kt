@@ -67,7 +67,12 @@ open class ComboChartRenderer(context: Context?, chart: Chart?) : AbstractChartR
         while (rendererIndex >= 0) {
             val renderer = renderers[rendererIndex]
             if (renderer.checkTouch(touchX, touchY)) {
-                selectedValue.set(renderer.getSelectedValue())
+                selectedValue.set(
+                    renderer.getSelectedValue().apply {
+                        this.selectedY = touchY
+                        this.selectedX = touchX
+                    }
+                )
                 break
             }
             rendererIndex--

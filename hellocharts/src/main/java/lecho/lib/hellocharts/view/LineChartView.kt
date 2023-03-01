@@ -11,6 +11,7 @@ import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener
 import lecho.lib.hellocharts.model.ChartData
 import lecho.lib.hellocharts.model.LineChartData
 import lecho.lib.hellocharts.model.LineChartData.Companion.generateDummyData
+import lecho.lib.hellocharts.model.TouchCoordinates
 import lecho.lib.hellocharts.provider.LineChartDataProvider
 import lecho.lib.hellocharts.renderer.AxesRenderer
 import lecho.lib.hellocharts.renderer.LineChartRenderer
@@ -69,9 +70,13 @@ open class LineChartView @JvmOverloads constructor(
                     ?.getValues()
                     ?.get(selectedValue.secondIndex)?.let {
                         onValueTouchListener.onValueSelected(
-                            selectedValue.firstIndex,
-                            selectedValue.secondIndex,
-                            it
+                            lineIndex = selectedValue.firstIndex,
+                            pointIndex = selectedValue.secondIndex,
+                            value = it,
+                            touchCoordinates = TouchCoordinates(
+                                touchX = selectedValue.selectedX,
+                                touchY = selectedValue.selectedY
+                            )
                         )
                     }
             } else {

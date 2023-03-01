@@ -11,6 +11,7 @@ import lecho.lib.hellocharts.listener.DummyColumnChartOnValueSelectListener
 import lecho.lib.hellocharts.model.ChartData
 import lecho.lib.hellocharts.model.ColumnChartData
 import lecho.lib.hellocharts.model.ColumnChartData.Companion.generateDummyData
+import lecho.lib.hellocharts.model.TouchCoordinates
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider
 import lecho.lib.hellocharts.renderer.AxesRenderer
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer
@@ -58,10 +59,15 @@ open class ColumnChartView @JvmOverloads constructor(
             if (selectedValue.isSet) {
                 val value =
                     data!!.columns[selectedValue.firstIndex].values[selectedValue.secondIndex]
+
                 onValueTouchListener.onValueSelected(
-                    selectedValue.firstIndex,
-                    selectedValue.secondIndex,
-                    value
+                    columnIndex = selectedValue.firstIndex,
+                    subColumnIndex = selectedValue.secondIndex,
+                    value = value,
+                    touchCoordinates = TouchCoordinates(
+                        touchX = selectedValue.selectedX,
+                        touchY = selectedValue.selectedY
+                    )
                 )
             } else {
                 onValueTouchListener.onValueDeselected()

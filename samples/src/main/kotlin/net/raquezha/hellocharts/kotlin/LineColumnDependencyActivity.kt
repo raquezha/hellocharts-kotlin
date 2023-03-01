@@ -16,6 +16,7 @@ import lecho.lib.hellocharts.model.Line
 import lecho.lib.hellocharts.model.LineChartData
 import lecho.lib.hellocharts.model.PointValue
 import lecho.lib.hellocharts.model.SubcolumnValue
+import lecho.lib.hellocharts.model.TouchCoordinates
 import lecho.lib.hellocharts.model.Viewport
 import lecho.lib.hellocharts.util.ChartUtils
 import net.raquezha.hellocharts.kotlin.databinding.FragmentLineColumnDependencyBinding
@@ -136,7 +137,8 @@ class LineColumnDependencyActivity : HelloChartsActivity() {
             override fun onValueSelected(
                 columnIndex: Int,
                 subColumnIndex: Int,
-                value: SubcolumnValue
+                value: SubcolumnValue,
+                touchCoordinates: TouchCoordinates?
             ) {
                 generateLineData(value.color, 100f)
             }

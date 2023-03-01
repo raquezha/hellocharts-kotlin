@@ -28,6 +28,13 @@ class SelectedValue {
     @JvmField
     var type: SelectedValueType? = SelectedValueType.NONE
 
+    @JvmField
+    var selectedX : Float = 0f
+
+    @JvmField
+
+    var selectedY: Float = 0f
+
     constructor() {
         clear()
     }

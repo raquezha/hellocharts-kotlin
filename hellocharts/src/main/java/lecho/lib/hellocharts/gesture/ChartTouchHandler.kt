@@ -177,7 +177,12 @@ open class ChartTouchHandler(context: Context?, protected var chart: Chart) {
                         // that means that should be
                         // first(selection) click on given value.
                         if (selectionModeOldValue != selectedValue) {
-                            selectionModeOldValue.set(selectedValue)
+                            selectionModeOldValue.set(
+                                selectedValue.apply {
+                                    this.selectedY = event.y
+                                    this.selectedX = event.x
+                                }
+                            )
                             chart.callTouchListener()
                         }
                     } else {
@@ -190,7 +195,8 @@ open class ChartTouchHandler(context: Context?, protected var chart: Chart) {
                 needInvalidate = true
             }
 
-            MotionEvent.ACTION_MOVE ->                 // If value was touched and now touch point is outside of value area - clear touch and invalidate, user
+            MotionEvent.ACTION_MOVE ->
+                // If value was touched and now touch point is outside of value area - clear touch and invalidate, user
                 // probably moved finger away from given chart value.
                 if (renderer!!.isTouched()) {
                     if (!checkTouch(event.x, event.y)) {
@@ -208,10 +214,20 @@ open class ChartTouchHandler(context: Context?, protected var chart: Chart) {
     }
 
     private fun checkTouch(touchX: Float, touchY: Float): Boolean {
-        oldSelectedValue.set(selectedValue)
+        oldSelectedValue.set(
+            selectedValue.apply {
+                this.selectedY = touchY
+                this.selectedX = touchX
+            }
+        )
         selectedValue.clear()
         if (renderer!!.checkTouch(touchX, touchY)) {
-            selectedValue.set(renderer!!.getSelectedValue())
+            selectedValue.set(
+                renderer!!.getSelectedValue().apply {
+                    this.selectedY = touchY
+                    this.selectedX = touchX
+                }
+            )
         }
 
         // Check if selection is still on the same value, if not return false.

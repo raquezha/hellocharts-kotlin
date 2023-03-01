@@ -15,6 +15,7 @@ import lecho.lib.hellocharts.model.Column
 import lecho.lib.hellocharts.model.ColumnChartData
 import lecho.lib.hellocharts.model.RoundedCorner
 import lecho.lib.hellocharts.model.SubcolumnValue
+import lecho.lib.hellocharts.model.TouchCoordinates
 import lecho.lib.hellocharts.util.ChartUtils
 import net.raquezha.hellocharts.kotlin.databinding.FragmentColumnChartBinding
 import kotlin.math.roundToInt
@@ -417,7 +418,8 @@ class ColumnChartActivity : HelloChartsActivity() {
             override fun onValueSelected(
                 columnIndex: Int,
                 subColumnIndex: Int,
-                value: SubcolumnValue
+                value: SubcolumnValue,
+                touchCoordinates: TouchCoordinates?
             ) {
                 Toast.makeText(activity, "Selected: $value", Toast.LENGTH_SHORT).show()
             }
