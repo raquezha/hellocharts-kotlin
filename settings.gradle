@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "HelloCharts"
 include ':hellocharts'
-include ':samples'
+//include ':samples'
